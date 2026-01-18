@@ -20,7 +20,6 @@ from backend.middlewares import RequestContextMiddleware
 def _init_directories(logger: logging.Logger) -> None:
     """Garante que os diretórios necessários para a aplicação existam."""
     try:
-        # A lógica que estava em 'settings.initialize_directories' agora vive aqui.
         logger.info("Verificando/Criando diretório de imagens em: %s", settings.IMAGENS_DIR_PATH)
         settings.IMAGENS_DIR_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -59,8 +58,8 @@ async def lifespan(app: FastAPI):
     logger = logging.getLogger("irricontrol")
     _init_directories(logger)
     _log_startup_info(logger)
-    
-    yield # A aplicação executa aqui
+
+    yield  # A aplicação executa aqui
 
     # Ações na finalização
     logger.info("Aplicação finalizando (lifespan shutdown).")
@@ -104,9 +103,9 @@ app.mount(
 # ---------------------------------------------------------------------------
 # Routers
 # ---------------------------------------------------------------------------
-app.include_router(kmz.router,        prefix=settings.API_V1_STR, tags=["KMZ Operations"])
+app.include_router(kmz.router, prefix=settings.API_V1_STR, tags=["KMZ Operations"])
 app.include_router(simulation.router, prefix=settings.API_V1_STR, tags=["Simulation"])
-app.include_router(report.router,     prefix=settings.API_V1_STR, tags=["Report Operations"])
+app.include_router(report.router, prefix=settings.API_V1_STR, tags=["Report Operations"])
 
 # ---------------------------------------------------------------------------
 # Logger global
@@ -123,13 +122,15 @@ async def read_root() -> dict[str, str]:
     return {"message": f"Bem-vindo à {settings.APP_NAME}!"}
 
 
-@app.get(f"{settings.API_V1_STR}/health", tags=["Health"])
+# ✅ Health check compatível com UptimeRobot Free (HEAD)
 @app.api_route(
     f"{settings.API_V1_STR}/health",
     methods=["GET", "HEAD"],
-    tags=["Health"]
+    tags=["Health"],
 )
-async def health():
+async def health() -> dict[str, str]:
+    """Health check simples para monitoramento externo (GET/HEAD)."""
+    logger.info("event=endpoint_access endpoint=/health status=ok")
     return {"status": "ok"}
 
 
@@ -144,4 +145,8 @@ async def list_templates() -> dict[str, list[str] | str]:
     """Lista IDs de templates disponíveis (sem expor segredos)."""
     ids = settings.listar_templates_ids()
     logger.info("event=endpoint_access endpoint=/templates templates=%s", ids)
-    return {"templates": ids, "disabled": settings.TEMPLATES_DESABILITADOS, "default": settings.DEFAULT_TEMPLATE_ID.value}
+    return {
+        "templates": ids,
+        "disabled": settings.TEMPLATES_DESABILITADOS,
+        "default": settings.DEFAULT_TEMPLATE_ID.value,
+    }
