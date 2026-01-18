@@ -124,9 +124,12 @@ async def read_root() -> dict[str, str]:
 
 
 @app.get(f"{settings.API_V1_STR}/health", tags=["Health"])
-async def health() -> dict[str, str]:
-    """Health check simples para monitoramento externo."""
-    logger.info("event=endpoint_access endpoint=/health status=ok")
+@app.api_route(
+    f"{settings.API_V1_STR}/health",
+    methods=["GET", "HEAD"],
+    tags=["Health"]
+)
+async def health():
     return {"status": "ok"}
 
 
