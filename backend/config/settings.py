@@ -52,6 +52,12 @@ class AppSettings(BaseSettings):
                 prod_origins.append(self.NETLIFY_APP_URL.strip().rstrip("/"))
             if self.BACKEND_PUBLIC_URL:
                 prod_origins.append(str(self.BACKEND_PUBLIC_URL).strip().rstrip("/"))
+            
+            # GUARANTEE: Ensure the known Netlify frontend is always allowed, 
+            # even if env vars are missing or empty.
+            if "https://irricontrolconnect.netlify.app" not in prod_origins:
+                prod_origins.append("https://irricontrolconnect.netlify.app")
+
             if not prod_origins:
                 raise ValueError(
                     "CONFIGURAÇÃO DE SEGURANÇA CRÍTICA AUSENTE: "
@@ -62,6 +68,10 @@ class AppSettings(BaseSettings):
             dev_origins = origins
             if self.NETLIFY_APP_URL:
                 dev_origins.append(self.NETLIFY_APP_URL.strip().rstrip("/"))
+            # Ensure it's in dev too just in case
+            if "https://irricontrolconnect.netlify.app" not in dev_origins:
+                dev_origins.append("https://irricontrolconnect.netlify.app")
+                
             if self.BACKEND_PUBLIC_URL:
                 dev_origins.append(str(self.BACKEND_PUBLIC_URL).strip().rstrip("/"))
             normalized_dev_origins = {o.lower().rstrip("/") for o in dev_origins if o}

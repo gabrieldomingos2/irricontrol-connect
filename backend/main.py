@@ -81,8 +81,6 @@ app = FastAPI(
 # ---------------------------------------------------------------------------
 # Middlewares (configurados no escopo do módulo, como esperado pelo FastAPI)
 # ---------------------------------------------------------------------------
-app.add_middleware(RequestContextMiddleware)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -91,6 +89,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(RequestContextMiddleware)
 # ---------------------------------------------------------------------------
 # Arquivos estáticos
 # ---------------------------------------------------------------------------
