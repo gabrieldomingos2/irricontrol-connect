@@ -12,6 +12,18 @@
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">
 
+  <!-- Config frontend -> backend (local vs prod) -->
+  <script>
+    (function () {
+      const isLocal =
+        location.hostname === "localhost" || location.hostname === "127.0.0.1";
+      window.BACKEND_URL = isLocal
+        ? "http://localhost:8000"
+        : "https://irricontrol-connect.onrender.com";
+      window.API_PREFIX = "/api/v1";
+    })();
+  </script>
+
   <!-- ===========================
       PERFORMANCE: PRECONNECT
       =========================== -->
@@ -38,10 +50,132 @@
       CSS DA APLICAÇÃO
       =========================== -->
   <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/login.css" />
 </head>
 
 <body class="bg-[#060B10] text-white h-screen w-screen overflow-hidden">
-  <div id="ui-wrapper">
+
+  <!-- LOGIN OVERLAY (fica por cima do app) -->
+  <div id="login-overlay" class="login-overlay hidden" aria-hidden="true">
+    <!-- background layers (isolado do app) -->
+    <div class="login-bg" aria-hidden="true">
+      <div class="bg__grid"></div>
+      <div class="bg__scan"></div>
+      <div class="bg__glow"></div>
+      <canvas id="particles" class="bg__particles" aria-hidden="true"></canvas>
+    </div>
+
+    <main class="shell">
+      <section class="card" role="region" aria-label="Login Irricontrol">
+        <header class="brand">
+          <div class="brand__mark">
+            <img
+              src="assets/images/logo-irricontrol.png"
+              alt="Irricontrol"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </header>
+
+        <div class="divider"></div>
+
+        <form id="login-form" class="form" autocomplete="on" novalidate>
+          <label class="field">
+            <span class="field__label">Usuário</span>
+            <span class="field__wrap">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                inputmode="email"
+                placeholder=""
+                autocomplete="username"
+                required
+              />
+              <span class="field__icon" aria-hidden="true">👤</span>
+            </span>
+            <span class="field__hint"></span>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Senha</span>
+            <span class="field__wrap">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder=""
+                autocomplete="current-password"
+                minlength="4"
+                required
+              />
+              <button
+                id="togglePass"
+                class="iconBtn"
+                type="button"
+                aria-label="Mostrar/ocultar senha"
+              >
+                <!-- Icon: Eye -->
+                <svg
+                  class="icon-eye"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+
+                <!-- Icon: Eye Off -->
+                <svg
+                  class="icon-eye-off"
+                  style="display:none;"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </span>
+          </label>
+
+          <div id="errorBox" class="error" role="alert" aria-live="polite"></div>
+
+          <button id="submitBtn" class="btn" type="submit">
+            <span class="btn__text">Entrar</span>
+            <span class="btn__shine" aria-hidden="true"></span>
+          </button>
+
+          <p class="legal">
+            Você está acessando um ambiente experimental da Irricontrol.
+            Esta plataforma é destinada exclusivamente a testes, simulações e validações internas.
+          </p>
+        </form>
+      </section>
+
+      <footer class="foot">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Status: <strong>Secure Access</strong></span>
+      </footer>
+    </main>
+  </div>  <div id="ui-wrapper">
   <!-- =========================================
       TOPBAR
       ========================================= -->
@@ -408,7 +542,9 @@
     </div>
   </div>
 
-  <!-- =========================================
+    <!-- Login controller (overlay + auth) - precisa vir ANTES do api.js -->
+  <script src="assets/js/auth.js"></script>
+<!-- =========================================
       SCRIPTS (ORDEM IMPORTA)
       ========================================= -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>

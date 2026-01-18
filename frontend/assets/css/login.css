@@ -1,0 +1,378 @@
+/* =========================================================
+   LOGIN OVERLAY (ISOLADO DO APP)
+   - NÃO encosta no body/html do simulador
+   - Tudo fica dentro de .login-overlay
+========================================================= */
+
+/* Overlay por cima de tudo */
+.login-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hidden control */
+.login-overlay.hidden{ display: none; }
+
+/* Trava o app por baixo */
+#ui-wrapper.ui-locked{
+  pointer-events: none;
+  filter: blur(1px);
+  opacity: .75;
+}
+
+/* =========================================================
+   VARIÁVEIS (escopadas no overlay)
+========================================================= */
+.login-overlay{
+  --bg0:#060b10;
+  --bg1:#060b10;
+
+  --card: rgba(12,18,28,0.62);
+  --card2: rgba(12,18,28,0.38);
+
+  --stroke: rgba(255,255,255,0.08);
+
+  --text:#e6eefc;
+  --muted:#9fb0c6;
+
+  --green:#3cff6a;
+  --green2:#22c55e;
+  --cyan:#00d4ff;
+  --danger:#ff4d4d;
+
+  --radius:18px;
+  --shadow:0 24px 80px rgba(0,0,0,0.62);
+  --blur: blur(14px);
+
+  --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+/* Base dentro do overlay */
+.login-overlay, 
+.login-overlay *{
+  box-sizing: border-box;
+}
+
+.login-overlay{
+  margin: 0;
+  font-family: var(--font);
+  color: var(--text);
+  overflow: hidden;
+
+  /* fundo base */
+  background: #060b10;
+}
+
+/* =========================================================
+   BACKGROUND EFFECTS
+========================================================= */
+.login-overlay .login-bg{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.login-overlay .bg__particles{
+  position: absolute;
+  inset: 0;
+  opacity: .55;
+}
+
+.login-overlay .bg__grid{
+  position: absolute;
+  inset: -2px;
+  background:
+    linear-gradient(to right, rgba(60,255,106,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(60,255,106,0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(900px) rotateX(58deg) translateY(160px);
+  filter: blur(.4px);
+  opacity: .35;
+  mask-image: radial-gradient(circle at 50% 40%, black 10%, rgba(0,0,0,0.2) 55%, transparent 78%);
+}
+
+.login-overlay .bg__scan{
+  position: absolute;
+  inset: 0;
+  background: none;
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes login_scan{
+  from{ transform: translateY(-120%); }
+  to{ transform: translateY(120%); }
+}
+
+.login-overlay .bg__glow{
+  position: absolute;
+  inset: 0;
+  background: none;
+  filter: none;
+  opacity: 0;
+}
+
+/* =========================================================
+   LAYOUT CENTRAL
+========================================================= */
+.login-overlay .shell{
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px 16vh; /* puxa “centro” um pouco pra cima */
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================================================
+   CARD LOGIN
+========================================================= */
+.login-overlay .card{
+  width: min(400px, 92vw);
+  background: linear-gradient(180deg, var(--card), var(--card2));
+  border-radius: var(--radius);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  backdrop-filter: var(--blur);
+  padding: 10px 18px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-overlay .card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: var(--radius);
+  border: 1px solid rgba(60,255,106,0.14);
+  pointer-events: none;
+}
+
+/* =========================================================
+   HEADER / BRAND
+========================================================= */
+.login-overlay .brand{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.login-overlay .brand__mark{
+  width: 320px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-overlay .brand__mark img{
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Divider */
+.login-overlay .divider{
+  height: 1px;
+  margin: 6px 0 10px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+.login-overlay .form{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-overlay .field{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-overlay .field__label{
+  font-size: 12px;
+  letter-spacing: .02em;
+  color: rgba(230,238,252,0.75);
+}
+
+.login-overlay .field__wrap{
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.login-overlay input{
+  width: 100%;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+  color: var(--text);
+  outline: none;
+  padding: 0 44px 0 14px;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.login-overlay input::placeholder{
+  color: rgba(230,238,252,0.35);
+}
+
+.login-overlay input:focus{
+  border-color: rgba(60,255,106,0.35);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.14);
+  background: rgba(0,0,0,0.24);
+}
+
+.login-overlay .field__icon{
+  position: absolute;
+  right: 14px;
+  opacity: .55;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+/* Botão olho */
+.login-overlay .iconBtn{
+  position: absolute;
+  right: 8px;
+  height: 32px;
+  width: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(230,238,252,0.75);
+  cursor: pointer;
+  transition: transform .12s ease, border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.login-overlay .iconBtn:hover{
+  border-color: rgba(60,255,106,0.25);
+  color: rgba(60,255,106,0.95);
+  background: rgba(255,255,255,0.10);
+  transform: translateY(-1px);
+}
+
+.login-overlay .icon-eye,
+.login-overlay .icon-eye-off{
+  display: block;
+}
+
+/* =========================================================
+   ERROR BOX
+========================================================= */
+.login-overlay .error{
+  display: none;
+  border-radius: 14px;
+  border: 1px solid rgba(255,77,77,0.35);
+  background: rgba(255,77,77,0.10);
+  color: rgba(255,190,190,0.95);
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.login-overlay .error.is-on{
+  display: block;
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+.login-overlay .btn{
+  position: relative;
+  height: 46px;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  color: #061010;
+  font-weight: 800;
+  letter-spacing: .02em;
+
+  background: linear-gradient(90deg, var(--green2), var(--green));
+  box-shadow: 0 18px 42px rgba(34,197,94,0.18);
+  overflow: hidden;
+
+  transition: transform .12s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+.login-overlay .btn:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 22px 56px rgba(34,197,94,0.22);
+}
+
+.login-overlay .btn:disabled{
+  cursor: not-allowed;
+  opacity: .85;
+  filter: grayscale(.1);
+}
+
+.login-overlay .btn__text{
+  position: relative;
+  z-index: 2;
+}
+
+.login-overlay .btn__shine{
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 55%);
+  transform: translateX(-45%);
+  animation: login_shine 2.8s ease-in-out infinite;
+  opacity: .55;
+}
+
+@keyframes login_shine{
+  0%,100%{ transform: translateX(-45%); }
+  50%{ transform: translateX(45%); }
+}
+
+/* =========================================================
+   LEGAL + FOOTER
+========================================================= */
+.login-overlay .legal{
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: rgba(230,238,252,0.58);
+  line-height: 1.35;
+}
+
+.login-overlay .foot{
+  margin-top: 14px;
+  font-size: 12px;
+  color: rgba(230,238,252,0.55);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-overlay .dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, var(--green), rgba(34,197,94,0.25));
+  box-shadow: 0 0 18px rgba(34,197,94,0.28);
+}
+
+/* Pequenas telas */
+@media (max-width: 420px){
+  .login-overlay .brand__mark{
+    width: 260px;
+    height: 140px;
+  }
+}

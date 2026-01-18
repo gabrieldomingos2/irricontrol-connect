@@ -92,6 +92,12 @@ async function apiRequest(endpoint, options = {}) {
     fetchOpts.headers["X-Request-ID"] = _makeRequestId();
   }
 
+  // ✅ Injeta Authorization automaticamente (se tiver token do login)
+  const token = window.Auth?.getToken?.();
+  if (token && !("Authorization" in fetchOpts.headers)) {
+    fetchOpts.headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
   fetchOpts.signal = controller.signal;
@@ -100,6 +106,7 @@ async function apiRequest(endpoint, options = {}) {
 
   try {
     const response = await fetch(url, fetchOpts);
+
 
     // HTTP error handling
     if (!response.ok) {

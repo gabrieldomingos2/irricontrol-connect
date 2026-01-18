@@ -128,6 +128,22 @@ function deactivateAllModes() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // ✅ Se não tiver token, NÃO inicia nada.
+    if (!window.Auth?.getToken?.()) {
+    console.log("🔒 Sem token: aguardando login para iniciar a plataforma...");
+    return;
+}
+
+    await initApp();
+});
+
+// ✅ quando logar, inicializa
+window.addEventListener("auth:login", async () => {
+    console.log("✅ Login OK: iniciando plataforma...");
+    await initApp();
+}, { once: true });
+
+async function initApp() {
     console.log("DOM Carregado. Iniciando Aplicação...");
 
     const savedLang = localStorage.getItem('preferredLanguage') || 'pt-br';
@@ -142,16 +158,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await handleResetClick(false);
 
-    // Garante tooltips/aria-labels localizados para KMZ e Reset
     updateActionButtonsI18n();
-
-    // Reaplica quando o idioma mudar
     document.addEventListener("i18n:applied", () => {
         updateActionButtonsI18n();
     });
 
     console.log("Aplicação Pronta.");
-});
+    }
+
 
 /**
  * Controla o estado (habilitado/desabilitado) e o tooltip do botão de exportar PDF.

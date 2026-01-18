@@ -4,14 +4,16 @@ import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from backend.auth.deps import require_auth
+from backend.auth.router import router as auth_router
 from backend.config import settings
-from backend.routers import kmz, simulation, report
 from backend.logging_config import setup_logging
 from backend.middlewares import RequestContextMiddleware
+from backend.routers import kmz, report, simulation
 
 
 # ---------------------------------------------------------------------------
@@ -53,15 +55,13 @@ def _log_startup_info(logger: logging.Logger) -> None:
 # ---------------------------------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Ações na inicialização (antes de aceitar requisições)
     setup_logging()
     logger = logging.getLogger("irricontrol")
     _init_directories(logger)
     _log_startup_info(logger)
 
-    yield  # A aplicação executa aqui
+    yield
 
-    # Ações na finalização
     logger.info("Aplicação finalizando (lifespan shutdown).")
 
 
@@ -79,7 +79,7 @@ app = FastAPI(
 )
 
 # ---------------------------------------------------------------------------
-# Middlewares (configurados no escopo do módulo, como esperado pelo FastAPI)
+# Middlewares
 # ---------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
@@ -90,6 +90,7 @@ app.add_middleware(
 )
 
 app.add_middleware(RequestContextMiddleware)
+
 # ---------------------------------------------------------------------------
 # Arquivos estáticos
 # ---------------------------------------------------------------------------
@@ -102,9 +103,29 @@ app.mount(
 # ---------------------------------------------------------------------------
 # Routers
 # ---------------------------------------------------------------------------
-app.include_router(kmz.router, prefix=settings.API_V1_STR, tags=["KMZ Operations"])
-app.include_router(simulation.router, prefix=settings.API_V1_STR, tags=["Simulation"])
-app.include_router(report.router, prefix=settings.API_V1_STR, tags=["Report Operations"])
+
+# Auth (rota aberta)
+app.include_router(auth_router, prefix=settings.API_V1_STR, tags=["Auth"])
+
+# Rotas protegidas
+app.include_router(
+    kmz.router,
+    prefix=settings.API_V1_STR,
+    tags=["KMZ Operations"],
+    dependencies=[Depends(require_auth)],
+)
+app.include_router(
+    simulation.router,
+    prefix=settings.API_V1_STR,
+    tags=["Simulation & Analysis"],
+    dependencies=[Depends(require_auth)],
+)
+app.include_router(
+    report.router,
+    prefix=settings.API_V1_STR,
+    tags=["Report Operations"],
+    dependencies=[Depends(require_auth)],
+)
 
 # ---------------------------------------------------------------------------
 # Logger global
@@ -112,40 +133,24 @@ app.include_router(report.router, prefix=settings.API_V1_STR, tags=["Report Oper
 logger = logging.getLogger("irricontrol")
 
 # ---------------------------------------------------------------------------
-# Endpoints básicos
+# Endpoints básicos (abertos)
 # ---------------------------------------------------------------------------
 @app.get("/", tags=["Root"])
 async def read_root() -> dict[str, str]:
-    """Endpoint raiz: retorna mensagem de boas-vindas."""
     logger.info("event=endpoint_access endpoint=/")
     return {"message": f"Bem-vindo à {settings.APP_NAME}!"}
 
 
-# ✅ Health check compatível com UptimeRobot Free (HEAD)
 @app.api_route(
     f"{settings.API_V1_STR}/health",
     methods=["GET", "HEAD"],
     tags=["Health"],
 )
 async def health() -> dict[str, str]:
-    """Health check simples para monitoramento externo (GET/HEAD)."""
     logger.info("event=endpoint_access endpoint=/health status=ok")
     return {"status": "ok"}
 
 
 @app.get(f"{settings.API_V1_STR}/version", tags=["Health"])
 async def version_info() -> dict[str, str]:
-    """Retorna nome e versão da aplicação (útil para automations)."""
     return {"name": settings.APP_NAME, "version": settings.APP_VERSION}
-
-
-@app.get(f"{settings.API_V1_STR}/templates", tags=["Simulation"])
-async def list_templates() -> dict[str, list[str] | str]:
-    """Lista IDs de templates disponíveis (sem expor segredos)."""
-    ids = settings.listar_templates_ids()
-    logger.info("event=endpoint_access endpoint=/templates templates=%s", ids)
-    return {
-        "templates": ids,
-        "disabled": settings.TEMPLATES_DESABILITADOS,
-        "default": settings.DEFAULT_TEMPLATE_ID.value,
-    }

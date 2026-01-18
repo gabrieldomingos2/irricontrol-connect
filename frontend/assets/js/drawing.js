@@ -730,10 +730,14 @@ function drawImageOverlay(url, bounds, opacity = 1.0) {
     const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
     const base = window.BACKEND_URL ?? (isLocal ? "http://localhost:8000" : "https://irricontrol-connect.onrender.com");
     const fullUrl = /^https?:/.test(url) ? url : `${base}${url}`;
+    const south = Math.min(bounds[0], bounds[2]);
+    const north = Math.max(bounds[0], bounds[2]);
+    const west = Math.min(bounds[1], bounds[3]);
+    const east = Math.max(bounds[1], bounds[3]);
     const imageBounds = [
-        [bounds[0], bounds[1]],
-        [bounds[2], bounds[3]]
-];
+        [south, west],
+        [north, east]
+    ];
 
     const overlay = L.imageOverlay(fullUrl, imageBounds, { opacity, interactive: false }).addTo(map);
     AppState.overlaysVisiveis.push(overlay);
