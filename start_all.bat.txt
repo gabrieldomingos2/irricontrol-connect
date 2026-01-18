@@ -1,13 +1,13 @@
 @echo off
-title Irricontrol - Backend + Frontend
+title SignalSimulator - Backend + Frontend
 echo =========================================
-echo  INICIANDO PROJETO IRRICONTROL (1 CLIQUE)
+echo  INICIANDO PROJETO SIGNALSIMULATOR (1 CLIQUE)
 echo =========================================
 
 REM ===== BACKEND =====
 echo.
 echo [1/3] Iniciando BACKEND...
-cd /d C:\Projetos\irricontrol-test\backend
+cd /d C:\Projetos\signal-simulator\backend
 
 if not exist .venv (
     echo Criando venv...
@@ -23,7 +23,7 @@ start /b uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
 REM ===== FRONTEND =====
 echo.
 echo [2/3] Iniciando FRONTEND...
-cd /d C:\Projetos\irricontrol-test\frontend
+cd /d C:\Projetos\signal-simulator\frontend
 
 npm install
 
