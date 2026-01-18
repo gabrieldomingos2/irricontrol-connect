@@ -40,7 +40,7 @@ class AppSettings(BaseSettings):
             "http://localhost:5173"
         )
     )
-    NETLIFY_APP_URL: Optional[str] = None
+    NETLIFY_APP_URL: Optional[str] = "https://irricontrolconnect.netlify.app"
     BACKEND_PUBLIC_URL: Optional[HttpUrl] = None
 
     @property

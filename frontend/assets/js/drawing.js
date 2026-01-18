@@ -728,7 +728,7 @@ function drawImageOverlay(url, bounds, opacity = 1.0) {
     if (!map || !url || !bounds) return null;
 
     const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
-    const base = window.BACKEND_URL ?? (isLocal ? "http://localhost:8000" : "https://irricontrol-test-5wea.onrender.com");
+    const base = window.BACKEND_URL ?? (isLocal ? "http://localhost:8000" : "https://irricontrol-connect.onrender.com");
     const fullUrl = /^https?:/.test(url) ? url : `${base}${url}`;
     const imageBounds = [
         [bounds[0], bounds[1]],
