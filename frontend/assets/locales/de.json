@@ -81,7 +81,8 @@
       "reset": "Zurücksetzen",
       "simulate": "Simulation ausführen",
       "cancel": "Abbrechen",
-      "confirm": "Bestätigen"
+      "confirm": "Bestätigen",
+      "logout": "Abmelden"
         },
         "chart_labels": {
             "terrain": "Gelände",

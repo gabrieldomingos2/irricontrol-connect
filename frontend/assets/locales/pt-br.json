@@ -81,7 +81,8 @@
         "reset": "Resetar",
         "simulate": "Executar Simulação",
         "cancel": "Cancelar",
-        "confirm": "Confirmar"
+        "confirm": "Confirmar",
+        "logout": "Sair"
     },
     "chart_labels": {
         "terrain": "Terreno",

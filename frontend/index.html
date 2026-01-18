@@ -179,7 +179,7 @@
   <!-- =========================================
       TOPBAR
       ========================================= -->
-  <div class="absolute top-0 left-0 right-0 h-14 bg-[#060B10] border-b-[2px] border-white/15 z-50 flex items-center justify-start px-4">
+  <div class="absolute top-0 left-0 right-0 h-14 bg-[#060B10] border-b-[2px] border-white/15 z-50 flex items-center justify-start px-4 relative">
 
     <!-- Idiomas -->
     <div class="flex items-center gap-3" aria-label="Idioma">
@@ -269,6 +269,13 @@
 
       <button id="desfazer-edicao" class="glass-button p-2 hidden" data-i18n-attr="title" data-i18n="ui.titles.undo_edit" type="button" aria-label="Desfazer edição">
         <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/undo-2.svg); mask-image: url(assets/images/undo-2.svg);"></span>
+      </button>
+    </div>
+    
+    <!-- Logout -->
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+      <button id="btn-logout" class="glass-button p-2" type="button" title="Sair" aria-label="Sair" data-i18n="ui.buttons.logout" data-i18n-attr="title,aria-label">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/log-out.svg); mask-image: url(assets/images/log-out.svg);"></span>
       </button>
     </div>
   </div>

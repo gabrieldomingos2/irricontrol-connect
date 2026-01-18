@@ -82,7 +82,8 @@
       "reset": "Reset",
       "simulate": "Run Simulation",
       "cancel": "Cancel",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "logout": "Log out"
         },
         "chart_labels": {
             "terrain": "Terrain",

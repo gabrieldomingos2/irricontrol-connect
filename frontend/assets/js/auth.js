@@ -17,6 +17,7 @@
   const toggle = $("#togglePass");
   const errorBox = $("#errorBox");
   const submitBtn = $("#submitBtn");
+  const logoutBtn = $("#btn-logout");
 
   // Canvas particles
   const canvas = $("#particles");
@@ -314,6 +315,7 @@
     wireTogglePassword();
     wireSubmit();
     startParticles();
+    logoutBtn?.addEventListener("click", () => logout());
 
     // Mostra/oculta login conforme token
     if (getToken()) {

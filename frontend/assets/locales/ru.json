@@ -81,7 +81,8 @@
       "reset": "Сброс",
       "simulate": "Запустить Симуляцию",
       "cancel": "Отмена",
-      "confirm": "Подтвердить"
+      "confirm": "Подтвердить",
+      "logout": "Выйти"
         },
         "chart_labels": {
             "terrain": "Местность",
