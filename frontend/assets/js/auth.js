@@ -204,7 +204,7 @@
 
           // dica opcional
           if (typeof window.mostrarMensagem === "function") {
-            window.mostrarMensagem("Login realizado. Bora simular 🚀", "sucesso");
+            window.mostrarMensagem("Login realizado.", "sucesso");
           }
         }, 250);
       } catch (err) {
