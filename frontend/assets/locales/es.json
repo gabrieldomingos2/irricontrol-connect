@@ -149,6 +149,7 @@
       "template_locked": "Plantilla Brazil V6 90dBm bloqueada nuevamente."
     },
     "errors": {
+        "session_expired": "Sesion expirada. Inicie sesion de nuevo.",
       "session_start_fail": "Fallo crítico al iniciar nueva sesión. Por favor, recargue la página.",
       "select_kmz": "Seleccione primero un archivo KMZ.",
       "kmz_load_fail": "Error al cargar KMZ: {error}",

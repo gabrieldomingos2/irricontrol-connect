@@ -149,6 +149,7 @@
       "template_locked": "Template Brazil V6 90dBm wieder gesperrt."
     },
     "errors": {
+        "session_expired": "Sitzung abgelaufen. Bitte erneut anmelden.",
       "session_start_fail": "Kritischer Fehler beim Starten der neuen Sitzung. Bitte laden Sie die Seite neu.",
       "select_kmz": "Wählen Sie zuerst eine KMZ-Datei aus.",
       "kmz_load_fail": "Fehler beim Laden der KMZ: {error}",
