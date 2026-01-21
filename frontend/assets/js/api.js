@@ -19,6 +19,16 @@ const notify = (msg, tipo = "info") =>
     ? window.mostrarMensagem(msg, tipo)
     : console[(tipo === "erro" ? "error" : "log")](msg));
 
+let _lastAuthErrorAt = 0;
+function handleUnauthorized(message) {
+  const now = Date.now();
+  if (now - _lastAuthErrorAt < 2000) return;
+  _lastAuthErrorAt = now;
+  window.Auth?.logout?.({
+    message: message || "Sessao expirada. Faca login novamente.",
+  });
+}
+
 // -------- Core fetch wrapper --------
 function buildUrl(endpoint) {
   const base = BACKEND_URL.replace(/\/+$/, "");
@@ -124,6 +134,9 @@ async function apiRequest(endpoint, options = {}) {
         errorPayload,
         response.statusText || "Erro de comunicação com o servidor"
       );
+      if (response.status === 401) {
+        handleUnauthorized(`Erro ${response.status}: ${msg}`);
+      }
       throw new Error(`Erro ${response.status}: ${msg}`);
     }
 

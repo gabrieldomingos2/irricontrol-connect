@@ -46,15 +46,25 @@
 
   function setToken(token) {
     localStorage.setItem(AUTH_KEY, token);
+    scheduleAutoLogout(token);
   }
 
   function clearToken() {
     localStorage.removeItem(AUTH_KEY);
   }
 
-  function logout() {
+  function logout(options = {}) {
+    const msg =
+      typeof options === "string" ? options : (options && options.message);
+    clearLogoutTimer();
     clearToken();
     showLogin();
+    if (msg) {
+      showError(msg);
+      if (typeof window.mostrarMensagem === "function") {
+        window.mostrarMensagem(msg, "erro");
+      }
+    }
   }
 
   // ---------------------------
@@ -90,6 +100,50 @@
     submitBtn.disabled = !!isLoading;
     const label = submitBtn.querySelector(".btn__text");
     if (label) label.textContent = isLoading ? "Entrando..." : "Entrar";
+  }
+
+  // ---------------------------
+  // Token expiry (JWT) handling
+  // ---------------------------
+  let logoutTimerId = null;
+
+  function clearLogoutTimer() {
+    if (logoutTimerId) {
+      clearTimeout(logoutTimerId);
+      logoutTimerId = null;
+    }
+  }
+
+  function getJwtExpMs(token) {
+    if (!token) return null;
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+    try {
+      const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const padded = b64.padEnd(Math.ceil(b64.length / 4) * 4, "=");
+      const json = atob(padded);
+      const payload = JSON.parse(json);
+      if (typeof payload.exp === "number") {
+        return payload.exp * 1000;
+      }
+    } catch {}
+    return null;
+  }
+
+  function scheduleAutoLogout(token) {
+    clearLogoutTimer();
+    const expMs = getJwtExpMs(token);
+    if (!expMs) return true;
+    const now = Date.now();
+    const delta = expMs - now - 5000; // 5s buffer
+    if (delta <= 0) {
+      logout("Sessao expirada. Faca login novamente.");
+      return false;
+    }
+    logoutTimerId = setTimeout(() => {
+      logout("Sessao expirada. Faca login novamente.");
+    }, delta);
+    return true;
   }
 
   // ---------------------------
@@ -318,7 +372,8 @@
     logoutBtn?.addEventListener("click", () => logout());
 
     // Mostra/oculta login conforme token
-    if (getToken()) {
+    const token = getToken();
+    if (token && scheduleAutoLogout(token)) {
       hideLogin();
     } else {
       showLogin();
