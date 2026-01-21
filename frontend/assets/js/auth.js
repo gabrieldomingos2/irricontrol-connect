@@ -7,6 +7,13 @@
   const $ = (sel) => document.querySelector(sel);
 
   const AUTH_KEY = "IRRI_AUTH_TOKEN";
+  const tOr = (key, fallback) => {
+    if (typeof window.t === "function") {
+      const value = window.t(key);
+      if (value && value !== key) return value;
+    }
+    return fallback;
+  };
 
   const overlay = $("#login-overlay");
   const ui = $("#ui-wrapper");
@@ -136,12 +143,16 @@
     if (!expMs) return true;
     const now = Date.now();
     const delta = expMs - now - 5000; // 5s buffer
+    const msg = tOr(
+      "messages.errors.session_expired",
+      "Sessao expirada. Faca login novamente."
+    );
     if (delta <= 0) {
-      logout("Sessao expirada. Faca login novamente.");
+      logout(msg);
       return false;
     }
     logoutTimerId = setTimeout(() => {
-      logout("Sessao expirada. Faca login novamente.");
+      logout(msg);
     }, delta);
     return true;
   }

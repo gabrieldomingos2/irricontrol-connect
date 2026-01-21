@@ -19,13 +19,24 @@ const notify = (msg, tipo = "info") =>
     ? window.mostrarMensagem(msg, tipo)
     : console[(tipo === "erro" ? "error" : "log")](msg));
 
+const tOr = (key, fallback) => {
+  if (typeof window.t === "function") {
+    const value = window.t(key);
+    if (value && value !== key) return value;
+  }
+  return fallback;
+};
+
 let _lastAuthErrorAt = 0;
 function handleUnauthorized(message) {
   const now = Date.now();
   if (now - _lastAuthErrorAt < 2000) return;
   _lastAuthErrorAt = now;
+  const msg =
+    message ||
+    tOr("messages.errors.session_expired", "Sessao expirada. Faca login novamente.");
   window.Auth?.logout?.({
-    message: message || "Sessao expirada. Faca login novamente.",
+    message: msg,
   });
 }
 
@@ -135,7 +146,7 @@ async function apiRequest(endpoint, options = {}) {
         response.statusText || "Erro de comunicação com o servidor"
       );
       if (response.status === 401) {
-        handleUnauthorized(`Erro ${response.status}: ${msg}`);
+        handleUnauthorized();
       }
       throw new Error(`Erro ${response.status}: ${msg}`);
     }
