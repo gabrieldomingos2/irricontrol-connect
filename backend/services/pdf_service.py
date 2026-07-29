@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
 from fpdf import FPDF
+from PIL import Image
 
 from backend.config import settings
 from backend.exceptions import PDFGenerationError
@@ -114,18 +115,18 @@ class PDFReportGenerator:
 
         if logo_path:
             try:
-                self.pdf.image(str(logo_path), x=10, y=6, w=30)
+                self.pdf.image(str(logo_path), x=8, y=-8, w=42)
             except Exception as e:
                 logger.warning("Failed to insert logo into PDF '%s': %s", logo_path, e)
 
         self._font(style="B", size=16)
         self.pdf.set_text_color(*COLOR_TEXT_LIGHT)
-        self.pdf.set_xy(45, 8)
+        self.pdf.set_xy(55, 8)
         self.pdf.cell(0, 8, self.t("ui.titles.main"), align="L")
 
         self._font(size=8)
         self.pdf.set_text_color(200, 200, 200)
-        self.pdf.set_xy(45, 16)
+        self.pdf.set_xy(55, 16)
         self.pdf.cell(0, 6, settings.APP_NAME, align="L")
 
         report_date = datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -141,7 +142,9 @@ class PDFReportGenerator:
         self.pdf.set_y(-15)
         self._font(style="I", size=8)
         self.pdf.set_text_color(150, 150, 150)
+        self.pdf.set_auto_page_break(False)
         self.pdf.cell(0, 10, f"{self.t('ui.labels.powered_by')} Irricontrol | {self.pdf.page_no()}/{{nb}}", align="C")
+        self.pdf.set_auto_page_break(True, margin=15)
 
     def add_section_title(self, title: str) -> None:
         self._font(style="B", size=12)
@@ -278,8 +281,16 @@ class PDFReportGenerator:
                 f.write(image_data)
 
             usable_w = self.pdf.w - self.pdf.l_margin - self.pdf.r_margin
+            with Image.open(tmp_img_path) as im:
+                img_w_px, img_h_px = im.size
+            img_h = usable_w * img_h_px / img_w_px
+
+            page_bottom = self.pdf.h - self.pdf.b_margin
+            if self.pdf.get_y() + img_h > page_bottom:
+                self.pdf.add_page()
+
             self.pdf.image(str(tmp_img_path), x=self.pdf.l_margin, y=self.pdf.get_y(), w=usable_w)
-            self.pdf.ln(usable_w * 0.3)
+            self.pdf.set_y(self.pdf.get_y() + img_h + 3)
 
             os.remove(tmp_img_path)
 

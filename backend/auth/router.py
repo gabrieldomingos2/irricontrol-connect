@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status
+from typing import Any, Dict
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
 from backend.config import settings
+from backend.services import access_log
+from .deps import require_auth
 from .security import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -19,9 +23,23 @@ class LoginResponse(BaseModel):
     token_type: str = "bearer"
 
 
+def _client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 @router.post("/login", response_model=LoginResponse)
-async def login(payload: LoginRequest) -> LoginResponse:
-    if payload.username != settings.AUTH_ADMIN_USER or payload.password != settings.AUTH_ADMIN_PASSWORD:
+async def login(payload: LoginRequest, request: Request, background_tasks: BackgroundTasks) -> LoginResponse:
+    ip = _client_ip(request)
+    user_agent = request.headers.get("user-agent", "")
+    success = payload.username == settings.AUTH_ADMIN_USER and payload.password == settings.AUTH_ADMIN_PASSWORD
+
+    access_log.record_login(ip=ip, user_agent=user_agent, username=payload.username, success=success)
+    background_tasks.add_task(access_log.ensure_ip_location, ip)
+
+    if not success:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuário ou senha inválidos.",
@@ -34,3 +52,9 @@ async def login(payload: LoginRequest) -> LoginResponse:
         expires_minutes=settings.AUTH_JWT_EXPIRES_MIN,
     )
     return LoginResponse(access_token=token)
+
+
+@router.get("/access-stats")
+async def access_stats(_payload: dict = Depends(require_auth)) -> Dict[str, Any]:
+    """Resumo dos acessos registrados (requer token válido)."""
+    return access_log.get_stats()

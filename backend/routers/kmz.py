@@ -27,6 +27,7 @@ from backend.config import settings
 from backend.services import kmz_parser, kmz_exporter
 from backend.services.i18n_service import i18n_service
 from backend.exceptions import FileParseError
+from backend.routers.validators import ensure_valid_job_id, safe_filename
 
 logger = logging.getLogger("irricontrol")
 
@@ -196,13 +197,15 @@ async def processar_kmz_endpoint(
         raise HTTPException(status_code=500, detail="Erro interno ao processar o arquivo.")
 
 
-@router.post("/exportar")
-async def exportar_kmz_endpoint(payload: ExportPayload, background_tasks: BackgroundTasks):
-    """Exporta os dados parseados em um KMZ pronto para Google Earth."""
-    logger.info("Starting KMZ export for job: %s in language: '%s'", payload.job_id, payload.language)
-
-    job_input_dir = settings.ARQUIVOS_DIR_PATH / payload.job_id
-    job_images_dir = settings.IMAGENS_DIR_PATH / payload.job_id
+def build_kmz_file(payload: ExportPayload) -> tuple[Path, str]:
+    """
+    Constrói o arquivo KMZ a partir do payload de exportação e devolve
+    (caminho_do_arquivo, nome_do_arquivo). Função síncrona, reutilizada
+    tanto pelo endpoint `/kmz/exportar` quanto pelo bundle PDF+KMZ.
+    """
+    job_id = ensure_valid_job_id(payload.job_id)
+    job_input_dir = settings.ARQUIVOS_DIR_PATH / job_id
+    job_images_dir = settings.IMAGENS_DIR_PATH / job_id
     _ensure_dir(job_input_dir)
     _ensure_dir(job_images_dir)
 
@@ -210,60 +213,67 @@ async def exportar_kmz_endpoint(payload: ExportPayload, background_tasks: Backgr
 
     if payload.antena_principal_data and payload.imagem and payload.bounds_file:
         logger.info(" -> Antena principal detectada no payload. Verificando arquivos...")
-        caminho_imagem_principal = job_images_dir / payload.imagem
-        caminho_bounds_principal = job_images_dir / payload.bounds_file
+        caminho_imagem_principal = job_images_dir / safe_filename(payload.imagem)
+        caminho_bounds_principal = job_images_dir / safe_filename(payload.bounds_file)
         if not caminho_imagem_principal.exists() or not caminho_bounds_principal.exists():
             raise HTTPException(status_code=404, detail=f"Arquivos da antena principal não encontrados para o job '{payload.job_id}'.")
-        
+
         with open(caminho_bounds_principal, "r", encoding="utf-8") as f:
             bounds_principal_data = json.load(f).get("bounds")
     else:
         logger.info(" -> Nenhuma antena principal no payload. Exportando sem ela.")
 
+    selected_template = settings.obter_template(payload.template_id)
+
+    t = i18n_service.get_translator(payload.language)
+    kml = simplekml.Kml(name=t("kml.main_name"))
+
+    caminho_kml_temp = job_input_dir / "estudo_temp.kml"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename_prefix = t("kml.filename_prefix")
+    nome_kmz_final = f"{filename_prefix}-{timestamp}.kmz"
+    caminho_kmz_final = job_input_dir / nome_kmz_final
+
+    arquivos_de_imagem_para_kmz = kmz_exporter.build_kml_document_and_get_image_list(
+        doc=kml.document, lang=payload.language,
+        antena_data=payload.antena_principal_data,
+        pivos_data=payload.pivos_data, ciclos_data=payload.ciclos_data,
+        bombas_data=payload.bombas_data,
+        imagem_principal_nome_relativo=payload.imagem,
+        bounds_principal_data=bounds_principal_data,
+        generated_images_dir=job_images_dir,
+        selected_template=selected_template,
+        repetidoras_selecionadas_data=payload.repetidoras_data,
+    )
+
+    kml.save(str(caminho_kml_temp))
+    logger.info("  -> KML temporário salvo em: %s", caminho_kml_temp)
+
+    logger.info("  -> Criando KMZ final: %s", caminho_kmz_final)
+    with zipfile.ZipFile(str(caminho_kmz_final), "w", zipfile.ZIP_DEFLATED) as kmz_zip:
+        kmz_zip.write(str(caminho_kml_temp), "doc.kml")
+        added_to_zip: set[str] = set()
+        for src_path, dest_name in arquivos_de_imagem_para_kmz:
+            if dest_name not in added_to_zip and Path(src_path).exists():
+                kmz_zip.write(str(src_path), dest_name)
+                added_to_zip.add(dest_name)
+            else:
+                logger.warning("      -> Image '%s' not found or duplicate, not added to KMZ.", src_path)
+
+    caminho_kml_temp.unlink(missing_ok=True)
+    return caminho_kmz_final, nome_kmz_final
+
+
+@router.post("/exportar")
+async def exportar_kmz_endpoint(payload: ExportPayload, background_tasks: BackgroundTasks):
+    """Exporta os dados parseados em um KMZ pronto para Google Earth."""
+    logger.info("Starting KMZ export for job: %s in language: '%s'", payload.job_id, payload.language)
+
     try:
-        selected_template = settings.obter_template(payload.template_id)
-        
-        t = i18n_service.get_translator(payload.language)
-        kml = simplekml.Kml(name=t("kml.main_name"))
+        caminho_kmz_final, nome_kmz_final = await run_in_threadpool(build_kmz_file, payload)
 
-        caminho_kml_temp = job_input_dir / "estudo_temp.kml"
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename_prefix = t("kml.filename_prefix")
-        nome_kmz_final = f"{filename_prefix}-{timestamp}.kmz"
-        caminho_kmz_final = job_input_dir / nome_kmz_final
-
-        def _build_and_zip_kmz_sync() -> None:
-            arquivos_de_imagem_para_kmz = kmz_exporter.build_kml_document_and_get_image_list(
-                doc=kml.document, lang=payload.language,
-                antena_data=payload.antena_principal_data,
-                pivos_data=payload.pivos_data, ciclos_data=payload.ciclos_data,
-                bombas_data=payload.bombas_data,
-                imagem_principal_nome_relativo=payload.imagem,
-                bounds_principal_data=bounds_principal_data,
-                generated_images_dir=job_images_dir,
-                selected_template=selected_template,
-                repetidoras_selecionadas_data=payload.repetidoras_data,
-            )
-
-            kml.save(str(caminho_kml_temp))
-            logger.info("  -> KML temporário salvo em: %s", caminho_kml_temp)
-
-            logger.info("  -> Criando KMZ final: %s", caminho_kmz_final)
-            with zipfile.ZipFile(str(caminho_kmz_final), "w", zipfile.ZIP_DEFLATED) as kmz_zip:
-                kmz_zip.write(str(caminho_kml_temp), "doc.kml")
-                added_to_zip: set[str] = set()
-                for src_path, dest_name in arquivos_de_imagem_para_kmz:
-                    if dest_name not in added_to_zip and Path(src_path).exists():
-                        kmz_zip.write(str(src_path), dest_name)
-                        added_to_zip.add(dest_name)
-                    else:
-                        logger.warning("      -> Image '%s' not found or duplicate, not added to KMZ.", src_path)
-
-        await run_in_threadpool(_build_and_zip_kmz_sync)
-
-        background_tasks.add_task(caminho_kml_temp.unlink, missing_ok=True)
         logger.info("  -> Exportação KMZ concluída.")
-        
+
         return FileResponse(
             str(caminho_kmz_final),
             media_type="application/vnd.google-earth.kmz",
