@@ -1,0 +1,57 @@
+# === Python: Ambiente virtual ===
+.venv/
+env/
+venv/
+
+# === Python: Cache e arquivos compilados ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# === Arquivos do sistema operacional ===
+.DS_Store
+Thumbs.db
+
+# === Temporários e logs ===
+*.log
+*.tmp
+*.bak
+*.swp
+
+# === IDEs e editores ===
+.vscode/
+.idea/
+*.code-workspace
+
+# === Claude Code ===
+.claude/
+
+# === Variáveis de ambiente (segredos) ===
+.env
+*.env
+
+# === Frontend (Node.js) ===
+node_modules/
+dist/
+build/
+
+# === Imagens de simulação geradas por job (pastas com nome UUID) ===
+# Os PNGs estáticos na raiz de backend/static/imagens/ (logo, ícones,
+# legendas de cor dos templates) SÃO versionados — são assets fixos do
+# app, necessários para o KMZ exportado incluir logo/legenda.
+backend/static/imagens/*/
+
+backend/static/arquivos/*
+!backend/static/arquivos/.keep
+
+# === Scripts e logs locais ===
+*.bat
+*.sh
+irricontrol_app.log
+*.ps1
+
+# === Runtime uploads/cache (NÃO versionar) ===
+backend/arquivos/
+backend/arquivos/cache/
+backend/arquivos/dem_cache/

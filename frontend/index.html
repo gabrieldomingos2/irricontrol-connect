@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <!-- ===========================
+      METADADOS BÁSICOS
+      =========================== -->
+  <meta charset="UTF-8" />
+  <title data-i18n="ui.titles.main">Irricontrol Connect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+
+  <!-- Config frontend -> backend (local vs prod) -->
+  <script src="assets/js/config.js"></script>
+
+  <!-- ===========================
+      PERFORMANCE: PRECONNECT
+      =========================== -->
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
+  
+  <!-- ===========================
+      BIBLIOTECAS DE TERCEIROS
+      =========================== -->
+  <!-- Tailwind CSS (build local) -->
+  <link rel="stylesheet" href="dist/output.css">
+  <!-- Ícones Lucide (SVG) -->
+  <script src="https://unpkg.com/lucide@1.7.0/dist/umd/lucide.min.js"
+          integrity="sha384-CykfT8/c0napBs4OEPBYSNzMhNhJUvjNEulxWZVAK+p2D3vEfYGg9zyOd8bzqyNO"
+          crossorigin="anonymous" defer></script>
+  <!-- Leaflet CSS (mapa) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+        crossorigin="anonymous" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
+          integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
+          crossorigin="anonymous" defer></script>
+  <!-- Mapbox (3D) -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"
+        integrity="sha384-SDYx9Nwa5fE1fRuBplOPejrcbPOK/ql0Uym6hsGsTvnlC784P5LZhBJIbo8O/O+0"
+        crossorigin="anonymous" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"
+          integrity="sha384-8KK5cWPPo2oOBnNju6hBjkoEm4NfYNKN8IoLYBPvwhPZMi9d/nS8HbUA1JyRbxIw"
+          crossorigin="anonymous" defer></script>
+
+  <!-- ===========================
+      CSS DA APLICAÇÃO
+      =========================== -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/login.css" />
+</head>
+
+<body class="bg-[#060B10] text-white h-screen w-screen overflow-hidden">
+
+  <!-- LOGIN OVERLAY (fica por cima do app) -->
+  <div id="login-overlay" class="login-overlay hidden" aria-hidden="true">
+    <!-- background layers (isolado do app) -->
+    <div class="login-bg" aria-hidden="true">
+      <div class="bg__grid"></div>
+      <div class="bg__scan"></div>
+      <div class="bg__glow"></div>
+      <canvas id="particles" class="bg__particles" aria-hidden="true"></canvas>
+    </div>
+
+    <main class="shell">
+      <section class="card" role="region" aria-label="Login Irricontrol">
+        <header class="brand">
+          <div class="brand__mark">
+            <img
+              src="assets/images/logo-irricontrol.png"
+              alt="Irricontrol"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </header>
+
+        <div class="login-langs" aria-label="Idioma">
+          <button
+            data-lang="pt-br"
+            class="lang-btn"
+            type="button"
+            data-i18n="ui.languages.pt_br"
+            data-i18n-attr="title,aria-label"
+          >
+            <img src="assets/images/br.svg" alt="" aria-hidden="true" />
+          </button>
+          <button
+            data-lang="es"
+            class="lang-btn"
+            type="button"
+            data-i18n="ui.languages.es"
+            data-i18n-attr="title,aria-label"
+          >
+            <img src="assets/images/es.svg" alt="" aria-hidden="true" />
+          </button>
+          <button
+            data-lang="de"
+            class="lang-btn"
+            type="button"
+            data-i18n="ui.languages.de"
+            data-i18n-attr="title,aria-label"
+          >
+            <img src="assets/images/de.svg" alt="" aria-hidden="true" />
+          </button>
+          <button
+            data-lang="en"
+            class="lang-btn"
+            type="button"
+            data-i18n="ui.languages.en"
+            data-i18n-attr="title,aria-label"
+          >
+            <img src="assets/images/uk.svg" alt="" aria-hidden="true" />
+          </button>
+          <button
+            data-lang="ru"
+            class="lang-btn"
+            type="button"
+            data-i18n="ui.languages.ru"
+            data-i18n-attr="title,aria-label"
+          >
+            <img src="assets/images/ru.svg" alt="" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <form id="login-form" class="form" autocomplete="on" novalidate>
+          <label class="field">
+            <span class="field__label" data-i18n="ui.labels.username">Usuário</span>
+            <span class="field__wrap">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                inputmode="email"
+                placeholder=""
+                autocomplete="username"
+                required
+              />
+              <span class="field__icon" aria-hidden="true">
+                <img src="assets/images/user.svg" alt="" class="icon-user" />
+              </span>
+            </span>
+            <span class="field__hint"></span>
+          </label>
+
+          <label class="field">
+            <span class="field__label" data-i18n="ui.labels.password">Senha</span>
+            <span class="field__wrap">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder=""
+                autocomplete="current-password"
+                minlength="4"
+                required
+              />
+              <button
+                id="togglePass"
+                class="iconBtn"
+                type="button"
+                aria-label="Mostrar/ocultar senha"
+                data-i18n="ui.titles.toggle_password"
+                data-i18n-attr="aria-label,title"
+              >
+                <img
+                  class="icon-eye"
+                  src="assets/images/eye.svg"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <img
+                  class="icon-eye-off"
+                  src="assets/images/eye-off.svg"
+                  alt=""
+                  aria-hidden="true"
+                  style="display:none;"
+                />
+              </button>
+            </span>
+          </label>
+
+          <div id="errorBox" class="error" role="alert" aria-live="polite"></div>
+
+          <button id="submitBtn" class="btn" type="submit">
+            <span class="btn__text" data-i18n="ui.buttons.login">Entrar</span>
+            <span class="btn__shine" aria-hidden="true"></span>
+          </button>
+
+          <p class="legal" data-i18n="ui.labels.login_legal">
+            Você está acessando um ambiente experimental da Irricontrol.
+            Esta plataforma é destinada exclusivamente a testes, simulações e validações internas.
+          </p>
+        </form>
+      </section>
+
+    </main>
+  </div>  <div id="ui-wrapper">
+  <!-- =========================================
+      TOPBAR
+      ========================================= -->
+  <div class="absolute top-0 left-0 right-0 h-14 bg-[#060B10] border-b-[2px] border-white/15 z-50 flex items-center justify-start px-4 relative">
+
+    <!-- Idiomas -->
+    <div class="flex items-center gap-3" aria-label="Idioma">
+      <button data-lang="pt-br" class="hover:scale-110 transition" title="Português (BR)" type="button" aria-label="Português (BR)">
+        <img src="assets/images/br.svg" class="w-8 h-5" alt="Português">
+      </button>
+      <button data-lang="es" class="hover:scale-110 transition" title="Español" type="button" aria-label="Español">
+        <img src="assets/images/es.svg" class="w-8 h-5" alt="Español">
+      </button>
+      <button data-lang="de" class="hover:scale-110 transition" title="Deutsch" type="button" aria-label="Deutsch">
+        <img src="assets/images/de.svg" class="w-8 h-5" alt="Deutsch">
+      </button>
+      <button data-lang="en" class="hover:scale-110 transition" title="English" type="button" aria-label="English">
+        <img src="assets/images/uk.svg" class="w-8 h-5" alt="English">
+      </button>
+      <button data-lang="ru" class="hover:scale-110 transition" title="Русский" type="button" aria-label="Русский">
+        <img src="assets/images/ru.svg" class="w-8 h-5" alt="Russian">
+      </button>
+    </div>
+
+    <!-- Ferramentas -->
+    <div class="flex items-center gap-2 ml-24">
+      <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.tools"></span>
+
+      <button id="btn-los-pivot-a-pivot" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.los_pivots" type="button" aria-label="Linha de visada entre pivôs">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/radio-tower.svg); mask-image: url(assets/images/radio-tower.svg);"></span>
+      </button>
+
+      <button id="btn-buscar-locais-repetidora" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.find_repeater_locations" type="button" aria-label="Encontrar locais para repetidora">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/view.svg); mask-image: url(assets/images/view.svg);"></span>
+      </button>
+    </div>
+
+    <!-- Legendas -->
+    <div class="flex items-center gap-2 ml-[20px]">
+      <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.legends_group"></span>
+
+      <button id="btn-visada" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.line_of_sight" type="button" aria-label="Linha de visada">
+        <span class="sidebar-icon w-5 h-5 bg-white" style="-webkit-mask-image: url(assets/images/mountain.svg); mask-image: url(assets/images/mountain.svg);"></span>
+      </button>
+
+      <button id="toggle-legenda" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.legend" type="button" aria-label="Mostrar/esconder legenda">
+        <span class="sidebar-icon w-5 h-5 bg-white" style="-webkit-mask-image: url(assets/images/captions.svg); mask-image: url(assets/images/captions.svg);"></span>
+      </button>
+
+      <button id="toggle-antenas-legendas" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.toggle_antenna_legends" type="button" aria-label="Alternar legendas de antenas">
+        <span class="sidebar-icon w-5 h-5 bg-white" style="-webkit-mask-image: url(assets/images/radio.svg); mask-image: url(assets/images/radio.svg);"></span>
+      </button>
+
+      <button id="toggle-distancias-pivos" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.show_pivot_distances" type="button" aria-label="Mostrar distâncias de pivôs">
+        <span class="sidebar-icon w-5 h-5 bg-white" style="-webkit-mask-image: url(assets/images/ruler-dimension-line.svg); mask-image: url(assets/images/ruler-dimension-line.svg);"></span>
+      </button>
+    </div>
+
+    <!-- Desenho/Edição -->
+    <div class="flex items-center gap-2 ml-[20px]">
+      <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.draw_group"></span>
+
+      <button id="btn-draw-pivot" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.draw_pivot" type="button" aria-label="Desenhar pivô circular">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/circle.svg); mask-image: url(assets/images/circle.svg);"></span>
+      </button>
+
+      <button id="btn-draw-pivot-setorial" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.draw_sector_pivot" type="button" aria-label="Desenhar pivô setorial">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/half-circle.svg); mask-image: url(assets/images/half-circle.svg);"></span>
+      </button>
+
+      <button id="btn-draw-pivot-pacman" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.draw_pacman_pivot" type="button" aria-label="Desenhar pivô Pac-Man">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/circle-dashed.svg); mask-image: url(assets/images/circle-dashed.svg);"></span>
+      </button>
+
+      <button id="btn-draw-irripump" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.draw_irripump" type="button" aria-label="Adicionar casa de bombas">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/irripump.svg); mask-image: url(assets/images/irripump.svg);"></span>
+      </button>
+    </div>
+
+    <!-- Editor -->
+    <div class="flex items-center gap-2 ml-[20px]">
+      <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.editor_group"></span>
+
+      <button id="btn-mover-pivo-sem-circulo" class="glass-button p-2 hidden" data-i18n-attr="title" data-i18n="ui.titles.move_pivot_center" type="button" aria-label="Mover pivô sem círculo">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/pin.svg); mask-image: url(assets/images/pin.svg);"></span>
+      </button>
+
+      <button id="editar-pivos" class="glass-button p-2" data-i18n-attr="title" data-i18n="ui.titles.edit_pivots" type="button" aria-label="Editar pivôs">
+        <i data-lucide="pencil" class="w-5 h-5"></i>
+      </button>
+
+      <button id="desfazer-edicao" class="glass-button p-2 hidden" data-i18n-attr="title" data-i18n="ui.titles.undo_edit" type="button" aria-label="Desfazer edição">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/undo-2.svg); mask-image: url(assets/images/undo-2.svg);"></span>
+      </button>
+    </div>
+    
+    <!-- Logout -->
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+      <button id="btn-logout" class="glass-button p-2" type="button" title="Sair" aria-label="Sair" data-i18n="ui.buttons.logout" data-i18n-attr="title,aria-label">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/log-out.svg); mask-image: url(assets/images/log-out.svg);"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================
+      SIDEBAR ESQUERDA
+      ========================================= -->
+  <div class="absolute top-14 bottom-14 left-0 w-[280px] bg-[#060B10] z-50 p-4 overflow-y-auto">
+    <!-- Template/modelo -->
+    <div class="mb-4 backdrop-blur bg-white/5 border border-white/15 px-3 py-[6px] rounded-lg shadow-sm flex items-center gap-2">
+      <label for="template-modelo" class="text-sm text-white/70 whitespace-nowrap" data-i18n="ui.labels.template"></label>
+      <select id="template-modelo" class="px-2 py-[3px] rounded-md bg-[#060B10]/70 border border-white/15 text-white/80 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition w-full" aria-label="Template"></select>
+    </div>
+
+    <!-- Busca por coordenadas -->
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center gap-2 backdrop-blur bg-white/5 border border-white/15 px-2 rounded-lg shadow-sm focus-within:ring-1 focus-within:ring-green-500 transition h-10">
+        <button id="coord-search-btn" class="flex items-center justify-center p-1 text-white/70 hover:text-green-500 transition ml-1" data-i18n-attr="title" data-i18n="ui.titles.search_coordinates" type="button" aria-label="Ir para coordenadas">
+          <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/map-pin.svg); mask-image: url(assets/images/map-pin.svg);"></span>
+        </button>
+        <input type="text" id="lat-long-input-field" data-i18n-attr="placeholder" data-i18n="ui.placeholders.lat_lon_search" class="flex-grow h-full pl-0 pr-2 rounded-md bg-transparent border-none text-sm text-white/80 placeholder:text-white/50 focus:outline-none focus:ring-0" autocomplete="off" aria-label="Pesquisar por latitude e longitude" />
+      </div>
+
+      <!-- Upload KMZ -->
+      <div class="flex flex-col gap-3">
+        <label for="arquivo" class="sidebar-button w-full h-10 cursor-pointer flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2" aria-label="Selecionar arquivo KMZ" title="Importar arquivo KMZ do estudo" data-i18n-attr="title" data-i18n="tooltips.load_kmz">
+          <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/file-up.svg); mask-image: url(assets/images/file-up.svg);"></span>
+          <span id="nome-arquivo-label" class="text-sm font-medium truncate" data-i18n="ui.labels.choose_kmz"></span>
+        </label>
+        <input type="file" id="arquivo" accept=".kmz" required class="hidden" />
+      </div>
+
+      <!-- Ações gerais -->
+      <button id="simular-btn"
+        class="sidebar-button w-full h-10 items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm hidden px-2"
+        type="button" aria-label="Executar estudo" data-i18n-attr="title" data-i18n="tooltips.run_signal_simulation">
+        <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/radio.svg); mask-image: url(assets/images/radio.svg);"></span>
+        <span class="text-sm font-medium" data-i18n="ui.buttons.run_study"></span>
+      </button>
+
+      <button id="exportar-btn"
+              class="sidebar-button w-full h-10 flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2"
+              type="button"
+              aria-label="Exportar KMZ"
+              data-i18n-attr="title"
+              data-i18n="tooltips.export_kmz">
+          <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/download.svg); mask-image: url(assets/images/download.svg);"></span>
+          <span class="text-sm font-medium" data-i18n="ui.buttons.export_kmz"></span>
+      </button>
+
+      <button id="resetar-btn" class="sidebar-button w-full h-10 flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2" type="button" aria-label="Resetar" title="Reiniciar a sessão e limpar o mapa">
+        <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/undo-2.svg); mask-image: url(assets/images/undo-2.svg);"></span>
+        <span class="text-sm font-medium" data-i18n="ui.buttons.reset"></span>
+      </button>
+    </div>
+
+    <!-- Painel (setup) de repetidora -->
+    <div id="painel-repetidora" class="mt-4 bg-white/5 border border-white/15 backdrop-blur-md rounded-xl shadow-lg w-60 p-2 hidden">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="font-semibold text-sm text-white/80"><span class="titulo-icone">📡</span><span data-i18n="ui.titles.repeater_panel_setup"></span></h2>
+        <button id="fechar-painel-rep" class="close-btn" type="button" aria-label="Fechar">✖</button>
+      </div>
+
+      <label for="altura-antena-rep" class="text-xs text-white/60 mb-1 block" data-i18n="ui.labels.antenna_height"></label>
+      <input id="altura-antena-rep" type="number" value="5" class="w-full h-8 px-2 rounded-lg border border-white/20 bg-[#060B10]/40 text-white text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition mb-3" />
+
+      <label for="altura-receiver-rep" class="text-xs text-white/60 mb-1 block" data-i18n="ui.labels.receiver_height"></label>
+      <input id="altura-receiver-rep" type="number" value="3" class="w-full h-8 px-2 rounded-lg border border-white/20 bg-[#060B10]/40 text-white text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition mb-3" />
+
+      <button id="confirmar-repetidora"
+        class="sidebar-button w-full h-9 flex items-center justify-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm mb-3"
+        type="button"
+        data-i18n-attr="title"
+        data-i18n="tooltips.run_signal_simulation"
+        aria-label="Executa a simulação do sinal">
+        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/radio.svg); mask-image: url(assets/images/radio.svg);"></span>
+        <span class="text-sm font-medium" data-i18n="ui.buttons.simulate"></span>
+      </button>
+
+      <button id="btn-download-active-pngs"
+        class="sidebar-button w-full h-9 flex items-center justify-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm text-xs mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        type="button"
+        data-i18n-attr="title"
+        data-i18n="tooltips.download_active_repeaters"
+        aria-label="Baixar Repetidoras ativas no mapa"
+        disabled>
+        <span class="sidebar-icon w-4 h-4" style="-webkit-mask-image: url(assets/images/download.svg); mask-image: url(assets/images/download.svg);"></span>
+        <span class="text-xs font-medium" data-i18n="ui.buttons.download_active_pngs"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================
+      CONTROLES FLUTUANTES
+      ========================================= -->
+  <div class="absolute bottom-6 left-72 flex items-center gap-2 z-50">
+    <span class="text-xs text-white/60" data-i18n=""></span>
+    <input id="range-opacidade" type="range" min="0" max="1" step="0.1" value="1" class="range-slider-custom w-24" aria-label="Opacidade do overlay" />
+  </div>
+
+  <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+    <a href="https://irricontrol.com.br/" target="_blank" id="footer-logo-link" rel="noopener">
+      <img src="assets/images/logo-irricontrol.png" alt="Powered by Irricontrol" class="h-10" loading="lazy">
+    </a>
+  </div>
+
+  <!-- =========================================
+      ÁREA DO MAPA
+      ========================================= -->
+  <div class="absolute top-14 bottom-14 left-[280px] right-12 z-10">
+    <div id="map" class="w-full h-full bg-neutral-900" role="application" aria-label="Mapa"></div>
+  </div>
+
+  <!-- =========================================
+      PAINÉIS DIREITOS
+      ========================================= -->
+  <div id="overlay-panels-container" class="absolute top-16 right-16 z-20 flex flex-col space-y-4">
+
+    <!-- Painel de Dados -->
+    <div id="painel-dados" class="panel w-64 bg-[#060B10]/70 border border-white/15 backdrop-blur-md rounded-xl shadow-xl p-4 flex-shrink-0">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-sm font-semibold text-white/80" data-i18n="ui.titles.data_panel"></h2>
+        <button class="panel-toggle-btn text-white/60 hover:text-green-500" type="button" aria-label="Recolher/expandir painel">
+          <i data-lucide="chevron-up" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="panel-content">
+        <div class="flex justify-between items-center mb-3">
+          <span id="template-info" class="font-medium text-sm text-green-500"></span>
+        </div>
+
+        <p id="total-pivos" class="text-sm text-white/70 mb-1" data-i18n="ui.labels.total_pivots"></p>
+        <p id="fora-cobertura" class="text-sm text-white/70 mb-1" data-i18n="ui.labels.out_of_coverage"></p>
+        <p id="total-repetidoras" class="text-sm text-white/70 mb-1" data-i18n="ui.labels.total_repeaters"></p>
+        <p id="total-centrais" class="text-sm text-white/70 mb-1">
+          <span data-i18n="ui.labels.central_count">Centrais:</span> <span id="central-count-value">0</span>
+        </p>
+        <p id="total-bombas" class="text-sm text-white/70 mb-1 hidden" data-i18n="ui.labels.pump_houses"></p>
+
+        <div class="mt-2 pt-2 border-t border-white/10 flex justify-center">
+          <button id="exportar-pdf-btn"
+                  class="inline-flex items-center justify-center gap-2 text-green-400 hover:text-green-300 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline disabled:text-gray-500 hover:underline"
+                  disabled
+                  data-i18n-attr="title"
+                  data-i18n="tooltips.export_pdf_disabled"
+                  type="button"
+                  aria-label="Exportar relatório PDF">
+            <i data-lucide="file-down" class="w-4 h-4"></i>
+            <span data-i18n="ui.buttons.export_pdf_report">Clique aqui para baixar o relatório</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Painel de Repetidoras -->
+    <div id="painel-repetidoras" class="panel w-64 bg-[#060B10]/70 border border-white/15 backdrop-blur-md rounded-xl shadow-xl p-2 flex flex-col min-h-0 flex-grow">
+      <div class="flex justify-between items-center mb-2 px-2">
+        <h2 class="text-sm font-semibold text-white/80" data-i18n="ui.titles.repeater_panel"></h2>
+        <button class="panel-toggle-btn text-white/60 hover:text-green-500" type="button" aria-label="Recolher/expandir painel">
+          <i data-lucide="chevron-up" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="panel-content">
+        <div id="lista-repetidoras" class="space-y-1 text-sm overflow-y-auto px-2 pb-2"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =========================================
+      MENSAGENS, LOADER, LEGENDA, CONFIRM
+      ========================================= -->
+  <!-- Toast central -->
+  <div id="mensagem"
+      class="hidden fixed bottom-16 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg text-center font-semibold z-[10000]"
+      role="status" aria-live="polite"></div>
+
+  <!-- Loader (corrigido + centralizado) -->
+<div id="loader"
+    class="hidden fixed inset-0 backdrop-blur-sm bg-black/70 items-center justify-center z-[10001] pointer-events-auto select-none"
+    role="alert" aria-live="assertive" aria-busy="true" aria-hidden="true">
+  <div class="loading-logo-container">
+    <img src="assets/images/irricontrol-loading.png" alt="Carregando..." class="loading-logo" loading="lazy">
+    <div class="loading-spinner"></div>
+  </div>
+  <span class="mt-4 text-lg font-bold text-green-500" data-i18n="ui.labels.processing"></span>
+</div>
+
+  <!-- Legenda (imagem) -->
+  <div id="legend-container" class="absolute top-6 right-6 hidden">
+    <img id="legend-image" src="" alt="Legenda de Cores" class="block h-auto rounded-md shadow-lg" />
+  </div>
+
+  <!-- Modal de confirmação (centralizado) -->
+        <div id="custom-confirm-overlay"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm items-center justify-center z-[20000] transition-opacity duration-300"
+        role="dialog" aria-modal="true" aria-labelledby="custom-confirm-title" aria-describedby="custom-confirm-message">
+    <div id="custom-confirm-box"
+        class="flex flex-col gap-4 w-full max-w-md bg-[#0A0F14]/80 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl shadow-green-500/10 transition-all duration-300">
+      <div class="px-6 pt-5">
+        <h3 id="custom-confirm-title" class="text-lg font-bold text-green-400 flex items-center gap-3">
+          <i data-lucide="shield-question" class="w-6 h-6"></i>
+          <span data-i18n="ui.titles.confirmation_needed">Confirmação Necessária</span>
+        </h3>
+      </div>
+      <div class="px-6">
+        <p id="custom-confirm-message" class="text-base text-white/80 leading-relaxed"></p>
+      </div>
+      <div class="flex justify-end items-center gap-4 bg-black/20 px-6 py-4 rounded-b-xl">
+        <button id="custom-confirm-cancel-btn" class="confirm-btn-cancel px-5 py-2 rounded-md text-white/70 font-semibold transition hover:bg-white/10" data-i18n="ui.buttons.cancel" type="button">
+          Cancelar
+        </button>
+        <button id="custom-confirm-ok-btn" class="confirm-btn-ok px-5 py-2 rounded-md bg-green-600 text-white font-semibold transition hover:bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.4)]" data-i18n="ui.buttons.confirm" type="button">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+      MODAL 3D (Análise de Visada Interativa)
+      ========================================= -->
+    <div id="modal-3d-analysis"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm items-center justify-center z-[19000] transition-opacity duration-300">
+    <div class="flex flex-col w-[90vw] max-w-[1600px] h-[85vh] bg-[#0A0F14]/90 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl shadow-green-500/10 transition-all duration-300">
+      
+      <!-- Cabeçalho -->
+      <div class="flex items-center justify-between bg-black/20 px-6 py-3 rounded-t-xl border-b border-white/10">
+        <h3 class="text-lg font-bold text-green-400 flex items-center gap-3">
+          <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+          <span data-i18n="ui.titles.interactive_los_analysis">Análise de Visada Interativa</span>
+        </h3>
+
+        <!-- Botão Fechar -->
+        <button id="close-3d-modal-btn" class="close-btn" type="button" aria-label="Fechar">×</button>
+      </div>
+
+      <!-- Conteúdo -->
+      <div class="flex-grow grid grid-cols-[1fr_auto_1fr_auto] gap-px bg-white/10 overflow-hidden rounded-b-xl">
+        <!-- MAPA -->
+        <div id="map-3d-container" class="w-full h-full bg-neutral-800"></div>
+
+        <!-- COLUNA ESQUERDA: Torre (A) -->
+        <div class="w-16 h-full bg-[#0A0F14] flex items-center justify-center">
+          <div class="los-vertical-control">
+            <div class="los-legend-vertical" data-i18n="ui.chart_labels.tower_elevation_m">
+              Tower Elevation (m)
+            </div>
+            <input id="tower-height-slider-vertical" type="range" min="1" max="100" step="1" value="15" class="los-vertical-slider">
+            <div id="tower-height-value-vertical" class="los-vertical-value">15 m</div>
+          </div>
+        </div>
+
+        <!-- GRÁFICO -->
+        <div class="w-full h-full bg-[#0A0F14] p-4 relative">
+          <canvas id="profile-chart-canvas"></canvas>
+        </div>
+
+        <!-- COLUNA DIREITA: Receptor (B) -->
+        <div class="w-16 h-full bg-[#0A0F14] flex items-center justify-center border-l border-white/10">
+          <div class="los-vertical-control">
+            <div class="los-legend-vertical" data-i18n="ui.chart_labels.receiver_elevation_m">
+              Receiver Elevation (m)
+            </div>
+            <input id="receiver-height-slider-vertical" type="range" min="1" max="100" step="1" value="3" class="los-vertical-slider">
+            <div id="receiver-height-value-vertical" class="los-vertical-value">3 m</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Login controller (overlay + auth) - precisa vir ANTES do api.js -->
+  <script src="assets/js/auth.js"></script>
+<!-- =========================================
+      SCRIPTS (ORDEM IMPORTA)
+      ========================================= -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+          crossorigin="anonymous" defer></script>
+
+  <!-- Módulos da aplicação -->
+  <script src="assets/js/i18n.js" defer></script>
+  <script src="assets/js/api.js" defer></script>
+  <script src="assets/js/map.js" defer></script>
+  <script src="assets/js/drawing/draw.core.js" defer></script>
+  <script src="assets/js/drawing/draw.markers.js" defer></script>
+  <script src="assets/js/drawing/draw.sector.js" defer></script>
+  <script src="assets/js/drawing/draw.pacman.js" defer></script>
+  <script src="assets/js/drawing/draw.circle.js" defer></script>
+  <script src="assets/js/drawing/draw.export.js" defer></script>
+  <script src="assets/js/drawing/index.js" defer></script>
+  <script src="assets/js/3d_analysis.js" defer></script>
+  <script src="assets/js/ui.js" defer></script>
+  <script src="assets/js/main/bootstrap.js" defer></script>
+
+  <!-- Inicialização dos ícones Lucide -->
+  <script src="assets/js/lucide-init.js" defer></script>
+
+  <!-- Fallback sem JavaScript -->
+  <noscript>
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0b1220;color:#fff;z-index:99999;">
+      <p>Ative o JavaScript para usar o simulador.</p>
+    </div>
+  </noscript>
+</body>
+</html>

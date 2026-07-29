@@ -1,0 +1,3 @@
+Shift + A  -> Alterna o “modo secreto” do template Brazil V6 90dBm (libera/bloqueia).
+R          -> Recentra no pivô/fazenda (focusOnFarm) quando não estiver digitando em inputs.
+Esc        -> Cancela modos de desenho (pivô, setorial, pacman, irripump), desativa LoS pivot-a-pivot, desativa busca de locais de repetidora e remove marcador de posicionamento; mostra mensagem de cancelamento.

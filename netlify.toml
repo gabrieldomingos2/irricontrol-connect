@@ -1,0 +1,111 @@
+[build]
+  base = "frontend"
+  command = "npm install && npm run build"
+  publish = "."
+
+# ── Security headers ────────────────────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self), payment=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    X-XSS-Protection = "0"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "credentialless"
+    Cross-Origin-Resource-Policy = "cross-origin"
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://api.mapbox.com;
+      style-src-elem 'self' https://unpkg.com https://api.mapbox.com https://cdn.jsdelivr.net;
+      style-src-attr 'unsafe-inline';
+      img-src 'self' data: blob: https://irricontrol-connect.onrender.com https://*.mapbox.com https://*.openstreetmap.org https://*.tile.openstreetmap.org https://*.google.com https://*.googleapis.com;
+      connect-src 'self' https://irricontrol-connect.onrender.com https://api.mapbox.com https://events.mapbox.com https://*.mapbox.com https://unpkg.com https://cdn.jsdelivr.net;
+      worker-src blob:;
+      frame-src 'none';
+      frame-ancestors 'none';
+      object-src 'none';
+      base-uri 'self';
+    """
+
+# ── Block sensitive project files ────────────────────────────────────────────
+[[redirects]]
+  from = "/package.json"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/vite.config.js"
+  to = "/index.html"
+  status = 404
+  force = true
+
+# ── Block WordPress probe paths (falso positivo do redirect SPA) ────────────
+[[redirects]]
+  from = "/wp-login.php"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/wp-login.php/*"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/xmlrpc.php"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/wp-admin/*"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/wp-json/*"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/wp-content/*"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/wp-includes/*"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/readme.html"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/license.txt"
+  to = "/index.html"
+  status = 404
+  force = true
+
+# ── SPA catch-all ────────────────────────────────────────────────────────────
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

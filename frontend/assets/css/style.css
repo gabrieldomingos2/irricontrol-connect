@@ -1,0 +1,1724 @@
+/* ============================================================
+    TOKENS
+   ============================================================ */
+
+/* Paleta e variáveis globais */
+:root {
+  /* Cores principais da UI */
+  --green: #22c55e;
+  --bg: #060B10;
+  --panel: rgba(6, 11, 16, 0.7);
+  --border: rgba(255, 255, 255, 0.15);
+
+  /* Design tokens (base) */
+  --ink-900: #0f172a;
+  --ink-800: #1f2937;
+  --muted-600: #64748b;
+  --muted-500: #94a3b8;
+  --surface-900: #0b1118;
+  --surface-800: #121a24;
+  --surface-glass: rgba(255, 255, 255, 0.08);
+  --border-200: rgba(255, 255, 255, 0.08);
+  --border-300: rgba(255, 255, 255, 0.15);
+  --success: #22c55e;
+  --info: #38bdf8;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.55);
+
+  /* Parametrização de sliders verticais (LoS) */
+  --track-thickness: 6px;
+  --track-border: 1px;
+  --thumb-size: 16px;
+
+  --slider-length: 22vh;
+  --slider-max: 180px;
+  --slider-min: 120px;
+
+  /* Chrome/Edge/Safari */
+  --thumb-offset-x-webkit: -6px;
+  --thumb-offset-y-webkit: 0px;
+
+  /* Firefox */
+  --thumb-offset-x-moz: -3px;
+  --thumb-offset-y-moz: -2px;
+}
+
+/* ============================================================
+    BASE / RESET
+   ============================================================ */
+
+/* Reset básico da página */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+/* ============================================================
+    COMPONENTES
+   ============================================================ */
+
+/* ============================================================
+    BASE COMPONENTS (BEM)
+   ============================================================ */
+
+.btn,
+.glass-button,
+.toolbar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 6px 10px;
+  border-radius: calc(var(--radius-lg) - 2px);
+  border: 1px solid var(--border-300);
+  background: transparent;
+  color: var(--muted-500);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn--icon {
+  padding: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: 2px 8px;
+  border-radius: calc(var(--radius-lg) * 2);
+  border: 1px solid var(--border-200);
+  background: var(--surface-800);
+  color: var(--muted-500);
+  font-size: .75rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+.pill--ok {
+  background: color-mix(in srgb, var(--success) 18%, transparent);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  color: var(--success);
+}
+
+.pill--warn {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  border-color: color-mix(in srgb, var(--warning) 40%, transparent);
+  color: var(--warning);
+}
+
+.pill--danger {
+  background: color-mix(in srgb, var(--danger) 18%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  color: var(--danger);
+}
+
+.pill--info {
+  background: color-mix(in srgb, var(--info) 18%, transparent);
+  border-color: color-mix(in srgb, var(--info) 40%, transparent);
+  color: var(--info);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border-300);
+  border-radius: calc(var(--radius-lg) - 2px);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(12px);
+  transition:
+    opacity .3s ease,
+    transform .3s ease,
+    background-color .4s ease,
+    border-color .4s ease,
+    backdrop-filter .4s ease,
+    box-shadow .4s ease;
+}
+
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .5rem .75rem;
+  border-bottom: 1px solid var(--border-200);
+}
+
+.panel__body {
+  padding: .75rem;
+}
+
+.modal {
+  background: var(--surface-900);
+  border: 1px solid var(--border-300);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--border-200);
+}
+
+.modal__body {
+  padding: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .25rem;
+  background: var(--surface-800);
+  border: 1px solid var(--border-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.toolbar__btn {
+  padding: 6px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+    🧊 BOTÕES ESTILO VIDRO (GLASS BUTTONS)
+   ============================================================ */
+
+.btn--glass,
+.glass-button {
+  backdrop-filter: blur(10px);
+  background: var(--surface-glass);
+  border: 1px solid var(--border-300);
+  border-radius: calc(var(--radius-lg) - 2px);
+  padding: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--muted-500);
+  cursor: pointer;
+
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+/* Fallback para navegadores sem suporte a blur */
+@supports not (backdrop-filter: blur(10px)) {
+  .btn--glass,
+  .glass-button {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* Hover padrão dos glass buttons */
+.btn--glass:hover,
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--surface-glass) 60%, var(--muted-500) 40%);
+  border-color: rgba(34, 197, 94, 0.4);
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  color: var(--success);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--success) 40%, transparent);
+}
+
+/* Estado oculto */
+.glass-button.hidden {
+  display: none;
+}
+
+/* Estado ativo (selecionado) */
+.glass-button-active {
+  background-color: rgba(34, 197, 94, 0.2);
+  background-color: color-mix(in srgb, var(--success) 20%, transparent);
+  border-color: rgba(34, 197, 94, 0.6);
+  border-color: color-mix(in srgb, var(--success) 60%, transparent);
+  color: var(--success);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success) 50%, transparent);
+}
+
+/* ============================================================
+    ❌ BOTÕES DE FECHAR (MODAIS / PAINÉIS)
+   ============================================================ */
+
+.modal__close,
+.close-btn,
+#fechar-painel-rep,
+#close-3d-modal-btn {
+  width: 28px;
+  height: 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: calc(var(--radius-lg) * 2);
+
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+
+  color: var(--muted-500);
+  background: var(--surface-glass);
+  border: 1px solid var(--border-300);
+
+  transition:
+    transform .15s ease,
+    background .2s ease,
+    color .2s ease;
+}
+
+.modal__close:hover,
+.close-btn:hover,
+#fechar-painel-rep:hover,
+#close-3d-modal-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(34, 197, 94, .25);
+  background: color-mix(in srgb, var(--success) 25%, transparent);
+  color: #fff;
+}
+
+/* ============================================================
+    LAYOUT DO APP (MAPA + PAINEIS)
+   ============================================================ */
+
+/* Wrapper geral da UI (zoom global da interface) */
+#ui-wrapper {
+  transform: scale(0.80);          /* reduz a UI para 80% */
+  transform-origin: top left;      /* ancora o zoom no topo esquerdo */
+  width: calc(100% / 0.80);        /* compensa o scale na largura */
+  height: calc(100% / 0.80);       /* compensa o scale na altura  */
+}
+
+/* Área do mapa (Leaflet) */
+#map {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* ============================================================
+    📚 BOTÕES DA BARRA LATERAL / AÇÕES GERAIS
+   ============================================================ */
+
+/* Botão genérico de sidebar (esquerda / direita) */
+.sidebar-button {
+  transition: all 0.3s ease;
+}
+
+.sidebar-button:hover {
+  color: var(--green);
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+/* Botão de confirmar/simular repetidora */
+#confirmar-repetidora {
+  height: 36px !important;
+  margin-top: .25rem;
+  border-radius: calc(var(--radius-lg) - 2px) !important;
+
+  backdrop-filter: blur(10px);
+  background: var(--surface-glass) !important;
+  border: 1px solid var(--border) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+
+  transition: all .3s ease;
+}
+
+#confirmar-repetidora:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  color: var(--green) !important;
+  box-shadow: 0 0 8px rgba(34, 197, 94, .4);
+}
+
+/* ============================================================
+    🗂️ PAINÉIS (DADOS / REPETIDORAS)
+   ============================================================ */
+
+.panel.hidden {
+  opacity: 0;
+  transform: translateX(20px);
+  pointer-events: none;
+}
+
+.panel .text-center {
+  margin-top: .25rem;
+  padding-top: .25rem;
+  border-top-width: 1px;
+}
+
+/* Conteúdo sanfona (minimizar painel) */
+.panel-content {
+  max-height: 600px;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    max-height .5s ease-in-out,
+    opacity .3s ease-in-out,
+    margin .5s ease-in-out;
+}
+
+.panel.minimized .panel-content {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.panel.minimized .panel-content > * {
+  display: none;
+}
+
+/* Aparência do painel ao minimizar (some o vidro) */
+.panel.minimized {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.panel h2 {
+  transition: opacity .3s ease;
+}
+
+.panel.minimized h2 {
+  opacity: 0;
+}
+
+/* Largura padrão dos painéis (telas grandes) */
+#overlay-panels-container .panel {
+  width: 260px;
+}
+
+/* ============================================================
+    📡 PAINEL REPETIDORA (CONFIGURAÇÃO)
+   ============================================================ */
+
+#painel-repetidora {
+  /* sem display aqui (evita conflito com .hidden no JS) */
+  width: 260px;
+  max-width: 100%;
+
+  padding: .75rem .75rem .6rem .75rem;
+  border-radius: calc(var(--radius-lg) - 2px);
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-300);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
+}
+
+/* Quando painel estiver aberto (classe adicionada no JS) */
+#painel-repetidora.rep-open {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: .55rem;
+}
+
+#painel-repetidora > .flex.justify-between.items-center {
+  margin-bottom: .45rem !important;
+}
+
+/* Título do painel de repetidora */
+#painel-repetidora h2 {
+  font-size: .9rem !important;
+  line-height: 2.0 !important;
+  color: #e5e7eb;
+
+  white-space: nowrap;   /* impede quebra de linha */
+  overflow: hidden;      /* evita barra de rolagem */
+}
+
+/* Esconde ícone no título em telas um pouco menores */
+@media (max-width: 1024px) {
+  #painel-repetidora h2 {
+    font-size: .8rem !important;
+  }
+}
+
+@media (max-width: 1440px) {
+  #painel-repetidora h2 .titulo-icone {
+    display: none !important;
+  }
+}
+
+/* Tipografia / espaçamento lista de repetidoras */
+#lista-repetidoras span {
+  font-size: .75rem;
+}
+
+#lista-repetidoras button {
+  font-size: .8rem;
+}
+
+#lista-repetidoras button .sidebar-icon,
+#lista-repetidoras button i[data-lucide] {
+  width: .875rem;
+  height: .875rem;
+}
+
+#lista-repetidoras > div > div:last-child {
+  gap: .6rem !important;
+}
+
+/* Scrollbar da lista de repetidoras */
+#lista-repetidoras {
+  max-height: calc(100vh - 360px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--green) #1a202c;
+}
+
+#lista-repetidoras::-webkit-scrollbar {
+  width: 8px;
+}
+
+#lista-repetidoras::-webkit-scrollbar-track {
+  background: #1a202c;
+  border-radius: var(--radius-md);
+}
+
+#lista-repetidoras::-webkit-scrollbar-thumb {
+  background-color: var(--green);
+  border-radius: var(--radius-md);
+  border: 2px solid #1a202c;
+}
+
+#lista-repetidoras::-webkit-scrollbar-thumb:hover {
+  background-color: #34d399;
+}
+
+/* ============================================================
+    🌐 RODAPÉ / LOGO
+   ============================================================ */
+
+#footer-logo-link {
+  opacity: .7;
+  transition:
+    opacity .3s ease,
+    filter .3s ease;
+}
+
+#footer-logo-link:hover {
+  opacity: 1;
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(58%)
+    sepia(85%)
+    saturate(548%)
+    hue-rotate(95deg)
+    brightness(95%)
+    contrast(90%);
+}
+
+/* ============================================================
+    📏 RESPONSIVO GERAL (LAYOUT / PAINÉIS / TOPBAR)
+    ============================================================ */
+
+@media (max-width: 1366px) {
+  /* Lista de repetidoras mais baixa em telas menores */
+  #lista-repetidoras {
+    max-height: calc(100vh - 320px);
+  }
+
+  /* Topbar mais compacta */
+  div.absolute.top-0.left-0.right-0.h-14 {
+    height: 3rem !important;
+    padding-left: .5rem !important;
+    padding-right: 0 !important;
+  }
+
+  div.absolute.top-0 .flex.items-center > span.text-sm.font-medium {
+    font-size: .7rem !important;
+    margin-right: .25rem !important;
+  }
+
+  div.absolute.top-0 .glass-button {
+    padding: 4px !important;
+    border-radius: calc(var(--radius-md) - 2px) !important;
+  }
+
+  div.absolute.top-0 .glass-button .sidebar-icon,
+  div.absolute.top-0 .glass-button i[data-lucide] {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  div.absolute.top-0 .flex.items-center.ml-24 {
+    margin-left: 6vw !important;
+  }
+
+  div.absolute.top-0 .flex.items-center.ml-\[20px\] {
+    margin-left: 3vw !important;
+  }
+
+  div.absolute.top-0 .flex.items-center.gap-2 {
+    gap: .3rem !important;
+  }
+
+  #editar-pivos.glass-button {
+    padding: 2px !important;
+  }
+
+  #editar-pivos.glass-button i[data-lucide] {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  /* Sidebar esquerda mais estreita */
+  div.absolute.top-14.bottom-14.left-0.w-\[280px\] {
+    width: 220px !important;
+    padding: .75rem !important;
+    top: 3rem !important;
+  }
+
+  /* Caixa do select/template na sidebar */
+  div.absolute.top-14 .mb-4.backdrop-blur {
+    padding: 4px 8px !important;
+  }
+
+  div.absolute.top-14 .mb-4.backdrop-blur label,
+  div.absolute.top-14 .mb-4.backdrop-blur select {
+    font-size: .75rem !important;
+  }
+
+  /* Campo de busca por coordenadas */
+  div.absolute.top-14 .focus-within\:ring-1 {
+    height: 2.25rem !important;
+  }
+
+  div.absolute.top-14 #lat-long-input-field {
+    font-size: .75rem !important;
+  }
+
+  .sidebar-button {
+    height: 2.25rem !important;
+    padding-left: .5rem !important;
+    padding-right: .5rem !important;
+  }
+
+  .sidebar-button .sidebar-icon {
+    width: 18px !important;
+  }
+
+  .sidebar-button span.text-sm {
+    font-size: .7rem !important;
+  }
+
+  /* Área do mapa ajustada à sidebar mais estreita */
+  div.absolute.top-14.bottom-14.left-\[280px\].right-12 {
+    top: 3rem !important;
+    left: 220px !important;
+    bottom: 2.5rem !important;
+  }
+
+  /* Painéis direitos mais compactos */
+  #overlay-panels-container {
+    top: 3.5rem !important;
+    right: 3.5rem !important;
+  }
+
+  #overlay-panels-container .panel {
+    width: 220px !important;
+    padding: .4rem !important;
+  }
+
+  #overlay-panels-container .panel h2,
+  #overlay-panels-container .panel p,
+  #template-info {
+    font-size: .65rem !important;
+    line-height: 1.4 !important;
+  }
+
+  #lista-repetidoras {
+    font-size: .6rem !important;
+  }
+
+  #lista-repetidoras > div {
+    padding-top: .2rem !important;
+    padding-bottom: .2rem !important;
+    align-items: center;
+  }
+
+  #lista-repetidoras button {
+    font-size: .7rem !important;
+    padding: 1px !important;
+  }
+
+  #lista-repetidoras button .sidebar-icon,
+  #lista-repetidoras button i[data-lucide] {
+    width: .75rem !important;
+    height: .75rem !important;
+  }
+
+  #lista-repetidoras > div > div:last-child {
+    gap: .3rem !important;
+  }
+
+  /* Painel de configuração de repetidora em telas menores */
+  #painel-repetidora {
+    width: 100% !important;
+    padding: .4rem !important;
+    margin-top: .5rem !important;
+    border-radius: .75rem !important;
+  }
+
+  #painel-repetidora h2 {
+    font-size: .7rem !important;
+    margin-bottom: .4rem !important;
+  }
+
+  #painel-repetidora label {
+    font-size: .65rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  #painel-repetidora input[type="number"],
+  #painel-repetidora #confirmar-repetidora {
+    height: 26px !important;
+    font-size: .7rem !important;
+  }
+
+  #painel-repetidora input[type="number"] {
+    margin-bottom: .4rem !important;
+  }
+
+  #painel-repetidora #confirmar-repetidora .sidebar-icon {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  /* Legenda em tela menor */
+  #legend-container {
+    top: 3.5rem !important;
+    right: .25rem !important;
+    padding: 3px !important;
+  }
+
+  #legend-image {
+    max-width: 36px !important;
+  }
+
+  /* Slider de opacidade */
+  div.absolute.bottom-6.left-72 {
+    left: 228px !important;
+    bottom: 1.2rem !important;
+  }
+
+  #range-opacidade {
+    width: 70px !important;
+  }
+
+  /* Logo do rodapé */
+  div.absolute.bottom-4.left-1\/2 {
+    bottom: .5rem !important;
+  }
+
+  #footer-logo-link img {
+    height: 1.5rem !important;
+  }
+
+  /* Bandeiras de idioma */
+  button[data-lang] img {
+    width: 20px !important;
+    height: 13px !important;
+  }
+
+  /* Espaçamento da primeira seção de ícones da topbar */
+  div.absolute.top-0 > .flex.items-center.gap-3 {
+    gap: .5rem !important;
+  }
+
+  /* Slider vertical LoS ligeiramente menor */
+  .los-vertical-slider {
+    height: 20vh;
+    max-height: 160px;
+  }
+}
+
+/* Layout mobile / tablet (sidebar some, mapa em tela cheia) */
+@media (max-width: 768px) {
+  .absolute.top-14.bottom-14.left-0.w-\[280px\] {
+    display: none;
+  }
+
+  .absolute.top-14.bottom-14.left-\[280px\].right-12 {
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  div.absolute.top-0 .flex.items-center > span {
+    display: none;
+  }
+
+  #overlay-panels-container {
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+  }
+
+  .los-vertical-slider {
+    height: 18vh;
+    max-height: 150px;
+  }
+}
+
+/* Layout ultra-mobile (esconde quase toda UI, só mapa) */
+@media (max-width: 480px) {
+  div.absolute.top-0.left-0.right-0 {
+    display: none;
+  }
+
+  #map {
+    height: 100vh;
+  }
+
+  #overlay-panels-container {
+    display: none;
+  }
+
+  #mobile-buttons-container {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+/* =====================================================
+    AUMENTO DOS ÍCONES DA TOPBAR (SVG + LUCIDE)
+   ===================================================== */
+
+/* Botões da topbar */
+#ui-wrapper .absolute.top-0.left-0.right-0 .glass-button {
+  padding: 10px !important; /* opcional: aumenta só um pouco o botão */
+}
+
+/* Ícones SVG usando mask-image */
+#ui-wrapper .absolute.top-0.left-0.right-0 .glass-button .sidebar-icon {
+  width: 22px !important;   /* AUMENTE AQUI (22, 24, 26, 28...) */
+  height: 22px !important;
+}
+
+/* Ícones LUCIDE */
+#ui-wrapper .absolute.top-0.left-0.right-0 .glass-button i[data-lucide] {
+  width: 26px !important;
+  height: 26px !important;
+  stroke-width: 2 !important;  /* opcional: deixa o traço mais forte */
+}
+
+
+/* =====================================================
+    Ajuste fino do logo da Irricontrol no rodapé
+   ===================================================== */
+
+#footer-logo-link {
+  position: relative;
+  top: 6px;  /* aumenta ou diminui aqui: 1px, 2px, 3px... */
+}
+
+/* ============================================================
+    REGRAS ESPECIFICAS
+   ============================================================ */
+
+/* ============================================================
+    🧠 ÍCONES (SVG via mask-image)
+   ============================================================ */
+
+.sidebar-icon {
+  display: inline-block;
+  background-color: currentColor;
+
+  -webkit-mask-size: contain;
+  mask-size: contain;
+
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* ============================================================
+    💬 TOAST / MENSAGENS FLUTUANTES
+   ============================================================ */
+
+#mensagem {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity .5s ease-in-out,
+    transform .5s ease-in-out;
+}
+
+#mensagem.hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+/* ============================================================
+    ⚡ EFEITO GLOW (animação genérica)
+   ============================================================ */
+
+@keyframes pulseGlow {
+  0%   { filter: drop-shadow(0 0 4px rgba(255, 0, 0, .7)); }
+  50%  { filter: drop-shadow(0 0 14px rgba(255, 0, 0, 1)); }
+  100% { filter: drop-shadow(0 0 4px rgba(255, 0, 0, .7)); }
+}
+
+/* ============================================================
+    🟢 CÍRCULOS / PIVÔS (Leaflet)
+   ============================================================ */
+
+.leaflet-interactive.circulo-verde {
+  stroke: #34c759;
+  stroke-width: 1;
+  fill: #34c759;
+  fill-opacity: .5;
+}
+
+/* Label fixa sobre pivôs */
+.pivo-marker-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  opacity: .8;
+
+  border: 1px solid rgba(0, 0, 0, .3);
+  box-sizing: border-box;
+
+  transition:
+    transform .2s ease-in-out,
+    box-shadow .2s ease-in-out,
+    opacity .2s;
+}
+
+.pivo-marker-container-selected .pivo-marker-dot {
+  transform: scale(1.1);
+  opacity: 1;
+  box-shadow: 0 0 8px 3px rgba(255, 255, 255, .9);
+}
+
+.label-pivo {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+  white-space: normal;
+  pointer-events: none;
+  line-height: 1.3;
+
+  text-shadow:
+    0 0 5px rgba(0, 0, 0, 1),
+    1px 1px 3px rgba(0, 0, 0, .8);
+}
+
+.distancia-pivo {
+  display: block;
+  font-size: .85em;
+  font-weight: normal;
+  color: #ddd;
+}
+
+.source-name-pivo {
+  font-size: .9em;
+  color: #c0c0c0;
+  font-weight: normal;
+}
+
+/* ============================================================
+    📍 POPUPS / TOOLTIP (Leaflet)
+   ============================================================ */
+
+/* Popup estilo vidro */
+.leaflet-popup.popup-glass .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.leaflet-popup.popup-glass .leaflet-popup-tip-container {
+  display: none;
+}
+
+.popup-glass-inner {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, .65);
+  padding: 10px 14px;
+  border-radius: calc(var(--radius-md) - 2px);
+
+  font-weight: 600;
+  font-size: .85rem;
+  color: #fff;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .4);
+  border: 1px solid var(--border);
+}
+
+@supports not (backdrop-filter: blur(8px)) {
+  .popup-glass-inner {
+    background: rgba(0, 0, 0, .8);
+  }
+}
+
+/* Popup de repetidora */
+.leaflet-popup.popup-repeater .leaflet-popup-content-wrapper {
+  background-color: rgba(6, 11, 16, 0.85) !important;
+  color: #e5e7eb;
+  padding: 5px 10px !important;
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+}
+
+.leaflet-popup.popup-repeater .leaflet-popup-content {
+  margin: 0 !important;
+  font-size: .75rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.leaflet-popup.popup-repeater .leaflet-popup-content span + span {
+  margin-left: .75rem;
+}
+
+.leaflet-popup.popup-repeater .leaflet-popup-tip {
+  background: rgba(6, 11, 16, 0.85) !important;
+}
+
+/* Tooltip de sinal (intensidade / info) */
+.leaflet-tooltip.tooltip-sinal {
+  background-color: rgba(6, 11, 16, .9) !important;
+  color: #e5e7eb !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 4px 8px !important;
+  border: 1px solid rgba(255, 255, 255, .1) !important;
+  font-size: .7rem !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .5) !important;
+  white-space: nowrap;
+  transition: opacity .2s ease !important;
+  opacity: 0;
+}
+
+.leaflet-tooltip.tooltip-sinal span + span {
+  margin-left: .4rem;
+}
+
+.leaflet-tooltip.tooltip-sinal.leaflet-tooltip-visible {
+  opacity: 1;
+}
+
+.leaflet-tooltip.tooltip-sinal::before {
+  display: none;
+}
+
+/* ============================================================
+    🛰️ LINHAS DIAGNÓSTICO / BLOQUEIO
+   ============================================================ */
+
+/* Linha pontilhada de diagnóstico de visada */
+.linha-pontilhada {
+  stroke-dasharray: 4 2;
+  animation: growLine 1.2s linear forwards;
+}
+
+/* Label de bloqueio de visada */
+.label-bloqueio {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  pointer-events: none;
+}
+
+.label-bloqueio i svg {
+  width: 20px;
+  height: 20px;
+  stroke: #000 !important;
+  fill: none !important;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .7));
+}
+
+/* ============================================================
+    📂 INPUT FILE / CONTROLES BÁSICOS
+   ============================================================ */
+
+/* Input file escondido (controlado via label) */
+input[type="file"].hidden {
+  display: none;
+}
+
+/* Sliders horizontais (opacidade) */
+.range-slider-custom {
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: 100%;
+  height: 3px;
+
+  background: #4A5568;
+  border-radius: 9999px;
+
+  outline: none;
+  opacity: .85;
+  transition: opacity .2s;
+}
+
+.range-slider-custom:hover {
+  opacity: 1;
+}
+
+.range-slider-custom::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: 14px;
+  height: 14px;
+
+  background-color: var(--green);
+  border-radius: 9999px;
+  border: none;
+
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(34, 197, 94, .7);
+  transition: transform .2s;
+}
+
+.range-slider-custom:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+.range-slider-custom::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+
+  background-color: var(--green);
+  border-radius: 50%;
+  border: none;
+
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(34, 197, 94, .7);
+  transition: transform .2s;
+}
+
+.range-slider-custom:active::-moz-range-thumb {
+  transform: scale(1.2);
+}
+
+/* Slider de opacidade do overlay */
+#range-opacidade {
+  width: 80px;   /* menor em telas grandes */
+  height: 6px;
+}
+
+/* ============================================================
+    ✏️ EDIÇÃO / NOMEAÇÃO / LEGENDA
+   ============================================================ */
+
+/* Input de edição inline de nomes */
+.name-container {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+.name-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #38bdf8;
+  padding: 0;
+
+  color: #e2e8f0;
+  width: 100%;
+
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.name-input:focus {
+  outline: none;
+}
+
+/* Container da legenda de cores (imagem) */
+#legend-container {
+  backdrop-filter: blur(8px);
+  background: rgba(10, 15, 20, .75);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+
+  top: 4rem;
+  right: 0;
+  z-index: 51;
+  transition:
+    opacity .3s ease,
+    transform .3s ease;
+}
+
+@supports not (backdrop-filter: blur(8px)) {
+  #legend-container {
+    background: rgba(10, 15, 20, .9);
+  }
+}
+
+#legend-image {
+  max-width: 38px;
+  height: auto;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .4);
+}
+
+/* Tooltip auxiliar de desenho */
+.drawing-tooltip {
+  position: absolute;
+  background-color: rgba(10, 15, 20, .2);
+  color: #ffffffa6;
+  padding: 2px 5px;
+  border-radius: var(--radius-xs);
+
+  font-size: 11px;
+  font-weight: bold;
+  border: none;
+  box-shadow: none;
+
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10001;
+  transition: opacity .1s ease;
+}
+
+/* Menu de renomear pivô / elemento */
+.rename-menu {
+  position: absolute;
+  background-color: var(--panel);
+  backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(34, 197, 94, .3);
+  border-radius: .5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+
+  padding: .5rem;
+  z-index: 10002;
+  min-width: 140px;
+}
+
+.rename-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: .5rem .75rem;
+
+  color: #d1d5db;
+  font-size: .875rem;
+  font-weight: 500;
+  border-radius: .25rem;
+
+  transition:
+    background-color .2s ease,
+    color .2s ease;
+}
+
+.rename-menu button:hover {
+  background-color: rgba(34, 197, 94, .15);
+  color: #34d399;
+}
+
+/* ============================================================
+    🌊 EFEITOS DE SELEÇÃO / ENERGIA
+   ============================================================ */
+
+@keyframes ondaEnergia {
+  0%   { transform: scale(1); opacity: .8; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+.pivo-marker-container-selected .pivo-marker-dot {
+  position: relative;
+  background-color: #fff;
+  box-shadow: 0 0 12px 3px rgba(255, 255, 255, .6);
+}
+
+.pivo-marker-container-selected .pivo-marker-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  border: 2px solid rgba(255, 255, 255, .8);
+  border-radius: 50%;
+  animation: ondaEnergia 2s infinite ease-out;
+}
+
+/* Wrapper para efeito de seleção global */
+.selection-effect-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-selected .selection-effect-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  border: 2px solid rgba(255, 255, 255, .8);
+  border-radius: 50%;
+  animation: ondaEnergia 2s infinite ease-out;
+  pointer-events: none;
+}
+
+/* Ícones transparentes Leaflet (sem fundo) */
+.leaflet-div-icon-transparent {
+  background: transparent;
+  border: none;
+}
+
+/* ============================================================
+    💎 MODAL DE CONFIRMAÇÃO / LOADER
+   ============================================================ */
+
+/* Overlay do modal de confirmação */
+#custom-confirm-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#custom-confirm-overlay:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#custom-confirm-box {
+  transform: scale(.95) translateY(10px);
+  opacity: 0;
+}
+
+#custom-confirm-overlay:not(.hidden) #custom-confirm-box {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.confirm-btn-cancel,
+.confirm-btn-ok {
+  border: none;
+  cursor: pointer;
+}
+
+.confirm-btn-ok:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(34, 197, 94, .6);
+}
+
+.confirm-btn-cancel:hover {
+  color: #fff;
+}
+
+/* Loader central (overlay) */
+#loader {
+  position: fixed;
+  inset: 0;                   /* cobre toda a tela */
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 9999;
+  display: none;              /* oculto por padrão */
+}
+
+/* Loader quando ativo (classe .flex adicionada via JS) */
+#loader.flex {
+  display: flex !important;
+}
+
+/* Estilo interno do loader (logo + texto) */
+#loader .loading-logo,
+#loader [data-i18n="ui.labels.processing"] {
+  text-shadow: 0 0 14px rgba(0, 0, 0, .55);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35));
+}
+
+/* Container do logo animado */
+.loading-logo-container {
+  position: relative;
+  width: 90px;
+  height: 90px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-logo {
+  width: 120px;
+  height: auto;
+  opacity: .9;
+}
+
+/* Anel de loading girando */
+.loading-spinner {
+  position: absolute;
+  inset: 0;
+
+  border: 4px solid transparent;
+  border-top-color: var(--green);
+  border-radius: 50%;
+
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ============================================================
+    🤖 ÍCONES DE CANDIDATOS A REPETIDORA (AI)
+   ============================================================ */
+
+.custom-div-icon-ponto-alto {
+  cursor: pointer;
+}
+
+.candidate-icon-wrapper {
+  position: relative;
+  display: inline-block;
+
+  text-align: center;
+  color: #E0E0E0;
+  font-weight: normal;
+  font-size: 10px;
+  white-space: normal;
+  line-height: 1.3;
+
+  padding: 4px 7px;
+  background-color: rgba(20, 30, 40, .85);
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .5);
+}
+
+.candidate-icon-wrapper .los-ok {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.candidate-icon-wrapper .los-no {
+  color: #FF9800;
+  font-weight: bold;
+}
+
+.candidate-icon-wrapper .distancia-info {
+  color: #B0BEC5;
+}
+
+/* Botão de remover candidato */
+.candidate-remove-btn {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+
+  width: 18px;
+  height: 18px;
+  line-height: 17px;
+  text-align: center;
+
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #D32F2F;
+  border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  transition:
+    background-color .2s ease,
+    transform .2s ease;
+}
+
+.candidate-remove-btn:hover {
+  background-color: #E57373;
+  transform: scale(1.1);
+}
+
+/* ============================================================
+    🖱️ CURSORES / INTERAÇÃO
+   ============================================================ */
+
+#map,
+.leaflet-interactive {
+  cursor: default !important;
+}
+
+button,
+.glass-button,
+label[for="arquivo"] {
+  cursor: pointer !important;
+}
+
+/* ============================================================
+    ✨ SUGESTÕES DE REPETIDORA (TOOLTIPS / MARCADORES)
+   ============================================================ */
+
+.suggestion-marker-dot {
+  background-color: #22c55e;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.suggestion-marker-dot:hover {
+  transform: scale(1.3);
+}
+
+/* Tooltip de sugestão (dados da repetidora) */
+.leaflet-tooltip.suggestion-tooltip {
+  background-color: rgba(6, 11, 16, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: var(--radius-sm) !important;
+  color: #e5e7eb !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .5) !important;
+  white-space: nowrap;
+}
+
+.leaflet-tooltip.suggestion-tooltip::before {
+  display: none;
+}
+
+/* Conteúdo interno do tooltip de sugestão */
+.suggestion-tooltip-content {
+  text-align: center;
+  line-height: 1.3;
+}
+
+.tooltip-elevation {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.tooltip-status {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+.tooltip-distance {
+  font-size: 10px;
+  color: #b0bec5;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+/* Painel antigo desativado (garantia) */
+#repeater-suggestions-panel {
+  display: none !important;
+}
+
+/* ============================================================
+    🗺️ AJUSTES DE MAPA / MODAL 3D / SLIDER VERTICAL
+   ============================================================ */
+
+/* Ajustes finos do mapa (foco) */
+#map:focus,
+.leaflet-container:focus {
+  outline: none !important;
+}
+
+/* Controles verticais de LoS (análise 3D) */
+.los-vertical-control {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: .75rem;
+}
+
+.los-legend-vertical {
+  position: absolute;
+  left: 25%;
+  top: 48%;
+  transform: translate(-50%, -50%) rotate(180deg);
+
+  writing-mode: vertical-rl;
+  color: #9ca3af;
+  font-size: .75rem;
+  letter-spacing: .5px;
+
+  user-select: none;
+  pointer-events: none;
+  opacity: .95;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+
+.los-vertical-value {
+  color: #fff;
+  font-weight: 600;
+  font-size: .9rem;
+  text-shadow: 0 0 8px rgba(34, 197, 94, .35);
+}
+
+/* Slider vertical (analise de visada) */
+.los-vertical-slider {
+  writing-mode: vertical-lr;
+  direction: rtl;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: var(--track-thickness);
+  height: var(--slider-length);
+  max-height: var(--slider-max);
+  min-height: var(--slider-min);
+
+  background: transparent;
+  outline: none;
+  accent-color: var(--green);
+}
+
+.los-vertical-slider::-webkit-slider-runnable-track {
+  width: var(--track-thickness);
+  height: 100%;
+  background: #4A5568;
+  border-radius: 9999px;
+  border: var(--track-border) solid rgba(255, 255, 255, .15);
+}
+
+.los-vertical-slider::-moz-range-track {
+  width: var(--track-thickness);
+  height: 100%;
+  background: #4A5568;
+  border-radius: 9999px;
+  border: var(--track-border) solid rgba(255, 255, 255, .15);
+}
+
+.los-vertical-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+
+  background-color: var(--green);
+  border-radius: 50%;
+  border: none;
+
+  box-shadow: 0 0 10px rgba(34, 197, 94, .65);
+  transition: transform .2s;
+  transform: translate(var(--thumb-offset-x-webkit), var(--thumb-offset-y-webkit));
+}
+
+.los-vertical-slider:active::-webkit-slider-thumb {
+  transform:
+    translate(var(--thumb-offset-x-webkit), var(--thumb-offset-y-webkit))
+    scale(1.15);
+}
+
+.los-vertical-slider::-moz-range-thumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  background-color: var(--green);
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(34, 197, 94, .65);
+  transition: transform .2s;
+  transform: translate(var(--thumb-offset-x-moz), var(--thumb-offset-y-moz));
+}
+
+.los-vertical-slider:active::-moz-range-thumb {
+  transform:
+    translate(var(--thumb-offset-x-moz), var(--thumb-offset-y-moz))
+    scale(1.15);
+}
+
+/* Refuerzo de escrita para sliders LoS por ID */
+#tower-height-slider-vertical,
+#receiver-height-slider-vertical {
+  writing-mode: vertical-lr;
+  direction: rtl;
+}
+
+/* Modal da análise 3D */
+#modal-3d-analysis {
+  display: none;
+}
+
+#modal-3d-analysis:not(.hidden) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Área 3D (Mapbox) */
+#map-3d-container .mapboxgl-canvas-container,
+#map-3d-container .mapboxgl-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#map-3d-container .mapboxgl-ctrl-logo,
+#map-3d-container .mapboxgl-ctrl-attrib {
+  display: none !important;
+}
