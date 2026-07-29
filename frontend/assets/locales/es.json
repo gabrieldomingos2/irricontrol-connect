@@ -21,7 +21,7 @@
       "search_coordinates": "Localizar por Coordenadas",
       "toggle_antenna_legends": "Leyendas de las Antenas",
       "restore_original_name": "Restaurar Nombre Original",
-      "export_pdf_report": "Exportar Informe PDF",
+      "export_pdf_report": "Exportar Informe Completo",
       "confirm_needed": "Confirmación Necesaria",
       "move_pivot_center": "Seleccione para Mover Solo el Centro del Pivote",
       "save_position": "Guardar Posición",
@@ -88,7 +88,7 @@
       "run_study": "Simular Cobertura",
       "run_los_diagnostic": "Diagnóstico de Visión",
       "export_kmz": "Descargar Archivo KMZ",
-      "export_pdf_report": "Exportar Informe PDF",
+      "export_pdf_report": "Exportar Informe Completo",
       "download_active_pngs": "Descargar Repetidoras",
       "reset": "Reiniciar",
       "simulate": "Ejecutar Simulación",
@@ -123,13 +123,14 @@
     "show_legends": "Mostrar Leyendas",
     "run_diagnostic_from_source": "Ejecutar diagnóstico desde esta fuente",
     "los_clear_at_highest_point": "Línea de visión despejada (Punto más alto: {elevation}m)",
-    "export_pdf_disabled": "Exporte el KMZ antes de generar el informe en PDF",
+    "export_pdf_disabled": "Cargue un KMZ para generar el informe.",
     "download_active_repeaters": "Descarga solo las repetidoras activas que están apareciendo en el mapa",
     "run_signal_simulation": "Ejecuta la simulación de señal",
     "load_kmz": "Importa y carga un archivo KMZ",
     "export_kmz": "Descarga el proyecto completo en KMZ",
+    "export_kmz_disabled": "Ejecute un estudio de señal para descargar el KMZ.",
     "reset": "Reinicia todo para empezar un nuevo proyecto",
-    "export_pdf_report": "Genera un informe PDF con el resumen del estudio"
+    "export_pdf_report": "Genera un paquete con el informe en PDF y el KMZ del estudio"
   },
   "messages": {
     "success": {
@@ -146,6 +147,7 @@
       "app_reset": "Aplicación reiniciada. Nueva sesión en curso.",
       "los_diagnostic_complete": "Análisis de línea de visión (LoS) finalizado.",
       "kmz_export_preparing": "Preparando exportación KMZ...",
+      "kmz_export_complete": "KMZ exportado con éxito.",
       "pdf_export_preparing": "Preparando informe PDF...",
       "pdf_export_complete": "Informe PDF generado con éxito.",
       "pivot_distances_shown": "Distancias entre pivotes mostradas.",

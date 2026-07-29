@@ -1,1 +1,103 @@
-const AppState={jobId:null,currentProcessedKmzData:null,antenaGlobal:null,lastPivosDataDrawn:[],lastBombasDataDrawn:[],ciclosGlobais:[],repetidoras:[],modoEdicaoPivos:!1,modoLoSPivotAPivot:!1,modoBuscaLocalRepetidora:!1,modoDesenhoPivo:!1,modoDesenhoPivoSetorial:!1,modoDesenhoPivoPacman:!1,modoDesenhoIrripump:!1,modoMoverPivoSemCirculo:!1,pontoRaioTemporario:null,distanciasPivosVisiveis:!1,legendasAtivas:!0,antenaLegendasAtivas:!0,clickedCandidateData:null,ultimoCliqueFoiSobrePivo:!1,visadaVisivel:!1,coordenadaClicada:null,marcadorPosicionamento:null,backupPosicoesPivos:{},historyStack:[],losSourcePivot:null,losTargetPivot:null,pivoAlvoParaLocalRepetidora:null,templateSelecionado:"",centroPivoTemporario:null,isDrawingSector:!1,selectedPivoNome:null,selectedSpecialMarker:null,marcadorAntena:null,marcadoresPivos:[],circulosPivos:[],pivotsMap:{},contadorRepetidoras:0,idsDisponiveis:[],marcadoresLegenda:[],marcadoresBombas:[],posicoesEditadas:{},overlaysVisiveis:[],linhasDiagnostico:[],marcadoresBloqueio:[],setJobId(o){this.jobId=o,console.log(`SESSION_INFO: Novo Job ID definido: ${this.jobId}`)},reset(){console.log("Resetando o estado da aplica\xE7\xE3o..."),this.jobId=null,this.currentProcessedKmzData=null,this.antenaGlobal=null,this.lastPivosDataDrawn=[],this.lastBombasDataDrawn=[],this.ciclosGlobais=[],this.repetidoras=[],this.modoEdicaoPivos=!1,this.modoLoSPivotAPivot=!1,this.modoBuscaLocalRepetidora=!1,this.modoDesenhoPivo=!1,this.modoDesenhoPivoSetorial=!1,this.modoDesenhoPivoPacman=!1,this.modoDesenhoIrripump=!1,this.pontoRaioTemporario=null,this.distanciasPivosVisiveis=!1,this.legendasAtivas=!0,this.antenaLegendasAtivas=!0,this.visadaVisivel=!1,this.clickedCandidateData=null,this.ultimoCliqueFoiSobrePivo=!1,this.coordenadaClicada=null,this.marcadorPosicionamento=null,this.backupPosicoesPivos={},this.historyStack=[],this.losSourcePivot=null,this.losTargetPivot=null,this.pivoAlvoParaLocalRepetidora=null,this.templateSelecionado="",this.centroPivoTemporario=null,this.isDrawingSector=!1,this.selectedPivoNome=null,this.selectedSpecialMarker=null,this.marcadorAntena=null,this.marcadoresPivos=[],this.circulosPivos=[],this.pivotsMap={},this.contadorRepetidoras=0,this.idsDisponiveis=[],this.marcadoresLegenda=[],this.marcadoresBombas=[],this.posicoesEditadas={},this.overlaysVisiveis=[],this.linhasDiagnostico=[],this.marcadoresBloqueio=[],this.modoMoverPivoSemCirculo=!1}};
+const AppState = {
+  jobId: null,
+  currentProcessedKmzData: null,
+  antenaGlobal: null,
+  lastPivosDataDrawn: [],
+  lastBombasDataDrawn: [],
+  ciclosGlobais: [],
+  repetidoras: [],
+  modoEdicaoPivos: false,
+  modoLoSPivotAPivot: false,
+  modoBuscaLocalRepetidora: false,
+  modoDesenhoPivo: false,
+  modoDesenhoPivoSetorial: false,
+  modoDesenhoPivoPacman: false,
+  modoDesenhoIrripump: false,
+  modoMoverPivoSemCirculo: false,
+  pontoRaioTemporario: null,
+  distanciasPivosVisiveis: false,
+  legendasAtivas: true,
+  antenaLegendasAtivas: true,
+  clickedCandidateData: null,
+  ultimoCliqueFoiSobrePivo: false,
+  visadaVisivel: false,
+  coordenadaClicada: null,
+  marcadorPosicionamento: null,
+  backupPosicoesPivos: {},
+  historyStack: [],
+  losSourcePivot: null,
+  losTargetPivot: null,
+  pivoAlvoParaLocalRepetidora: null,
+  templateSelecionado: "",
+  centroPivoTemporario: null,
+  isDrawingSector: false,
+  selectedPivoNome: null,
+  selectedSpecialMarker: null,
+  marcadorAntena: null,
+  marcadoresPivos: [],
+  circulosPivos: [],
+  pivotsMap: {},
+  contadorRepetidoras: 0,
+  idsDisponiveis: [],
+  marcadoresLegenda: [],
+  marcadoresBombas: [],
+  posicoesEditadas: {},
+  overlaysVisiveis: [],
+  linhasDiagnostico: [],
+  marcadoresBloqueio: [],
+
+  setJobId(jobId) {
+    this.jobId = jobId;
+    console.log(`SESSION_INFO: Novo Job ID definido: ${this.jobId}`);
+  },
+
+  reset() {
+    console.log("Resetando o estado da aplicação...");
+    this.jobId = null;
+    this.currentProcessedKmzData = null;
+    this.antenaGlobal = null;
+    this.lastPivosDataDrawn = [];
+    this.lastBombasDataDrawn = [];
+    this.ciclosGlobais = [];
+    this.repetidoras = [];
+    this.modoEdicaoPivos = false;
+    this.modoLoSPivotAPivot = false;
+    this.modoBuscaLocalRepetidora = false;
+    this.modoDesenhoPivo = false;
+    this.modoDesenhoPivoSetorial = false;
+    this.modoDesenhoPivoPacman = false;
+    this.modoDesenhoIrripump = false;
+    this.pontoRaioTemporario = null;
+    this.distanciasPivosVisiveis = false;
+    this.legendasAtivas = true;
+    this.antenaLegendasAtivas = true;
+    this.visadaVisivel = false;
+    this.clickedCandidateData = null;
+    this.ultimoCliqueFoiSobrePivo = false;
+    this.coordenadaClicada = null;
+    this.marcadorPosicionamento = null;
+    this.backupPosicoesPivos = {};
+    this.historyStack = [];
+    this.losSourcePivot = null;
+    this.losTargetPivot = null;
+    this.pivoAlvoParaLocalRepetidora = null;
+    this.templateSelecionado = "";
+    this.centroPivoTemporario = null;
+    this.isDrawingSector = false;
+    this.selectedPivoNome = null;
+    this.selectedSpecialMarker = null;
+    this.marcadorAntena = null;
+    this.marcadoresPivos = [];
+    this.circulosPivos = [];
+    this.pivotsMap = {};
+    this.contadorRepetidoras = 0;
+    this.idsDisponiveis = [];
+    this.marcadoresLegenda = [];
+    this.marcadoresBombas = [];
+    this.posicoesEditadas = {};
+    this.overlaysVisiveis = [];
+    this.linhasDiagnostico = [];
+    this.marcadoresBloqueio = [];
+    this.modoMoverPivoSemCirculo = false;
+  }
+};

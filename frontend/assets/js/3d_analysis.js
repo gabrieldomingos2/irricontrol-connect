@@ -1,1 +1,262 @@
-window.Analysis3D=(()=>{const x=document.getElementById("modal-3d-analysis"),C=document.getElementById("map-3d-container"),I=document.getElementById("profile-chart-canvas"),p=document.getElementById("tower-height-slider-vertical")||document.getElementById("tower-height-slider"),h=document.getElementById("tower-height-value-vertical")||document.getElementById("tower-height-value"),y=document.getElementById("receiver-height-slider-vertical")||document.getElementById("receiver-height-slider"),f=document.getElementById("receiver-height-value-vertical")||document.getElementById("receiver-height-value"),M=document.getElementById("close-3d-modal-btn");let a,c,i=[],m=3,d=5;function F(e,n,l,o){const s=v=>v*Math.PI/180,u=v=>v*180/Math.PI,b=s(o),g=s(e),S=s(n),w=Math.asin(Math.sin(g)*Math.cos(l/6378137)+Math.cos(g)*Math.sin(l/6378137)*Math.cos(b)),N=S+Math.atan2(Math.sin(b)*Math.sin(l/6378137)*Math.cos(g),Math.cos(l/6378137)-Math.sin(g)*Math.sin(w));return[u(N),u(w)]}function k(e,n,l=64){const o=[];for(let r=0;r<l;r++){const s=r/l*360;o.push(F(e.lat,e.lon,n,s))}return o.push(o[0]),[o]}function P(e){if(!a||!e)return;const n=[];(e.pivos||[]).forEach(o=>{if(o.tipo==="custom"&&Array.isArray(o.coordenadas)){const r=o.coordenadas.map(s=>[s[1],s[0]]);n.push({type:"Feature",geometry:{type:"Polygon",coordinates:[r]}})}else if(o.raio){const r={lat:o.circle_center_lat||o.lat,lon:o.circle_center_lon||o.lon},s=k(r,o.raio);n.push({type:"Feature",geometry:{type:"Polygon",coordinates:s}})}});const l=a.getSource("pivots-source");l?l.setData({type:"FeatureCollection",features:n}):a.addSource("pivots-source",{type:"geojson",data:{type:"FeatureCollection",features:n}}),a.getLayer("pivots-layer-line")||a.addLayer({id:"pivots-layer-line",type:"line",source:"pivots-source",paint:{"line-color":"#FF4136","line-width":2,"line-opacity":.8}})}function E(e){const n=i[0].elev+e,l=i[i.length-1].elev+m;let o=!1;return{points:i.map((s,u)=>{const b=u/(i.length-1),g=n+b*(l-n);return s.elev>g&&(o=!0),g}),isBlocked:o}}function B(e=null){e!=null&&(d=e),h&&(h.textContent=`${Number(d).toFixed(0)} m`),f&&(f.textContent=`${Number(m).toFixed(0)} m`);const n=E(Number(d));c&&(c.data.datasets[1].data=n.points,c.data.datasets[1].borderColor=n.isBlocked?"#ef4444":"#22c55e",c.update("none")),a&&a.getLayer("los-line-layer")&&a.setPaintProperty("los-line-layer","line-color",n.isBlocked?"#ef4444":"#22c55e")}function _(e,n,l){mapboxgl.accessToken="pk.eyJ1IjoiMzYzMzUzMzZnYSIsImEiOiJjbWVsaHZmN2YwaGZvMmxwemtyOHlzczNwIn0.V6Y5GLafCzXd6Bnqjtu89Q",a=new mapboxgl.Map({container:C,style:"mapbox://styles/mapbox/satellite-streets-v12",center:[e[0].lon,e[0].lat],zoom:14}),a.on("load",()=>{a.addSource("mapbox-dem",{type:"raster-dem",url:"mapbox://mapbox.mapbox-terrain-dem-v1"}),a.setTerrain({source:"mapbox-dem",exaggeration:1.5});const o=[e[0].lon,e[0].lat],r=[e[e.length-1].lon,e[e.length-1].lat];new mapboxgl.Marker({color:"#22c55e",scale:.8}).setLngLat(o).addTo(a),new mapboxgl.Marker({color:"#f87171",scale:.8}).setLngLat(r).addTo(a),a.addSource("los-line-source",{type:"geojson",data:{type:"Feature",geometry:{type:"LineString",coordinates:[o,r]}}}),a.addLayer({id:"los-line-layer",type:"line",source:"los-line-source",layout:{"line-join":"round","line-cap":"round"},paint:{"line-color":n.isBlocked?"#ef4444":"#22c55e","line-width":4,"line-dasharray":[2,2]}}),P(l);const s=new mapboxgl.LngLatBounds(o,r);a.fitBounds(s,{padding:{top:100,bottom:100,left:50,right:50}})})}function R(e){c&&c.destroy();const n=L.latLng(i[0].lat,i[0].lon),l=L.latLng(i[i.length-1].lat,i[i.length-1].lon),o=n.distanceTo(l),r=i.map(u=>(u.dist*o).toFixed(0)+"m"),s=i.map(u=>u.elev);c=new Chart(I,{type:"line",data:{labels:r,datasets:[{label:t("ui.chart_labels.terrain"),data:s,borderColor:"rgba(156, 163, 175, 0.7)",backgroundColor:"rgba(156, 163, 175, 0.3)",fill:"start",pointRadius:0,borderWidth:1.5},{label:t("ui.chart_labels.line_of_sight"),data:e.points,borderColor:e.isBlocked?"#ef4444":"#22c55e",borderWidth:3,pointRadius:0,fill:!1}]},options:{maintainAspectRatio:!1,scales:{y:{title:{display:!0,text:t("ui.chart_labels.elevation_m"),color:"#9ca3af"}},x:{title:{display:!0,text:t("ui.chart_labels.distance_m"),color:"#9ca3af"},ticks:{color:"#9ca3af",maxRotation:45,minRotation:45}}},plugins:{legend:{labels:{color:"#d1d5db"}}}}})}function z(e,n,l,o){i=e.perfil,d=Number(n??d),m=Number(l??m),x.classList.remove("hidden");const r=E(d);setTimeout(()=>{_(i,r,o),R(r)},50),p&&(p.value=d),h&&(h.textContent=`${d} m`),y&&(y.value=m),f&&(f.textContent=`${m} m`)}return p&&p.addEventListener("input",e=>{B(parseFloat(e.target.value))}),y&&y.addEventListener("input",e=>{m=parseFloat(e.target.value),B()}),M&&M.addEventListener("click",()=>{x.classList.add("hidden"),a&&(a.remove(),a=null),c&&(c.destroy(),c=null)}),{show:z}})();
+window.Analysis3D = (() => {
+  const modalEl = document.getElementById("modal-3d-analysis");
+  const mapContainerEl = document.getElementById("map-3d-container");
+  const profileChartCanvas = document.getElementById("profile-chart-canvas");
+  const towerHeightSlider = document.getElementById("tower-height-slider-vertical") || document.getElementById("tower-height-slider");
+  const towerHeightValueEl = document.getElementById("tower-height-value-vertical") || document.getElementById("tower-height-value");
+  const receiverHeightSlider = document.getElementById("receiver-height-slider-vertical") || document.getElementById("receiver-height-slider");
+  const receiverHeightValueEl = document.getElementById("receiver-height-value-vertical") || document.getElementById("receiver-height-value");
+  const closeModalBtn = document.getElementById("close-3d-modal-btn");
+
+  let mapboxMap;
+  let profileChart;
+  let elevationProfile = [];
+  let receiverHeight = 3;
+  let towerHeight = 5;
+
+  function destinationPoint(lat, lon, distanceMeters, bearingDeg) {
+    const toRad = (v) => v * Math.PI / 180;
+    const toDeg = (v) => v * 180 / Math.PI;
+    const bearingRad = toRad(bearingDeg);
+    const latRad = toRad(lat);
+    const lonRad = toRad(lon);
+    const angularDistance = distanceMeters / 6378137;
+
+    const destLatRad = Math.asin(Math.sin(latRad) * Math.cos(angularDistance) + Math.cos(latRad) * Math.sin(angularDistance) * Math.cos(bearingRad));
+    const destLonRad = lonRad + Math.atan2(Math.sin(bearingRad) * Math.sin(angularDistance) * Math.cos(latRad), Math.cos(angularDistance) - Math.sin(latRad) * Math.sin(destLatRad));
+
+    return [toDeg(destLonRad), toDeg(destLatRad)];
+  }
+
+  function buildCirclePolygon(center, radiusMeters, steps = 64) {
+    const ring = [];
+    for (let i = 0; i < steps; i++) {
+      const bearing = i / steps * 360;
+      ring.push(destinationPoint(center.lat, center.lon, radiusMeters, bearing));
+    }
+    ring.push(ring[0]);
+    return [ring];
+  }
+
+  function drawPivotOverlays(context) {
+    if (!mapboxMap || !context) return;
+
+    const features = [];
+    (context.pivos || []).forEach((pivot) => {
+      if (pivot.tipo === "custom" && Array.isArray(pivot.coordenadas)) {
+        const ring = pivot.coordenadas.map((coord) => [coord[1], coord[0]]);
+        features.push({
+          type: "Feature",
+          geometry: { type: "Polygon", coordinates: [ring] }
+        });
+      } else if (pivot.raio) {
+        const center = {
+          lat: pivot.circle_center_lat || pivot.lat,
+          lon: pivot.circle_center_lon || pivot.lon
+        };
+        const polygon = buildCirclePolygon(center, pivot.raio);
+        features.push({
+          type: "Feature",
+          geometry: { type: "Polygon", coordinates: polygon }
+        });
+      }
+    });
+
+    const geojson = { type: "FeatureCollection", features };
+    const existingSource = mapboxMap.getSource("pivots-source");
+    if (existingSource) {
+      existingSource.setData(geojson);
+    } else {
+      mapboxMap.addSource("pivots-source", { type: "geojson", data: geojson });
+    }
+
+    mapboxMap.getLayer("pivots-layer-line") || mapboxMap.addLayer({
+      id: "pivots-layer-line",
+      type: "line",
+      source: "pivots-source",
+      paint: {
+        "line-color": "#FF4136",
+        "line-width": 2,
+        "line-opacity": 0.8
+      }
+    });
+  }
+
+  function computeLosLine(towerHeightMeters) {
+    const startElev = elevationProfile[0].elev + towerHeightMeters;
+    const endElev = elevationProfile[elevationProfile.length - 1].elev + receiverHeight;
+    let isBlocked = false;
+
+    return {
+      points: elevationProfile.map((point, index) => {
+        const fraction = index / (elevationProfile.length - 1);
+        const losElev = startElev + fraction * (endElev - startElev);
+        point.elev > losElev && (isBlocked = true);
+        return losElev;
+      }),
+      isBlocked
+    };
+  }
+
+  function updateLosLine(newTowerHeight = null) {
+    newTowerHeight != null && (towerHeight = newTowerHeight);
+    towerHeightValueEl && (towerHeightValueEl.textContent = `${Number(towerHeight).toFixed(0)} m`);
+    receiverHeightValueEl && (receiverHeightValueEl.textContent = `${Number(receiverHeight).toFixed(0)} m`);
+
+    const losLine = computeLosLine(Number(towerHeight));
+
+    if (profileChart) {
+      profileChart.data.datasets[1].data = losLine.points;
+      profileChart.data.datasets[1].borderColor = losLine.isBlocked ? "#ef4444" : "#22c55e";
+      profileChart.update("none");
+    }
+
+    mapboxMap && mapboxMap.getLayer("los-line-layer") && mapboxMap.setPaintProperty("los-line-layer", "line-color", losLine.isBlocked ? "#ef4444" : "#22c55e");
+  }
+
+  function initMapboxScene(profile, losLine, context) {
+    mapboxgl.accessToken = "pk.eyJ1IjoiMzYzMzUzMzZnYSIsImEiOiJjbWVsaHZmN2YwaGZvMmxwemtyOHlzczNwIn0.V6Y5GLafCzXd6Bnqjtu89Q";
+    mapboxMap = new mapboxgl.Map({
+      container: mapContainerEl,
+      style: "mapbox://styles/mapbox/satellite-streets-v12",
+      center: [profile[0].lon, profile[0].lat],
+      zoom: 14
+    });
+
+    mapboxMap.on("load", () => {
+      mapboxMap.addSource("mapbox-dem", {
+        type: "raster-dem",
+        url: "mapbox://mapbox.mapbox-terrain-dem-v1"
+      });
+      mapboxMap.setTerrain({ source: "mapbox-dem", exaggeration: 1.5 });
+
+      const startCoord = [profile[0].lon, profile[0].lat];
+      const endCoord = [profile[profile.length - 1].lon, profile[profile.length - 1].lat];
+
+      new mapboxgl.Marker({ color: "#22c55e", scale: 0.8 }).setLngLat(startCoord).addTo(mapboxMap);
+      new mapboxgl.Marker({ color: "#f87171", scale: 0.8 }).setLngLat(endCoord).addTo(mapboxMap);
+
+      mapboxMap.addSource("los-line-source", {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          geometry: { type: "LineString", coordinates: [startCoord, endCoord] }
+        }
+      });
+
+      mapboxMap.addLayer({
+        id: "los-line-layer",
+        type: "line",
+        source: "los-line-source",
+        layout: { "line-join": "round", "line-cap": "round" },
+        paint: {
+          "line-color": losLine.isBlocked ? "#ef4444" : "#22c55e",
+          "line-width": 4,
+          "line-dasharray": [2, 2]
+        }
+      });
+
+      drawPivotOverlays(context);
+
+      const bounds = new mapboxgl.LngLatBounds(startCoord, endCoord);
+      mapboxMap.fitBounds(bounds, { padding: { top: 100, bottom: 100, left: 50, right: 50 } });
+    });
+  }
+
+  function renderProfileChart(losLine) {
+    profileChart && profileChart.destroy();
+
+    const startLatLng = L.latLng(elevationProfile[0].lat, elevationProfile[0].lon);
+    const endLatLng = L.latLng(elevationProfile[elevationProfile.length - 1].lat, elevationProfile[elevationProfile.length - 1].lon);
+    const totalDistance = startLatLng.distanceTo(endLatLng);
+    const labels = elevationProfile.map((point) => (point.dist * totalDistance).toFixed(0) + "m");
+    const terrainData = elevationProfile.map((point) => point.elev);
+
+    profileChart = new Chart(profileChartCanvas, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{
+          label: t("ui.chart_labels.terrain"),
+          data: terrainData,
+          borderColor: "rgba(156, 163, 175, 0.7)",
+          backgroundColor: "rgba(156, 163, 175, 0.3)",
+          fill: "start",
+          pointRadius: 0,
+          borderWidth: 1.5
+        }, {
+          label: t("ui.chart_labels.line_of_sight"),
+          data: losLine.points,
+          borderColor: losLine.isBlocked ? "#ef4444" : "#22c55e",
+          borderWidth: 3,
+          pointRadius: 0,
+          fill: false
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: t("ui.chart_labels.elevation_m"),
+              color: "#9ca3af"
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: t("ui.chart_labels.distance_m"),
+              color: "#9ca3af"
+            },
+            ticks: {
+              color: "#9ca3af",
+              maxRotation: 45,
+              minRotation: 45
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: "#d1d5db" }
+          }
+        }
+      }
+    });
+  }
+
+  function show(profileResult, initialTowerHeight, initialReceiverHeight, context) {
+    elevationProfile = profileResult.perfil;
+    towerHeight = Number(initialTowerHeight ?? towerHeight);
+    receiverHeight = Number(initialReceiverHeight ?? receiverHeight);
+    modalEl.classList.remove("hidden");
+
+    const losLine = computeLosLine(towerHeight);
+    setTimeout(() => {
+      initMapboxScene(elevationProfile, losLine, context);
+      renderProfileChart(losLine);
+    }, 50);
+
+    towerHeightSlider && (towerHeightSlider.value = towerHeight);
+    towerHeightValueEl && (towerHeightValueEl.textContent = `${towerHeight} m`);
+    receiverHeightSlider && (receiverHeightSlider.value = receiverHeight);
+    receiverHeightValueEl && (receiverHeightValueEl.textContent = `${receiverHeight} m`);
+  }
+
+  towerHeightSlider && towerHeightSlider.addEventListener("input", (event) => {
+    updateLosLine(parseFloat(event.target.value));
+  });
+
+  receiverHeightSlider && receiverHeightSlider.addEventListener("input", (event) => {
+    receiverHeight = parseFloat(event.target.value);
+    updateLosLine();
+  });
+
+  closeModalBtn && closeModalBtn.addEventListener("click", () => {
+    modalEl.classList.add("hidden");
+    mapboxMap && (mapboxMap.remove(), mapboxMap = null);
+    profileChart && (profileChart.destroy(), profileChart = null);
+  });
+
+  return { show };
+})();

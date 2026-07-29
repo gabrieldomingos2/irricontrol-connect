@@ -1,1 +1,400 @@
-(()=>{const d=e=>document.querySelector(e),P="IRRI_AUTH_TOKEN",b=(e,n)=>{if(typeof window.t=="function"){const s=window.t(e);if(s&&s!==e)return s}return n},x=d("#login-overlay"),q=d("#ui-wrapper"),I=d("#login-form"),F=d("#email"),E=d("#password"),M=d("#togglePass"),p=d("#errorBox"),L=d("#submitBtn"),N=d("#btn-logout"),h=d("#particles"),r=h?.getContext?.("2d");function _(){x&&(x.classList.remove("hidden"),x.setAttribute("aria-hidden","false"),q?.classList.add("ui-locked"))}function k(){x&&(x.classList.add("hidden"),x.setAttribute("aria-hidden","true"),q?.classList.remove("ui-locked"))}function O(){return sessionStorage.getItem(P)}function U(e){sessionStorage.setItem(P,e),$(e)}function H(){sessionStorage.removeItem(P)}function S(e={}){const n=typeof e=="string"?e:e&&e.message;B(),H(),_(),n&&(A(n),typeof window.mostrarMensagem=="function"&&window.mostrarMensagem(n,"erro"))}function A(e){if(!p)return;p.textContent=e||"Erro ao autenticar.",p.classList.add("is-on"),document.querySelector("#login-overlay .card")?.animate?.([{transform:"translateX(0)"},{transform:"translateX(-4px)"},{transform:"translateX(4px)"},{transform:"translateX(-2px)"},{transform:"translateX(0)"}],{duration:240,easing:"ease-out"})}function W(){p&&(p.textContent="",p.classList.remove("is-on"))}function C(e){if(!L)return;L.disabled=!!e;const n=L.querySelector(".btn__text");n&&(n.textContent=e?b("ui.buttons.login_loading","Entrando..."):b("ui.buttons.login","Entrar"))}let T=null;function B(){T&&(clearTimeout(T),T=null)}function z(e){if(!e)return null;const n=e.split(".");if(n.length<2)return null;try{const s=n[1].replace(/-/g,"+").replace(/_/g,"/"),t=s.padEnd(Math.ceil(s.length/4)*4,"="),o=atob(t),i=JSON.parse(o);if(typeof i.exp=="number")return i.exp*1e3}catch{}return null}function $(e){B();const n=z(e);if(!n)return!0;const s=Date.now(),t=n-s-5e3,o=()=>b("messages.errors.session_expired","Sessao expirada. Faca login novamente.");return t<=0?(S(o()),!1):(T=setTimeout(()=>{S(o())},t),!0)}function J(){!M||!E||M.addEventListener("click",()=>{const e=E.type==="password";E.type=e?"text":"password";const n=M.querySelector(".icon-eye"),s=M.querySelector(".icon-eye-off");n&&s&&(e?(n.style.display="none",s.style.display="block"):(n.style.display="block",s.style.display="none"))})}function K(){const e=window.location.hostname==="localhost"||window.location.hostname==="127.0.0.1",n=window.BACKEND_URL||(e?"http://localhost:8000":"https://irricontrol-connect.onrender.com"),s=window.API_PREFIX||"/api/v1";return{backend:String(n).replace(/\/+$/,""),prefix:String(s).replace(/\/+$/,"")}}async function Y(e,n){const{backend:s,prefix:t}=K(),o=`${s}${t}/auth/login`,i=await fetch(o,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({username:e,password:n})});if(!i.ok){let l=`Erro ${i.status}: senha inv\xE1lida.`;try{const u=await i.json();l=u?.detail||u?.message||l}catch{try{const u=await i.text();u&&(l=u)}catch{}}throw new Error(l)}const a=await i.json();if(!a?.access_token)throw new Error("Login falhou: token ausente.");return a.access_token}function G(){I&&I.addEventListener("submit",async e=>{e.preventDefault(),W();const n=(F?.value||"").trim(),s=(E?.value||"").trim();if(!n||!s){A("Preencha usu\xE1rio e senha.");return}C(!0);try{const t=await Y(n,s);U(t);const o=L?.querySelector?.(".btn__text");o&&(o.textContent=b("ui.buttons.login_success","Acesso liberado \u2714")),setTimeout(()=>{C(!1),k(),window.dispatchEvent(new CustomEvent("auth:login")),typeof window.mostrarMensagem=="function"&&window.mostrarMensagem("Login realizado.","sucesso")},250)}catch(t){C(!1);const o=t?.message||"Falha ao autenticar.";A(o),typeof window.mostrarMensagem=="function"&&window.mostrarMensagem(o,"erro")}})}let m=0,g=0,c=1,w=[];const Q=600,V=8,Z=.18,f={x:-9999,y:-9999},tt=140,et=2.8,R=2.2;function D(){!h||!r||(c=Math.min(window.devicePixelRatio||1,2),m=h.width=Math.floor(window.innerWidth*c),g=h.height=Math.floor(window.innerHeight*c),h.style.width="100%",h.style.height="100%")}function y(e,n){return e+Math.random()*(n-e)}function X(){const e=Array.from({length:V},()=>({cx:y(.1*m,.9*m),cy:y(.1*g,.9*g)}));w=Array.from({length:Q},(n,s)=>{let t,o;if(Math.random()<.25){const l=e[s%e.length],u=y(0,Math.PI*2),v=y(0,Z*Math.min(m,g));t=l.cx+Math.cos(u)*v,o=l.cy+Math.sin(u)*v}else t=y(0,m),o=y(0,g);const i=y(-.14,.14)*c,a=y(-.12,.12)*c;return{x:t,y:o,r:y(1*c,2.6*c),vx:i,vy:a,bvx:i,bvy:a,a:y(.45,1)}})}function j(){if(!r)return;r.clearRect(0,0,m,g);const e=tt*c;for(const t of w){const o=t.x-f.x,i=t.y-f.y,a=Math.sqrt(o*o+i*i);if(a<e&&a>0){const u=(1-a/e)*et*c;t.vx+=o/a*u,t.vy+=i/a*u}t.vx+=(t.bvx-t.vx)*.018,t.vy+=(t.bvy-t.vy)*.018;const l=Math.sqrt(t.vx*t.vx+t.vy*t.vy);l>R*c&&(t.vx=t.vx/l*R*c,t.vy=t.vy/l*R*c),t.x+=t.vx,t.y+=t.vy,t.x<-20&&(t.x=m+20),t.x>m+20&&(t.x=-20),t.y<-20&&(t.y=g+20),t.y>g+20&&(t.y=-20),r.shadowBlur=8*c,r.shadowColor="rgba(60,255,106,0.9)",r.beginPath(),r.arc(t.x,t.y,t.r,0,Math.PI*2),r.fillStyle=`rgba(60,255,106,${t.a})`,r.fill(),r.shadowBlur=0}const n=140*c;for(let t=0;t<w.length;t++)for(let o=t+1;o<w.length;o++){const i=w[t],a=w[o],l=i.x-a.x,u=i.y-a.y,v=Math.sqrt(l*l+u*u);if(v<n){const st=(1-v/n)*.18;r.strokeStyle=`rgba(0,212,255,${st})`,r.lineWidth=1.2,r.beginPath(),r.moveTo(i.x,i.y),r.lineTo(a.x,a.y),r.stroke()}}const s=160*c;for(const t of w){const o=t.x-f.x,i=t.y-f.y,a=Math.sqrt(o*o+i*i);if(a<s){const l=(1-a/s)*.32;r.strokeStyle=`rgba(60,255,106,${l})`,r.lineWidth=1,r.beginPath(),r.moveTo(f.x,f.y),r.lineTo(t.x,t.y),r.stroke()}}requestAnimationFrame(j)}function nt(){!h||!r||(D(),X(),requestAnimationFrame(j),window.addEventListener("resize",()=>{D(),X()}),window.addEventListener("mousemove",e=>{f.x=e.clientX*c,f.y=e.clientY*c}),window.addEventListener("mouseleave",()=>{f.x=-9999,f.y=-9999}))}function ot(){J(),G(),nt(),N?.addEventListener("click",()=>S());const e=O();e&&$(e)?k():_()}window.Auth={showLogin:_,hideLogin:k,getToken:O,setToken:U,logout:S},document.addEventListener("DOMContentLoaded",ot)})();
+(() => {
+  const qs = (sel) => document.querySelector(sel);
+  const TOKEN_STORAGE_KEY = "IRRI_AUTH_TOKEN";
+
+  const translate = (key, fallback) => {
+    if (typeof window.t == "function") {
+      const translated = window.t(key);
+      if (translated && translated !== key) return translated;
+    }
+    return fallback;
+  };
+
+  const loginOverlay = qs("#login-overlay");
+  const uiWrapper = qs("#ui-wrapper");
+  const loginForm = qs("#login-form");
+  const emailInput = qs("#email");
+  const passwordInput = qs("#password");
+  const togglePassBtn = qs("#togglePass");
+  const errorBox = qs("#errorBox");
+  const submitBtn = qs("#submitBtn");
+  const logoutBtn = qs("#btn-logout");
+  const particlesCanvas = qs("#particles");
+  const particlesCtx = particlesCanvas?.getContext?.("2d");
+
+  function showLogin() {
+    loginOverlay && (
+      loginOverlay.classList.remove("hidden"),
+      loginOverlay.setAttribute("aria-hidden", "false"),
+      uiWrapper?.classList.add("ui-locked")
+    );
+  }
+
+  function hideLogin() {
+    loginOverlay && (
+      loginOverlay.classList.add("hidden"),
+      loginOverlay.setAttribute("aria-hidden", "true"),
+      uiWrapper?.classList.remove("ui-locked")
+    );
+  }
+
+  function getToken() {
+    return sessionStorage.getItem(TOKEN_STORAGE_KEY);
+  }
+
+  function setToken(token) {
+    sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+    scheduleSessionExpiry(token);
+  }
+
+  function clearToken() {
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+  }
+
+  function logout(errorOrMessage = {}) {
+    const message = typeof errorOrMessage == "string" ? errorOrMessage : errorOrMessage && errorOrMessage.message;
+    clearSessionExpiryTimer();
+    clearToken();
+    showLogin();
+    if (message) {
+      showError(message);
+      typeof window.mostrarMensagem == "function" && window.mostrarMensagem(message, "erro");
+    }
+  }
+
+  function showError(message) {
+    if (!errorBox) return;
+    errorBox.textContent = message || "Erro ao autenticar.";
+    errorBox.classList.add("is-on");
+    document.querySelector("#login-overlay .card")?.animate?.([
+      { transform: "translateX(0)" },
+      { transform: "translateX(-4px)" },
+      { transform: "translateX(4px)" },
+      { transform: "translateX(-2px)" },
+      { transform: "translateX(0)" }
+    ], {
+      duration: 240,
+      easing: "ease-out"
+    });
+  }
+
+  function clearError() {
+    errorBox && (errorBox.textContent = "", errorBox.classList.remove("is-on"));
+  }
+
+  function setSubmitLoading(isLoading) {
+    if (!submitBtn) return;
+    submitBtn.disabled = !!isLoading;
+    const label = submitBtn.querySelector(".btn__text");
+    label && (label.textContent = isLoading ? translate("ui.buttons.login_loading", "Entrando...") : translate("ui.buttons.login", "Entrar"));
+  }
+
+  let sessionExpiryTimer = null;
+
+  function clearSessionExpiryTimer() {
+    sessionExpiryTimer && (clearTimeout(sessionExpiryTimer), sessionExpiryTimer = null);
+  }
+
+  function decodeJwtExpiry(token) {
+    if (!token) return null;
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+    try {
+      const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
+      const json = atob(padded);
+      const payload = JSON.parse(json);
+      if (typeof payload.exp == "number") return payload.exp * 1000;
+    } catch {}
+    return null;
+  }
+
+  function scheduleSessionExpiry(token) {
+    clearSessionExpiryTimer();
+    const expiresAtMs = decodeJwtExpiry(token);
+    if (!expiresAtMs) return true;
+
+    const now = Date.now();
+    const msUntilExpiry = expiresAtMs - now - 5000;
+    const expiredMessage = () => translate("messages.errors.session_expired", "Sessao expirada. Faca login novamente.");
+
+    if (msUntilExpiry <= 0) {
+      logout(expiredMessage());
+      return false;
+    }
+
+    sessionExpiryTimer = setTimeout(() => {
+      logout(expiredMessage());
+    }, msUntilExpiry);
+    return true;
+  }
+
+  function setupPasswordToggle() {
+    if (!togglePassBtn || !passwordInput) return;
+    togglePassBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      const eyeIcon = togglePassBtn.querySelector(".icon-eye");
+      const eyeOffIcon = togglePassBtn.querySelector(".icon-eye-off");
+      if (eyeIcon && eyeOffIcon) {
+        if (isPassword) {
+          eyeIcon.style.display = "none";
+          eyeOffIcon.style.display = "block";
+        } else {
+          eyeIcon.style.display = "block";
+          eyeOffIcon.style.display = "none";
+        }
+      }
+    });
+  }
+
+  function getBackendConfig() {
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const backend = window.BACKEND_URL || (isLocal ? "http://localhost:8000" : "https://irricontrol-connect.onrender.com");
+    const prefix = window.API_PREFIX || "/api/v1";
+    return {
+      backend: String(backend).replace(/\/+$/, ""),
+      prefix: String(prefix).replace(/\/+$/, "")
+    };
+  }
+
+  async function loginRequest(username, password) {
+    const { backend, prefix } = getBackendConfig();
+    const url = `${backend}${prefix}/auth/login`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    });
+
+    if (!response.ok) {
+      let errorMessage = `Erro ${response.status}: senha inválida.`;
+      try {
+        const errorBody = await response.json();
+        errorMessage = errorBody?.detail || errorBody?.message || errorMessage;
+      } catch {
+        try {
+          const errorText = await response.text();
+          errorText && (errorMessage = errorText);
+        } catch {}
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    if (!data?.access_token) throw new Error("Login falhou: token ausente.");
+    return data.access_token;
+  }
+
+  function setupLoginForm() {
+    loginForm && loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearError();
+
+      const username = (emailInput?.value || "").trim();
+      const password = (passwordInput?.value || "").trim();
+      if (!username || !password) {
+        showError("Preencha usuário e senha.");
+        return;
+      }
+
+      setSubmitLoading(true);
+      try {
+        const token = await loginRequest(username, password);
+        setToken(token);
+        const label = submitBtn?.querySelector?.(".btn__text");
+        label && (label.textContent = translate("ui.buttons.login_success", "Acesso liberado ✔"));
+        setTimeout(() => {
+          setSubmitLoading(false);
+          hideLogin();
+          window.dispatchEvent(new CustomEvent("auth:login"));
+          typeof window.mostrarMensagem == "function" && window.mostrarMensagem("Login realizado.", "sucesso");
+        }, 250);
+      } catch (err) {
+        setSubmitLoading(false);
+        const errorMessage = err?.message || "Falha ao autenticar.";
+        showError(errorMessage);
+        typeof window.mostrarMensagem == "function" && window.mostrarMensagem(errorMessage, "erro");
+      }
+    });
+  }
+
+  // --- Background particle animation on the login screen ---
+  let canvasWidth = 0;
+  let canvasHeight = 0;
+  let pixelRatio = 1;
+  let particles = [];
+
+  const PARTICLE_COUNT = 600;
+  const CLUSTER_COUNT = 8;
+  const CLUSTER_SPREAD = 0.18;
+  const mousePos = { x: -9999, y: -9999 };
+  const MOUSE_REPEL_RADIUS = 140;
+  const MOUSE_REPEL_STRENGTH = 2.8;
+  const MAX_PARTICLE_SPEED = 2.2;
+
+  function resizeCanvas() {
+    if (!particlesCanvas || !particlesCtx) return;
+    pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    canvasWidth = particlesCanvas.width = Math.floor(window.innerWidth * pixelRatio);
+    canvasHeight = particlesCanvas.height = Math.floor(window.innerHeight * pixelRatio);
+    particlesCanvas.style.width = "100%";
+    particlesCanvas.style.height = "100%";
+  }
+
+  function randomBetween(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function initParticles() {
+    const clusters = Array.from({ length: CLUSTER_COUNT }, () => ({
+      cx: randomBetween(0.1 * canvasWidth, 0.9 * canvasWidth),
+      cy: randomBetween(0.1 * canvasHeight, 0.9 * canvasHeight)
+    }));
+
+    particles = Array.from({ length: PARTICLE_COUNT }, (_, index) => {
+      let x, y;
+      if (Math.random() < 0.25) {
+        const cluster = clusters[index % clusters.length];
+        const angle = randomBetween(0, Math.PI * 2);
+        const distance = randomBetween(0, CLUSTER_SPREAD * Math.min(canvasWidth, canvasHeight));
+        x = cluster.cx + Math.cos(angle) * distance;
+        y = cluster.cy + Math.sin(angle) * distance;
+      } else {
+        x = randomBetween(0, canvasWidth);
+        y = randomBetween(0, canvasHeight);
+      }
+      const vx = randomBetween(-0.14, 0.14) * pixelRatio;
+      const vy = randomBetween(-0.12, 0.12) * pixelRatio;
+      return {
+        x, y,
+        r: randomBetween(1 * pixelRatio, 2.6 * pixelRatio),
+        vx, vy,
+        bvx: vx, bvy: vy,
+        a: randomBetween(0.45, 1)
+      };
+    });
+  }
+
+  function animateParticles() {
+    if (!particlesCtx) return;
+    particlesCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    const repelRadius = MOUSE_REPEL_RADIUS * pixelRatio;
+    for (const p of particles) {
+      const dx = p.x - mousePos.x;
+      const dy = p.y - mousePos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < repelRadius && dist > 0) {
+        const force = (1 - dist / repelRadius) * MOUSE_REPEL_STRENGTH * pixelRatio;
+        p.vx += dx / dist * force;
+        p.vy += dy / dist * force;
+      }
+
+      p.vx += (p.bvx - p.vx) * 0.018;
+      p.vy += (p.bvy - p.vy) * 0.018;
+
+      const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      const maxSpeed = MAX_PARTICLE_SPEED * pixelRatio;
+      if (speed > maxSpeed) {
+        p.vx = p.vx / speed * maxSpeed;
+        p.vy = p.vy / speed * maxSpeed;
+      }
+
+      p.x += p.vx;
+      p.y += p.vy;
+      p.x < -20 && (p.x = canvasWidth + 20);
+      p.x > canvasWidth + 20 && (p.x = -20);
+      p.y < -20 && (p.y = canvasHeight + 20);
+      p.y > canvasHeight + 20 && (p.y = -20);
+
+      particlesCtx.shadowBlur = 8 * pixelRatio;
+      particlesCtx.shadowColor = "rgba(60,255,106,0.9)";
+      particlesCtx.beginPath();
+      particlesCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      particlesCtx.fillStyle = `rgba(60,255,106,${p.a})`;
+      particlesCtx.fill();
+      particlesCtx.shadowBlur = 0;
+    }
+
+    const linkRadius = 140 * pixelRatio;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i];
+        const b = particles[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < linkRadius) {
+          const alpha = (1 - dist / linkRadius) * 0.18;
+          particlesCtx.strokeStyle = `rgba(0,212,255,${alpha})`;
+          particlesCtx.lineWidth = 1.2;
+          particlesCtx.beginPath();
+          particlesCtx.moveTo(a.x, a.y);
+          particlesCtx.lineTo(b.x, b.y);
+          particlesCtx.stroke();
+        }
+      }
+    }
+
+    const mouseLinkRadius = 160 * pixelRatio;
+    for (const p of particles) {
+      const dx = p.x - mousePos.x;
+      const dy = p.y - mousePos.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < mouseLinkRadius) {
+        const alpha = (1 - dist / mouseLinkRadius) * 0.32;
+        particlesCtx.strokeStyle = `rgba(60,255,106,${alpha})`;
+        particlesCtx.lineWidth = 1;
+        particlesCtx.beginPath();
+        particlesCtx.moveTo(mousePos.x, mousePos.y);
+        particlesCtx.lineTo(p.x, p.y);
+        particlesCtx.stroke();
+      }
+    }
+
+    requestAnimationFrame(animateParticles);
+  }
+
+  function setupParticles() {
+    if (!particlesCanvas || !particlesCtx) return;
+    resizeCanvas();
+    initParticles();
+    requestAnimationFrame(animateParticles);
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      initParticles();
+    });
+    window.addEventListener("mousemove", (event) => {
+      mousePos.x = event.clientX * pixelRatio;
+      mousePos.y = event.clientY * pixelRatio;
+    });
+    window.addEventListener("mouseleave", () => {
+      mousePos.x = -9999;
+      mousePos.y = -9999;
+    });
+  }
+
+  function init() {
+    setupPasswordToggle();
+    setupLoginForm();
+    setupParticles();
+    logoutBtn?.addEventListener("click", () => logout());
+
+    const existingToken = getToken();
+    existingToken && scheduleSessionExpiry(existingToken) ? hideLogin() : showLogin();
+  }
+
+  window.Auth = {
+    showLogin,
+    hideLogin,
+    getToken,
+    setToken,
+    logout
+  };
+
+  document.addEventListener("DOMContentLoaded", init);
+})();

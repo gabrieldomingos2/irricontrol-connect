@@ -21,7 +21,7 @@
         "search_coordinates": "Localizar por Coordenadas",
         "toggle_antenna_legends": "Legendas das Antenas",
         "restore_original_name": "Restaurar Nome Original",
-        "export_pdf_report": "Exportar Relatório PDF",
+        "export_pdf_report": "Exportar Relatório Completo",
         "confirm_needed": "Confirmação Necessária",
         "move_pivot_center": "Selecione para Mover Apenas o Centro do Pivô",
         "save_position": "Salvar Posição",
@@ -88,7 +88,7 @@
         "run_study": "Simular Cobertura",
         "run_los_diagnostic": "Diagnóstico de Visada",
         "export_kmz": "Baixar Arquivo KMZ",
-        "export_pdf_report": "Exportar Relatório PDF",
+        "export_pdf_report": "Exportar Relatório Completo",
         "download_active_pngs": "Baixar Repetidoras",
         "reset": "Resetar",
         "simulate": "Executar Simulação",
@@ -123,13 +123,14 @@
         "show_legends": "Mostrar Legendas",
         "run_diagnostic_from_source": "Executar diagnóstico a partir desta fonte",
         "los_clear_at_highest_point": "Visada livre (Ponto mais alto: {elevation}m)",
-        "export_pdf_disabled": "Exporte o KMZ antes de gerar o relatório em PDF.",
+        "export_pdf_disabled": "Carregue um KMZ para gerar o relatório.",
         "download_active_repeaters": "Baixa apenas as repetidoras ativas que estão aparecendo no mapa",
         "run_signal_simulation": "Executa a simulação de sinal",
         "load_kmz": "Importa e carrega um arquivo KMZ",
         "export_kmz": "Baixa o projeto completo em KMZ",
+        "export_kmz_disabled": "Rode um estudo de sinal para baixar o KMZ.",
         "reset": "Reinicia tudo para começar um novo projeto",
-        "export_pdf_report": "Gera um relatório em PDF com o resumo do estudo"
+        "export_pdf_report": "Gera um pacote com relatório em PDF e o KMZ do estudo"
 },
     "messages": {
         "success": {
@@ -146,6 +147,7 @@
         "app_reset": "Aplicação reiniciada. Nova sessão em andamento.",
         "los_diagnostic_complete": "Análise de visada (LoS) finalizada.",
         "kmz_export_preparing": "Preparando exportação KMZ...",
+        "kmz_export_complete": "KMZ exportado com sucesso.",
         "pdf_export_preparing": "Preparando relatório PDF...",
         "pdf_export_complete": "Relatório em PDF gerado com sucesso.",
         "pivot_distances_shown": "Distâncias entre pivôs exibidas.",

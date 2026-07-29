@@ -1,1 +1,163 @@
-const DEFAULT_LANG="pt-br",SAFE_ATTRS=new Set(["title","placeholder","aria-label","aria-describedby","aria-controls","alt","value","data-label"]);let currentLanguage=DEFAULT_LANG;const translationsCache=new Map;let activeDict={};function normalizeLang(e){if(!e)return DEFAULT_LANG;const n=String(e).toLowerCase();return n.startsWith("pt")?"pt-br":n.startsWith("en")?"en":n.startsWith("es")?"es":n.startsWith("de")?"de":n.startsWith("ru")?"ru":DEFAULT_LANG}function getNested(e,n){return n.split(".").reduce((a,r)=>a&&typeof a=="object"?a[r]:void 0,e)}function deepMerge(e,n){const a=Array.isArray(e)?[...e]:{...e};if(!n||typeof n!="object")return a;for(const[r,o]of Object.entries(n))o&&typeof o=="object"&&!Array.isArray(o)?a[r]=deepMerge(a[r]||{},o):a[r]=o;return a}function interpolate(e,n={}){return typeof e!="string"?e:Object.keys(n).reduce((a,r)=>{const o=new RegExp(`\\{${r}\\}`,"g");return a.replace(o,String(n[r]))},e)}function isValueAssignable(e){const n=e.tagName;return n==="INPUT"||n==="TEXTAREA"||n==="SELECT"}async function fetchLocaleDict(e){if(translationsCache.has(e))return translationsCache.get(e);const a=`${(typeof window.I18N_LOCALES_BASE=="string"&&window.I18N_LOCALES_BASE||"assets/locales").replace(/\/+$/,"")}/${e}.json`;try{const r=await fetch(a,{cache:"no-cache"});if(!r.ok)throw new Error(`Could not load ${e}.json`);const o=await r.json();return translationsCache.set(e,o),console.log(`i18n: ${e} loaded.`),o}catch(r){return console.warn(`i18n: failed to load ${e}.json ->`,r),translationsCache.set(e,{}),{}}}async function loadTranslations(e){const n=normalizeLang(e),a=n===DEFAULT_LANG,r=await fetchLocaleDict(DEFAULT_LANG),o=a?r:await fetchLocaleDict(n);activeDict=a?r:deepMerge(r,o),currentLanguage=n}function t(e,n={}){let a=getNested(activeDict,e);return a==null?(console.warn(`i18n: key not found '${e}' in ${currentLanguage}`),interpolate(e,n)):interpolate(a,n)}function applyTranslationTo(e){const n=e.getAttribute("data-i18n");if(!n)return;let a={};const r=e.getAttribute("data-i18n-args");if(r){let i=String(r).trim();if(i.startsWith("{")||i.startsWith("["))try{a=JSON.parse(i)}catch(s){console.warn("i18n: invalid data-i18n-args, ignoring:",i,s,e),a={}}else console.warn("i18n: data-i18n-args does not look like JSON, ignoring:",i,e)}const o=(e.getAttribute("data-i18n-attr")||"textContent").split(",").map(i=>i.trim()).filter(Boolean);for(const i of o)if(i==="textContent")e.textContent=t(n,a);else{if(!SAFE_ATTRS.has(i)){console.warn(`i18n: disallowed attribute "${i}" for key '${n}'`,e);continue}if(i==="value"&&!isValueAssignable(e)){console.warn(`i18n: attribute "value" skipped on <${e.tagName.toLowerCase()}> for key '${n}'`);continue}e.setAttribute(i,t(n,a))}}function applyTranslations(e=document){e.querySelectorAll("[data-i18n]").forEach(applyTranslationTo);const a=document.getElementById("resetar-btn");a&&a.setAttribute("title",t("tooltips.reset"));const r=document.querySelector("head title[data-i18n]");r&&(document.title=r.textContent),document.dispatchEvent(new CustomEvent("i18n:applied",{detail:{lang:currentLanguage}})),console.log(`i18n: translations applied (${currentLanguage}).`)}async function setLanguage(e){await loadTranslations(e),applyTranslations(),localStorage.setItem("preferredLanguage",currentLanguage),document.documentElement.lang=currentLanguage,document.documentElement.dir="ltr"}async function initI18n(){const e=localStorage.getItem("preferredLanguage"),n=normalizeLang(navigator.language||navigator.userLanguage);await setLanguage(e||n||DEFAULT_LANG),document.querySelectorAll("[data-lang]").forEach(r=>{r.addEventListener("click",()=>{const o=r.getAttribute("data-lang");setLanguage(o)})})}window.t=t,window.setLanguage=setLanguage,window.applyTranslations=applyTranslations,window.getCurrentLanguage=()=>currentLanguage,document.readyState==="loading"?document.addEventListener("DOMContentLoaded",initI18n,{once:!0}):initI18n();
+const DEFAULT_LANG = "pt-br";
+const SAFE_ATTRS = new Set(["title", "placeholder", "aria-label", "aria-describedby", "aria-controls", "alt", "value", "data-label"]);
+
+let currentLanguage = DEFAULT_LANG;
+const translationsCache = new Map();
+let activeDict = {};
+
+function normalizeLang(lang) {
+  if (!lang) return DEFAULT_LANG;
+  const normalized = String(lang).toLowerCase();
+  return normalized.startsWith("pt") ? "pt-br"
+    : normalized.startsWith("en") ? "en"
+    : normalized.startsWith("es") ? "es"
+    : normalized.startsWith("de") ? "de"
+    : normalized.startsWith("ru") ? "ru"
+    : DEFAULT_LANG;
+}
+
+function getNested(obj, path) {
+  return path.split(".").reduce((acc, key) => acc && typeof acc == "object" ? acc[key] : undefined, obj);
+}
+
+function deepMerge(base, overrides) {
+  const merged = Array.isArray(base) ? [...base] : { ...base };
+  if (!overrides || typeof overrides != "object") return merged;
+  for (const [key, value] of Object.entries(overrides)) {
+    merged[key] = value && typeof value == "object" && !Array.isArray(value) ? deepMerge(merged[key] || {}, value) : value;
+  }
+  return merged;
+}
+
+function interpolate(text, params = {}) {
+  if (typeof text != "string") return text;
+  return Object.keys(params).reduce((result, key) => {
+    const pattern = new RegExp(`\\{${key}\\}`, "g");
+    return result.replace(pattern, String(params[key]));
+  }, text);
+}
+
+function isValueAssignable(el) {
+  const tag = el.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+}
+
+async function fetchLocaleDict(lang) {
+  if (translationsCache.has(lang)) return translationsCache.get(lang);
+
+  const base = (typeof window.I18N_LOCALES_BASE == "string" && window.I18N_LOCALES_BASE || "assets/locales").replace(/\/+$/, "");
+  const url = `${base}/${lang}.json`;
+
+  try {
+    const response = await fetch(url, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`Could not load ${lang}.json`);
+    const dict = await response.json();
+    translationsCache.set(lang, dict);
+    console.log(`i18n: ${lang} loaded.`);
+    return dict;
+  } catch (err) {
+    console.warn(`i18n: failed to load ${lang}.json ->`, err);
+    translationsCache.set(lang, {});
+    return {};
+  }
+}
+
+async function loadTranslations(lang) {
+  const normalized = normalizeLang(lang);
+  const isDefault = normalized === DEFAULT_LANG;
+  const defaultDict = await fetchLocaleDict(DEFAULT_LANG);
+  const targetDict = isDefault ? defaultDict : await fetchLocaleDict(normalized);
+  activeDict = isDefault ? defaultDict : deepMerge(defaultDict, targetDict);
+  currentLanguage = normalized;
+}
+
+function t(key, params = {}) {
+  const value = getNested(activeDict, key);
+  if (value == null) {
+    console.warn(`i18n: key not found '${key}' in ${currentLanguage}`);
+    return interpolate(key, params);
+  }
+  return interpolate(value, params);
+}
+
+function applyTranslationTo(el) {
+  const key = el.getAttribute("data-i18n");
+  if (!key) return;
+
+  let args = {};
+  const rawArgs = el.getAttribute("data-i18n-args");
+  if (rawArgs) {
+    const trimmed = String(rawArgs).trim();
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        args = JSON.parse(trimmed);
+      } catch (err) {
+        console.warn("i18n: invalid data-i18n-args, ignoring:", trimmed, err, el);
+        args = {};
+      }
+    } else {
+      console.warn("i18n: data-i18n-args does not look like JSON, ignoring:", trimmed, el);
+    }
+  }
+
+  const targets = (el.getAttribute("data-i18n-attr") || "textContent").split(",").map((s) => s.trim()).filter(Boolean);
+
+  for (const target of targets) {
+    if (target === "textContent") {
+      el.textContent = t(key, args);
+      continue;
+    }
+    if (!SAFE_ATTRS.has(target)) {
+      console.warn(`i18n: disallowed attribute "${target}" for key '${key}'`, el);
+      continue;
+    }
+    if (target === "value" && !isValueAssignable(el)) {
+      console.warn(`i18n: attribute "value" skipped on <${el.tagName.toLowerCase()}> for key '${key}'`);
+      continue;
+    }
+    el.setAttribute(target, t(key, args));
+  }
+}
+
+function applyTranslations(root = document) {
+  root.querySelectorAll("[data-i18n]").forEach(applyTranslationTo);
+
+  const resetBtn = document.getElementById("resetar-btn");
+  resetBtn && resetBtn.setAttribute("title", t("tooltips.reset"));
+
+  const titleEl = document.querySelector("head title[data-i18n]");
+  titleEl && (document.title = titleEl.textContent);
+
+  document.dispatchEvent(new CustomEvent("i18n:applied", { detail: { lang: currentLanguage } }));
+  console.log(`i18n: translations applied (${currentLanguage}).`);
+}
+
+async function setLanguage(lang) {
+  await loadTranslations(lang);
+  applyTranslations();
+  localStorage.setItem("preferredLanguage", currentLanguage);
+  document.documentElement.lang = currentLanguage;
+  document.documentElement.dir = "ltr";
+}
+
+async function initI18n() {
+  const savedLang = localStorage.getItem("preferredLanguage");
+  const browserLang = normalizeLang(navigator.language || navigator.userLanguage);
+  await setLanguage(savedLang || browserLang || DEFAULT_LANG);
+
+  document.querySelectorAll("[data-lang]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const lang = btn.getAttribute("data-lang");
+      setLanguage(lang);
+    });
+  });
+}
+
+window.t = t;
+window.setLanguage = setLanguage;
+window.applyTranslations = applyTranslations;
+window.getCurrentLanguage = () => currentLanguage;
+
+document.readyState === "loading"
+  ? document.addEventListener("DOMContentLoaded", initI18n, { once: true })
+  : initI18n();

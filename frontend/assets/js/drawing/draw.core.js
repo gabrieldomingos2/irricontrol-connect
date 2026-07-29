@@ -1,1 +1,502 @@
-const TORRE_ICON_PATH="assets/images/cloudrf.png",BOMBA_ICON_AZUL_PATH="assets/images/homegardenbusiness.png",BOMBA_ICON_VERMELHO_PATH="assets/images/homegardenbusiness-red.png",ATTENTION_ICON_PATH="assets/images/attention-icon-original.svg",CHECK_ICON_PATH="assets/images/circle-check-big.svg",MOUNTAIN_ICON_PATH="assets/images/attention-icon-original.svg",CAPTIONS_ON_ICON_PATH="assets/images/captions.svg",CAPTIONS_OFF_ICON_PATH="assets/images/captions-off.svg";(function(){window.AppState||(window.AppState={}),AppState.marcadoresLegenda??=[],AppState.marcadoresPivos??=[],AppState.marcadoresBombas??=[],AppState.circulosPivos??=[],AppState.overlaysVisiveis??=[],AppState.pivotsMap??={},AppState.idsDisponiveis??=[],AppState.repetidoras??=[],AppState.lastPivosDataDrawn??=[],AppState.lastBombasDataDrawn??=[],AppState.visadaLayerGroup??=null,AppState.antenaCandidatesLayerGroup??=null})();const antenaIcon=L.divIcon({className:"leaflet-div-icon-transparent",html:`<div class="selection-effect-wrapper"><img src="${TORRE_ICON_PATH}" style="width:28px;height:28px;"></div>`,iconSize:[28,28],iconAnchor:[14,28]}),bombaIconAzul=L.divIcon({className:"leaflet-div-icon-transparent",html:`<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_AZUL_PATH}" style="width:28px;height:28px;"></div>`,iconSize:[28,28],iconAnchor:[14,28]}),bombaIconVermelho=L.divIcon({className:"leaflet-div-icon-transparent",html:`<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_VERMELHO_PATH}" style="width:28px;height:28px;"></div>`,iconSize:[28,28],iconAnchor:[14,28]}),posicionamentoIcon=L.icon({iconUrl:TORRE_ICON_PATH,iconSize:[28,28],iconAnchor:[14,28],popupAnchor:[0,-30]});window.antenaIcon=antenaIcon,window.bombaIconAzul=bombaIconAzul,window.bombaIconVermelho=bombaIconVermelho,window.posicionamentoIcon=posicionamentoIcon;function getDynamicIconSize(a){if(a<=10)return 10;if(a>=17)return 20;const i=(a-10)/7*10+10;return Math.round(i)}function updatePivotIcons(){if(!map||!Array.isArray(AppState.lastPivosDataDrawn)||!Array.isArray(AppState.marcadoresPivos))return;const a=getDynamicIconSize(map.getZoom());AppState.lastPivosDataDrawn.forEach((e,n)=>{const o=AppState.marcadoresPivos[n];if(!o)return;const r=e.fora?"red":"green";let i="pivo-marker-container";AppState.selectedPivoNome===e.nome&&(i+=" pivo-marker-container-selected");const s=L.divIcon({className:i,iconSize:[a,a],html:`<div class="pivo-marker-dot" style="background-color:${r};"></div>`});o.setIcon(s)})}function findClosestSignalSource(a){let e=null,n=1/0;const o=document.querySelector("#antena-item button[data-visible]"),r=!o||o.getAttribute("data-visible")==="true";if(AppState.antenaGlobal&&r){const i=L.latLng(AppState.antenaGlobal.lat,AppState.antenaGlobal.lon),s=a.distanceTo(i);s<n&&(n=s,e={id:"main_antenna",name:AppState.antenaGlobal.nome||t("ui.labels.main_antenna_default"),distance:s,isMainAntenna:!0,type:AppState.antenaGlobal.type})}return AppState.repetidoras.forEach(i=>{const s=document.querySelector(`#rep-item-${i.id} button[data-visible]`),c=!s||s.getAttribute("data-visible")==="true";if(!i.marker||!c)return;const l=i.marker.getLatLng(),p=a.distanceTo(l);p<n&&(n=p,e={id:i.id,name:i.nome,distance:p,isMainAntenna:!1,type:i.type})}),e}function getFormattedAntennaOrRepeaterName(a){if(!a)return"";const e=a.nome||"",n=a.is_from_kmz&&a.had_height_in_kmz,o=/(?:\s*-?\s*\d+(?:\.\d+)?\s*m)+$/i,r=n?e.replace(o,"").trim():e.trim();if(n){const i=a.altura!=null?` - ${a.altura}m`:"";return`${r}${i}`}return r}function drawImageOverlay(a,e,n=1){if(!map||!a||!e)return null;const o=location.hostname==="localhost"||location.hostname==="127.0.0.1",r=window.BACKEND_URL??(o?"http://localhost:8000":"https://irricontrol-connect.onrender.com"),i=/^https?:/.test(a)?a:`${r}${a}`,s=Math.min(e[0],e[2]),c=Math.max(e[0],e[2]),l=Math.min(e[1],e[3]),p=Math.max(e[1],e[3]),m=L.imageOverlay(i,[[s,l],[c,p]],{opacity:n,interactive:!1,crossOrigin:!0}).addTo(map);return AppState.overlaysVisiveis.push(m),m}function fitMapToAllElements(){if(!map)return;const a=[];(AppState.lastPivosDataDrawn||[]).forEach(e=>{const n=e.circle_center_lat&&e.circle_center_lon?L.latLng(e.circle_center_lat,e.circle_center_lon):L.latLng(e.lat,e.lon);let o;e.tipo==="custom"&&Array.isArray(e.coordenadas)&&e.coordenadas.length>0?o=e.coordenadas:e.tipo==="setorial"?o=generateSectorCoords(n,e.raio,e.angulo_central,e.abertura_arco):e.tipo==="pacman"?o=generatePacmanCoords(n,e.raio,e.angulo_inicio,e.angulo_fim):o=generateCircleCoords(n,e.raio||100),Array.isArray(o)&&o.length>0?o.forEach(r=>a.push(r)):a.push([e.lat,e.lon])}),(AppState.lastBombasDataDrawn||[]).forEach(e=>a.push([e.lat,e.lon])),AppState.antenaGlobal&&a.push([AppState.antenaGlobal.lat,AppState.antenaGlobal.lon]),(AppState.repetidoras||[]).forEach(e=>a.push([e.lat,e.lon])),a.length>0&&map.fitBounds(a,{padding:[80,80]})}function waitForMapReady(a=8e3,e=150){return map?new Promise(r=>{if(!map._animatingZoom&&!map._panAnim?._inProgress){r();return}map.once("moveend",r)}).then(()=>new Promise(r=>{const i=Date.now(),s=map.getContainer();function c(){const l=s.querySelectorAll("img");Array.from(l).every(m=>m.complete&&m.naturalWidth>0)||Date.now()-i>a?r():setTimeout(c,e)}c()})):Promise.resolve()}function drawTileLayersOntoCanvas(a){map.eachLayer(e=>{if(!(e instanceof L.GridLayer)||!e._tiles)return;const n=e.getTileSize();Object.values(e._tiles).forEach(o=>{const r=o.el;if(!o.current||!r||!r.complete||!r.naturalWidth)return;const i=o.coords.z,s=o.coords.scaleBy(n),c=L.point(o.coords.x+1,o.coords.y+1).scaleBy(n),l=map.latLngToContainerPoint(map.unproject(s,i)),p=map.latLngToContainerPoint(map.unproject(c,i));try{a.drawImage(r,l.x,l.y,p.x-l.x,p.y-l.y)}catch{}})})}function _preloadImage(a){return new Promise(e=>{const n=new Image;n.onload=()=>e(n),n.onerror=()=>e(n),n.src=a})}const _snapshotIconCache={};function _getSnapshotIcons(){return _snapshotIconCache.promise||(_snapshotIconCache.promise=Promise.all([_preloadImage(TORRE_ICON_PATH),_preloadImage(BOMBA_ICON_AZUL_PATH),_preloadImage(BOMBA_ICON_VERMELHO_PATH)]).then(([a,e,n])=>({torre:a,bombaAzul:e,bombaVermelho:n}))),_snapshotIconCache.promise}function _drawSnapshotLabel(a,e,n,o){if(!e)return;a.font="bold 11px Arial, sans-serif",a.textAlign="center",a.textBaseline="middle";const i=a.measureText(e).width+5*2,s=15;a.fillStyle="rgba(0,0,0,0.7)",a.fillRect(n-i/2,o,i,s),a.fillStyle="#ffffff",a.fillText(e,n,o+s/2+1)}function drawCoverageOverlaysOntoCanvas(a){(AppState.overlaysVisiveis||[]).forEach(e=>{const n=e._image,o=e.getBounds?.();if(!n||!o||!n.complete||!n.naturalWidth)return;const r=map.latLngToContainerPoint(o.getNorthWest()),i=map.latLngToContainerPoint(o.getSouthEast());try{a.drawImage(n,r.x,r.y,i.x-r.x,i.y-r.y)}catch{}})}function drawPivotShapesOntoCanvas(a){(AppState.lastPivosDataDrawn||[]).forEach(e=>{const n=e.circle_center_lat&&e.circle_center_lon?L.latLng(e.circle_center_lat,e.circle_center_lon):L.latLng(e.lat,e.lon);let o;e.tipo==="custom"&&Array.isArray(e.coordenadas)&&e.coordenadas.length>0?o=e.coordenadas:e.tipo==="setorial"?o=generateSectorCoords(n,e.raio,e.angulo_central,e.abertura_arco):e.tipo==="pacman"?o=generatePacmanCoords(n,e.raio,e.angulo_inicio,e.angulo_fim):o=generateCircleCoords(n,e.raio||100),!(!Array.isArray(o)||o.length<2)&&(a.beginPath(),o.forEach(([r,i],s)=>{const c=map.latLngToContainerPoint([r,i]);s===0?a.moveTo(c.x,c.y):a.lineTo(c.x,c.y)}),a.closePath(),a.strokeStyle="#cc0000",a.lineWidth=3,a.stroke())})}function _drawSnapshotIcon(a,e,n){e?.naturalWidth&&a.drawImage(e,n.x-14,n.y-28,28,28)}function drawEntitiesOntoCanvas(a,e){if((AppState.lastPivosDataDrawn||[]).forEach(n=>{const o=map.latLngToContainerPoint([n.lat,n.lon]);a.beginPath(),a.arc(o.x,o.y,5,0,Math.PI*2),a.fillStyle=n.fora?"red":"green",a.fill(),a.lineWidth=1,a.strokeStyle="#ffffff",a.stroke(),_drawSnapshotLabel(a,n.nome,o.x,o.y+7)}),(AppState.lastBombasDataDrawn||[]).forEach((n,o)=>{const r=map.latLngToContainerPoint([n.lat,n.lon]);_drawSnapshotIcon(a,n.fora===!1?e.bombaAzul:e.bombaVermelho,r);const i=n.nome||`Irripump ${String(o+1).padStart(2,"0")}`;_drawSnapshotLabel(a,i,r.x,r.y+4)}),AppState.antenaGlobal){const n=AppState.antenaGlobal,o=map.latLngToContainerPoint([n.lat,n.lon]);_drawSnapshotIcon(a,e.torre,o),_drawSnapshotLabel(a,getFormattedAntennaOrRepeaterName(n),o.x,o.y+4)}(AppState.repetidoras||[]).forEach(n=>{const o=map.latLngToContainerPoint([n.lat,n.lon]);_drawSnapshotIcon(a,e.torre,o),_drawSnapshotLabel(a,getFormattedAntennaOrRepeaterName(n),o.x,o.y+4)})}async function captureMapSnapshot(){if(!map)return null;try{await waitForMapReady(),await new Promise(s=>setTimeout(s,200));const a=map.getContainer(),e=Math.round(a.clientWidth),n=Math.round(a.clientHeight),o=document.createElement("canvas");o.width=e,o.height=n;const r=o.getContext("2d"),i=await _getSnapshotIcons();return drawTileLayersOntoCanvas(r),drawCoverageOverlaysOntoCanvas(r),drawPivotShapesOntoCanvas(r),drawEntitiesOntoCanvas(r,i),o.toDataURL("image/png")}catch(a){return console.error("Falha ao capturar snapshot do mapa:",a),null}}function criarGradienteVisada(a="gradient-visada"){const e=map.getPane("overlayPane");let n=e.querySelector("svg");if(!n){const i=L.polyline([[0,0],[0,0]]).addTo(map);if(n=e.querySelector("svg"),map.removeLayer(i),!n)return}if(n.querySelector(`#${a}`))return;let o=n.querySelector("defs");o||(o=document.createElementNS("http://www.w3.org/2000/svg","defs"),n.insertBefore(o,n.firstChild));const r=document.createElementNS("http://www.w3.org/2000/svg","linearGradient");r.setAttribute("id",a),r.setAttribute("gradientUnits","userSpaceOnUse"),r.innerHTML='<stop offset="0%" stop-color="green"/><stop offset="50%" stop-color="yellow"/><stop offset="100%" stop-color="red"/>',o.appendChild(r)}function drawVisadaComGradiente(a,e){return L.polyline([a,e],{color:"yellow",weight:2,opacity:AppState.visadaVisivel?1:0,dashArray:"8 8"}).addTo(AppState.visadaLayerGroup)}function drawDiagnostico(a,e,n,o,r,i=null,s=null,c=null,l=null){if(!map||!AppState.visadaLayerGroup)return;const p=drawVisadaComGradiente(a,e),m=n?.diff>.1;let h,d,f,u,g;if(m?(h=ATTENTION_ICON_PATH,d=[24,24],u=[n.lat,n.lon],f=`<strong>${r}</strong>`,i&&(f+=`<br>${t("ui.labels.pivo_distance_label")} ${i}`),f+=`<br>${t("tooltips.blockage_point",{elevation:n.elev.toFixed(1)})}`,g="#FF9800",f+=`<br><span style="color:${g};">${t("tooltips.blockage_present",{diff:n.diff.toFixed(1)})}</span>`):(h=MOUNTAIN_ICON_PATH,d=[22,22],u=[o.lat,o.lon],f=`<strong>${r}</strong>`,i&&(f+=`<br>${t("ui.labels.pivo_distance_label")} ${i}`),g="#FF9800",f+=`<br><span style="color:${g};">${t("tooltips.highest_point_short",{elevation:o.elev.toFixed(1)})}</span>`),u?.[0]&&u?.[1]){const A=L.divIcon({className:"label-bloqueio-dinamico blockage-icon-button",html:`<img src="${h}" style="width:${d[0]}px;height:${d[1]}px;">`,iconSize:d,iconAnchor:[d[0]/2,d[1]/2]}),S=L.marker(u,{icon:A}).addTo(AppState.visadaLayerGroup).bindTooltip(f,{permanent:!1,direction:"top",className:"tooltip-sinal tooltip-visada-diagnostico",offset:[0,-(d[1]/2+5)]});S.on("click",()=>{s&&c&&window.Analysis3D?window.Analysis3D.show(s,c.altura_antena,c.altura_receiver,l):console.warn("Dados do perfil de eleva\xE7\xE3o n\xE3o dispon\xEDveis para este \xEDcone.")}),AppState.marcadoresBloqueio?.push?.(S)}AppState.linhasDiagnostico?.push?.(p)}function clearMapLayers(){if(!map)return;[AppState.marcadorAntena,AppState.antenaCandidatesLayerGroup,AppState.marcadorPosicionamento,AppState.visadaLayerGroup,window.candidateRepeaterSitesLayerGroup,...AppState.marcadoresPivos||[],...AppState.circulosPivos||[],...AppState.marcadoresBombas||[],...AppState.marcadoresLegenda||[],...Object.values(AppState.pivotsMap||{})].forEach(e=>{e&&(typeof e.clearLayers=="function"?e.clearLayers():map.hasLayer(e)&&map.removeLayer(e))}),AppState.repetidoras.forEach(e=>{e.marker&&map.removeLayer(e.marker),e.overlay&&map.removeLayer(e.overlay),e.label&&map.removeLayer(e.label)}),AppState.antenaGlobal?.overlay&&map.removeLayer(AppState.antenaGlobal.overlay)}
+const TORRE_ICON_PATH = "assets/images/cloudrf.png";
+const BOMBA_ICON_AZUL_PATH = "assets/images/homegardenbusiness.png";
+const BOMBA_ICON_VERMELHO_PATH = "assets/images/homegardenbusiness-red.png";
+const ATTENTION_ICON_PATH = "assets/images/attention-icon-original.svg";
+const CHECK_ICON_PATH = "assets/images/circle-check-big.svg";
+const MOUNTAIN_ICON_PATH = "assets/images/attention-icon-original.svg";
+const CAPTIONS_ON_ICON_PATH = "assets/images/captions.svg";
+const CAPTIONS_OFF_ICON_PATH = "assets/images/captions-off.svg";
+
+(function() {
+  window.AppState || (window.AppState = {});
+  AppState.marcadoresLegenda ??= [];
+  AppState.marcadoresPivos ??= [];
+  AppState.marcadoresBombas ??= [];
+  AppState.circulosPivos ??= [];
+  AppState.overlaysVisiveis ??= [];
+  AppState.pivotsMap ??= {};
+  AppState.idsDisponiveis ??= [];
+  AppState.repetidoras ??= [];
+  AppState.lastPivosDataDrawn ??= [];
+  AppState.lastBombasDataDrawn ??= [];
+  AppState.visadaLayerGroup ??= null;
+  AppState.antenaCandidatesLayerGroup ??= null;
+})();
+
+const antenaIcon = L.divIcon({
+  className: "leaflet-div-icon-transparent",
+  html: `<div class="selection-effect-wrapper"><img src="${TORRE_ICON_PATH}" style="width:28px;height:28px;"></div>`,
+  iconSize: [28, 28],
+  iconAnchor: [14, 28]
+});
+const bombaIconAzul = L.divIcon({
+  className: "leaflet-div-icon-transparent",
+  html: `<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_AZUL_PATH}" style="width:28px;height:28px;"></div>`,
+  iconSize: [28, 28],
+  iconAnchor: [14, 28]
+});
+const bombaIconVermelho = L.divIcon({
+  className: "leaflet-div-icon-transparent",
+  html: `<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_VERMELHO_PATH}" style="width:28px;height:28px;"></div>`,
+  iconSize: [28, 28],
+  iconAnchor: [14, 28]
+});
+const posicionamentoIcon = L.icon({
+  iconUrl: TORRE_ICON_PATH,
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+  popupAnchor: [0, -30]
+});
+
+window.antenaIcon = antenaIcon;
+window.bombaIconAzul = bombaIconAzul;
+window.bombaIconVermelho = bombaIconVermelho;
+window.posicionamentoIcon = posicionamentoIcon;
+
+function getDynamicIconSize(zoom) {
+  if (zoom <= 10) return 10;
+  if (zoom >= 17) return 20;
+  const interpolated = (zoom - 10) / 7 * 10 + 10;
+  return Math.round(interpolated);
+}
+
+function updatePivotIcons() {
+  if (!map || !Array.isArray(AppState.lastPivosDataDrawn) || !Array.isArray(AppState.marcadoresPivos)) return;
+
+  const iconSize = getDynamicIconSize(map.getZoom());
+  AppState.lastPivosDataDrawn.forEach((pivot, index) => {
+    const marker = AppState.marcadoresPivos[index];
+    if (!marker) return;
+
+    const color = pivot.fora ? "red" : "green";
+    let className = "pivo-marker-container";
+    AppState.selectedPivoNome === pivot.nome && (className += " pivo-marker-container-selected");
+
+    const icon = L.divIcon({
+      className,
+      iconSize: [iconSize, iconSize],
+      html: `<div class="pivo-marker-dot" style="background-color:${color};"></div>`
+    });
+    marker.setIcon(icon);
+  });
+}
+
+function findClosestSignalSource(fromLatLng) {
+  let closest = null;
+  let closestDistance = Infinity;
+
+  const antennaVisibilityBtn = document.querySelector("#antena-item button[data-visible]");
+  const antennaIsVisible = !antennaVisibilityBtn || antennaVisibilityBtn.getAttribute("data-visible") === "true";
+
+  if (AppState.antenaGlobal && antennaIsVisible) {
+    const antennaLatLng = L.latLng(AppState.antenaGlobal.lat, AppState.antenaGlobal.lon);
+    const distance = fromLatLng.distanceTo(antennaLatLng);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closest = {
+        id: "main_antenna",
+        name: AppState.antenaGlobal.nome || t("ui.labels.main_antenna_default"),
+        distance,
+        isMainAntenna: true,
+        type: AppState.antenaGlobal.type
+      };
+    }
+  }
+
+  AppState.repetidoras.forEach((rep) => {
+    const visibilityBtn = document.querySelector(`#rep-item-${rep.id} button[data-visible]`);
+    const isVisible = !visibilityBtn || visibilityBtn.getAttribute("data-visible") === "true";
+    if (!rep.marker || !isVisible) return;
+
+    const repLatLng = rep.marker.getLatLng();
+    const distance = fromLatLng.distanceTo(repLatLng);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closest = {
+        id: rep.id,
+        name: rep.nome,
+        distance,
+        isMainAntenna: false,
+        type: rep.type
+      };
+    }
+  });
+
+  return closest;
+}
+
+function getFormattedAntennaOrRepeaterName(entity) {
+  if (!entity) return "";
+
+  const rawName = entity.nome || "";
+  const showHeightSuffix = entity.is_from_kmz && entity.had_height_in_kmz;
+  const heightSuffixPattern = /(?:\s*-?\s*\d+(?:\.\d+)?\s*m)+$/i;
+  const baseName = showHeightSuffix ? rawName.replace(heightSuffixPattern, "").trim() : rawName.trim();
+
+  if (showHeightSuffix) {
+    const heightSuffix = entity.altura != null ? ` - ${entity.altura}m` : "";
+    return `${baseName}${heightSuffix}`;
+  }
+  return baseName;
+}
+
+function drawImageOverlay(imagePath, bounds, opacity = 1) {
+  if (!map || !imagePath || !bounds) return null;
+
+  const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  const backend = window.BACKEND_URL ?? (isLocal ? "http://localhost:8000" : "https://irricontrol-connect.onrender.com");
+  const fullUrl = /^https?:/.test(imagePath) ? imagePath : `${backend}${imagePath}`;
+
+  const south = Math.min(bounds[0], bounds[2]);
+  const north = Math.max(bounds[0], bounds[2]);
+  const west = Math.min(bounds[1], bounds[3]);
+  const east = Math.max(bounds[1], bounds[3]);
+
+  const overlay = L.imageOverlay(fullUrl, [[south, west], [north, east]], {
+    opacity,
+    interactive: false,
+    crossOrigin: true
+  }).addTo(map);
+
+  AppState.overlaysVisiveis.push(overlay);
+  return overlay;
+}
+
+function fitMapToAllElements() {
+  if (!map) return;
+
+  const points = [];
+
+  (AppState.lastPivosDataDrawn || []).forEach((pivot) => {
+    const center = pivot.circle_center_lat && pivot.circle_center_lon
+      ? L.latLng(pivot.circle_center_lat, pivot.circle_center_lon)
+      : L.latLng(pivot.lat, pivot.lon);
+
+    let shape;
+    if (pivot.tipo === "custom" && Array.isArray(pivot.coordenadas) && pivot.coordenadas.length > 0) {
+      shape = pivot.coordenadas;
+    } else if (pivot.tipo === "setorial") {
+      shape = generateSectorCoords(center, pivot.raio, pivot.angulo_central, pivot.abertura_arco);
+    } else if (pivot.tipo === "pacman") {
+      shape = generatePacmanCoords(center, pivot.raio, pivot.angulo_inicio, pivot.angulo_fim);
+    } else {
+      shape = generateCircleCoords(center, pivot.raio || 100);
+    }
+
+    Array.isArray(shape) && shape.length > 0 ? shape.forEach((point) => points.push(point)) : points.push([pivot.lat, pivot.lon]);
+  });
+
+  (AppState.lastBombasDataDrawn || []).forEach((bomba) => points.push([bomba.lat, bomba.lon]));
+  AppState.antenaGlobal && points.push([AppState.antenaGlobal.lat, AppState.antenaGlobal.lon]);
+  (AppState.repetidoras || []).forEach((rep) => points.push([rep.lat, rep.lon]));
+
+  points.length > 0 && map.fitBounds(points, { padding: [80, 80] });
+}
+
+function waitForMapReady(timeoutMs = 8000, pollIntervalMs = 150) {
+  if (!map) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    if (!map._animatingZoom && !map._panAnim?._inProgress) {
+      resolve();
+      return;
+    }
+    map.once("moveend", resolve);
+  }).then(() => new Promise((resolve) => {
+    const startTime = Date.now();
+    const container = map.getContainer();
+
+    function poll() {
+      const images = container.querySelectorAll("img");
+      const allLoaded = Array.from(images).every((img) => img.complete && img.naturalWidth > 0);
+      allLoaded || Date.now() - startTime > timeoutMs ? resolve() : setTimeout(poll, pollIntervalMs);
+    }
+    poll();
+  }));
+}
+
+function drawTileLayersOntoCanvas(ctx) {
+  map.eachLayer((layer) => {
+    if (!(layer instanceof L.GridLayer) || !layer._tiles) return;
+
+    const tileSize = layer.getTileSize();
+    Object.values(layer._tiles).forEach((tile) => {
+      const el = tile.el;
+      if (!tile.current || !el || !el.complete || !el.naturalWidth) return;
+
+      const zoom = tile.coords.z;
+      const nwPoint = tile.coords.scaleBy(tileSize);
+      const sePoint = L.point(tile.coords.x + 1, tile.coords.y + 1).scaleBy(tileSize);
+      const nw = map.latLngToContainerPoint(map.unproject(nwPoint, zoom));
+      const se = map.latLngToContainerPoint(map.unproject(sePoint, zoom));
+
+      try {
+        ctx.drawImage(el, nw.x, nw.y, se.x - nw.x, se.y - nw.y);
+      } catch {}
+    });
+  });
+}
+
+function _preloadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(img);
+    img.src = src;
+  });
+}
+
+const _snapshotIconCache = {};
+
+function _getSnapshotIcons() {
+  return _snapshotIconCache.promise || (_snapshotIconCache.promise = Promise.all([
+    _preloadImage(TORRE_ICON_PATH),
+    _preloadImage(BOMBA_ICON_AZUL_PATH),
+    _preloadImage(BOMBA_ICON_VERMELHO_PATH)
+  ]).then(([torre, bombaAzul, bombaVermelho]) => ({ torre, bombaAzul, bombaVermelho })));
+}
+
+function _drawSnapshotLabel(ctx, text, x, y) {
+  if (!text) return;
+  ctx.font = "bold 11px Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const padding = 5;
+  const width = ctx.measureText(text).width + padding * 2;
+  const height = 15;
+
+  ctx.fillStyle = "rgba(0,0,0,0.7)";
+  ctx.fillRect(x - width / 2, y, width, height);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(text, x, y + height / 2 + 1);
+}
+
+function drawCoverageOverlaysOntoCanvas(ctx) {
+  (AppState.overlaysVisiveis || []).forEach((overlay) => {
+    const imageEl = overlay._image;
+    const bounds = overlay.getBounds?.();
+    if (!imageEl || !bounds || !imageEl.complete || !imageEl.naturalWidth) return;
+
+    const nw = map.latLngToContainerPoint(bounds.getNorthWest());
+    const se = map.latLngToContainerPoint(bounds.getSouthEast());
+
+    try {
+      ctx.drawImage(imageEl, nw.x, nw.y, se.x - nw.x, se.y - nw.y);
+    } catch {}
+  });
+}
+
+function drawPivotShapesOntoCanvas(ctx) {
+  (AppState.lastPivosDataDrawn || []).forEach((pivot) => {
+    const center = pivot.circle_center_lat && pivot.circle_center_lon
+      ? L.latLng(pivot.circle_center_lat, pivot.circle_center_lon)
+      : L.latLng(pivot.lat, pivot.lon);
+
+    let shape;
+    if (pivot.tipo === "custom" && Array.isArray(pivot.coordenadas) && pivot.coordenadas.length > 0) {
+      shape = pivot.coordenadas;
+    } else if (pivot.tipo === "setorial") {
+      shape = generateSectorCoords(center, pivot.raio, pivot.angulo_central, pivot.abertura_arco);
+    } else if (pivot.tipo === "pacman") {
+      shape = generatePacmanCoords(center, pivot.raio, pivot.angulo_inicio, pivot.angulo_fim);
+    } else {
+      shape = generateCircleCoords(center, pivot.raio || 100);
+    }
+
+    if (!Array.isArray(shape) || shape.length < 2) return;
+
+    ctx.beginPath();
+    shape.forEach(([lat, lon], index) => {
+      const point = map.latLngToContainerPoint([lat, lon]);
+      index === 0 ? ctx.moveTo(point.x, point.y) : ctx.lineTo(point.x, point.y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = "#cc0000";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+}
+
+function _drawSnapshotIcon(ctx, image, point) {
+  image?.naturalWidth && ctx.drawImage(image, point.x - 14, point.y - 28, 28, 28);
+}
+
+function drawEntitiesOntoCanvas(ctx, icons) {
+  (AppState.lastPivosDataDrawn || []).forEach((pivot) => {
+    const point = map.latLngToContainerPoint([pivot.lat, pivot.lon]);
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = pivot.fora ? "red" : "green";
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#ffffff";
+    ctx.stroke();
+    _drawSnapshotLabel(ctx, pivot.nome, point.x, point.y + 7);
+  });
+
+  (AppState.lastBombasDataDrawn || []).forEach((bomba, index) => {
+    const point = map.latLngToContainerPoint([bomba.lat, bomba.lon]);
+    _drawSnapshotIcon(ctx, bomba.fora === false ? icons.bombaAzul : icons.bombaVermelho, point);
+    const label = bomba.nome || `Irripump ${String(index + 1).padStart(2, "0")}`;
+    _drawSnapshotLabel(ctx, label, point.x, point.y + 4);
+  });
+
+  if (AppState.antenaGlobal) {
+    const antenna = AppState.antenaGlobal;
+    const point = map.latLngToContainerPoint([antenna.lat, antenna.lon]);
+    _drawSnapshotIcon(ctx, icons.torre, point);
+    _drawSnapshotLabel(ctx, getFormattedAntennaOrRepeaterName(antenna), point.x, point.y + 4);
+  }
+
+  (AppState.repetidoras || []).forEach((rep) => {
+    const point = map.latLngToContainerPoint([rep.lat, rep.lon]);
+    _drawSnapshotIcon(ctx, icons.torre, point);
+    _drawSnapshotLabel(ctx, getFormattedAntennaOrRepeaterName(rep), point.x, point.y + 4);
+  });
+}
+
+async function captureMapSnapshot() {
+  if (!map) return null;
+
+  try {
+    await waitForMapReady();
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    const container = map.getContainer();
+    const width = Math.round(container.clientWidth);
+    const height = Math.round(container.clientHeight);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d");
+    const icons = await _getSnapshotIcons();
+
+    drawTileLayersOntoCanvas(ctx);
+    drawCoverageOverlaysOntoCanvas(ctx);
+    drawPivotShapesOntoCanvas(ctx);
+    drawEntitiesOntoCanvas(ctx, icons);
+
+    return canvas.toDataURL("image/png");
+  } catch (err) {
+    console.error("Falha ao capturar snapshot do mapa:", err);
+    return null;
+  }
+}
+
+function criarGradienteVisada(gradientId = "gradient-visada") {
+  const overlayPane = map.getPane("overlayPane");
+  let svg = overlayPane.querySelector("svg");
+
+  if (!svg) {
+    const tempLine = L.polyline([[0, 0], [0, 0]]).addTo(map);
+    svg = overlayPane.querySelector("svg");
+    map.removeLayer(tempLine);
+    if (!svg) return;
+  }
+
+  if (svg.querySelector(`#${gradientId}`)) return;
+
+  let defs = svg.querySelector("defs");
+  if (!defs) {
+    defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    svg.insertBefore(defs, svg.firstChild);
+  }
+
+  const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+  gradient.setAttribute("id", gradientId);
+  gradient.setAttribute("gradientUnits", "userSpaceOnUse");
+  gradient.innerHTML = '<stop offset="0%" stop-color="green"/><stop offset="50%" stop-color="yellow"/><stop offset="100%" stop-color="red"/>';
+  defs.appendChild(gradient);
+}
+
+function drawVisadaComGradiente(fromLatLng, toLatLng) {
+  return L.polyline([fromLatLng, toLatLng], {
+    color: "yellow",
+    weight: 2,
+    opacity: AppState.visadaVisivel ? 1 : 0,
+    dashArray: "8 8"
+  }).addTo(AppState.visadaLayerGroup);
+}
+
+function drawDiagnostico(fromLatLng, toLatLng, bloqueio, pontoMaisAlto, label, distanceLabel = null, profileResult = null, profileRequest = null, context = null) {
+  if (!map || !AppState.visadaLayerGroup) return;
+
+  const line = drawVisadaComGradiente(fromLatLng, toLatLng);
+  const isCriticallyBlocked = bloqueio?.diff > 0.1;
+
+  let iconPath, iconSize, markerLatLng, tooltipHtml, accentColor;
+
+  if (isCriticallyBlocked) {
+    iconPath = ATTENTION_ICON_PATH;
+    iconSize = [24, 24];
+    markerLatLng = [bloqueio.lat, bloqueio.lon];
+    tooltipHtml = `<strong>${label}</strong>`;
+    distanceLabel && (tooltipHtml += `<br>${t("ui.labels.pivo_distance_label")} ${distanceLabel}`);
+    tooltipHtml += `<br>${t("tooltips.blockage_point", { elevation: bloqueio.elev.toFixed(1) })}`;
+    accentColor = "#FF9800";
+    tooltipHtml += `<br><span style="color:${accentColor};">${t("tooltips.blockage_present", { diff: bloqueio.diff.toFixed(1) })}</span>`;
+  } else {
+    iconPath = MOUNTAIN_ICON_PATH;
+    iconSize = [22, 22];
+    markerLatLng = [pontoMaisAlto.lat, pontoMaisAlto.lon];
+    tooltipHtml = `<strong>${label}</strong>`;
+    distanceLabel && (tooltipHtml += `<br>${t("ui.labels.pivo_distance_label")} ${distanceLabel}`);
+    accentColor = "#FF9800";
+    tooltipHtml += `<br><span style="color:${accentColor};">${t("tooltips.highest_point_short", { elevation: pontoMaisAlto.elev.toFixed(1) })}</span>`;
+  }
+
+  if (markerLatLng?.[0] && markerLatLng?.[1]) {
+    const icon = L.divIcon({
+      className: "label-bloqueio-dinamico blockage-icon-button",
+      html: `<img src="${iconPath}" style="width:${iconSize[0]}px;height:${iconSize[1]}px;">`,
+      iconSize,
+      iconAnchor: [iconSize[0] / 2, iconSize[1] / 2]
+    });
+
+    const marker = L.marker(markerLatLng, { icon }).addTo(AppState.visadaLayerGroup).bindTooltip(tooltipHtml, {
+      permanent: false,
+      direction: "top",
+      className: "tooltip-sinal tooltip-visada-diagnostico",
+      offset: [0, -(iconSize[1] / 2 + 5)]
+    });
+
+    marker.on("click", () => {
+      profileResult && profileRequest && window.Analysis3D
+        ? window.Analysis3D.show(profileResult, profileRequest.altura_antena, profileRequest.altura_receiver, context)
+        : console.warn("Dados do perfil de elevação não disponíveis para este ícone.");
+    });
+
+    AppState.marcadoresBloqueio?.push?.(marker);
+  }
+
+  AppState.linhasDiagnostico?.push?.(line);
+}
+
+function clearMapLayers() {
+  if (!map) return;
+
+  [
+    AppState.marcadorAntena,
+    AppState.antenaCandidatesLayerGroup,
+    AppState.marcadorPosicionamento,
+    AppState.visadaLayerGroup,
+    window.candidateRepeaterSitesLayerGroup,
+    ...AppState.marcadoresPivos || [],
+    ...AppState.circulosPivos || [],
+    ...AppState.marcadoresBombas || [],
+    ...AppState.marcadoresLegenda || [],
+    ...Object.values(AppState.pivotsMap || {})
+  ].forEach((layer) => {
+    layer && (typeof layer.clearLayers == "function" ? layer.clearLayers() : map.hasLayer(layer) && map.removeLayer(layer));
+  });
+
+  AppState.repetidoras.forEach((rep) => {
+    rep.marker && map.removeLayer(rep.marker);
+    rep.overlay && map.removeLayer(rep.overlay);
+    rep.label && map.removeLayer(rep.label);
+  });
+
+  AppState.antenaGlobal?.overlay && map.removeLayer(AppState.antenaGlobal.overlay);
+}

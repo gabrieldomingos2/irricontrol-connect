@@ -21,7 +21,7 @@
       "search_coordinates": "Nach Koordinaten suchen",
       "toggle_antenna_legends": "Antennenlegenden",
       "restore_original_name": "Ursprünglichen Namen wiederherstellen",
-      "export_pdf_report": "PDF-Bericht exportieren",
+      "export_pdf_report": "Vollständigen Bericht exportieren",
       "confirm_needed": "Bestätigung erforderlich",
       "move_pivot_center": "Auswählen, um nur das Pivot-Zentrum zu verschieben",
       "save_position": "Position speichern",
@@ -88,7 +88,7 @@
       "run_study": "Abdeckung simulieren",
       "run_los_diagnostic": "Sichtlinien-Diagnose",
       "export_kmz": "KMZ-Datei herunterladen",
-      "export_pdf_report": "PDF-Bericht exportieren",
+      "export_pdf_report": "Vollständigen Bericht exportieren",
       "download_active_pngs": "Repeater herunterladen",
       "reset": "Zurücksetzen",
       "simulate": "Simulation ausführen",
@@ -123,13 +123,14 @@
     "show_legends": "Legenden anzeigen",
     "run_diagnostic_from_source": "Diagnose von dieser Quelle ausführen",
     "los_clear_at_highest_point": "Sichtlinie frei (Höchster Punkt: {elevation}m)",
-    "export_pdf_disabled": "Exportieren Sie die KMZ, bevor Sie den PDF-Bericht erstellen.",
+    "export_pdf_disabled": "Laden Sie eine KMZ, um den Bericht zu erstellen.",
     "download_active_repeaters": "Lädt nur die aktiven Repeater herunter, die auf der Karte sichtbar sind",
     "run_signal_simulation": "Führt die Signalsimulation aus",
     "load_kmz": "Importiert und lädt eine KMZ-Datei",
     "export_kmz": "Lädt das gesamte Projekt als KMZ-Datei herunter",
+    "export_kmz_disabled": "Führen Sie eine Signalstudie durch, um die KMZ herunterzuladen.",
     "reset": "Setzt alles zurück und startet ein neues Projekt",
-    "export_pdf_report": "Erstellt einen PDF-Bericht mit der Studienzusammenfassung"
+    "export_pdf_report": "Erstellt ein Paket mit dem PDF-Bericht und der KMZ-Datei der Studie"
   },
   "messages": {
     "success": {
@@ -146,6 +147,7 @@
       "app_reset": "Anwendung zurückgesetzt. Neue Sitzung wird gestartet.",
       "los_diagnostic_complete": "Sichtlinienanalyse (LoS) abgeschlossen.",
       "kmz_export_preparing": "KMZ-Export wird vorbereitet...",
+      "kmz_export_complete": "KMZ erfolgreich exportiert.",
       "pdf_export_preparing": "PDF-Bericht wird vorbereitet...",
       "pdf_export_complete": "PDF-Bericht erfolgreich erstellt.",
       "pivot_distances_shown": "Entfernungen zwischen Pivots angezeigt.",

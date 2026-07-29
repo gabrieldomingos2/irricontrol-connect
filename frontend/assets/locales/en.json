@@ -21,7 +21,7 @@
       "search_coordinates": "Locate by Coordinates",
       "toggle_antenna_legends": "Antenna Legends",
       "restore_original_name": "Restore Original Name",
-      "export_pdf_report": "Export PDF Report",
+      "export_pdf_report": "Export Full Report",
       "confirm_needed": "Confirmation Needed",
       "move_pivot_center": "Select to Move Only the Pivot Center",
       "save_position": "Save Position",
@@ -89,7 +89,7 @@
       "run_study": "Simulate Coverage",
       "run_los_diagnostic": "LoS Diagnostic",
       "export_kmz": "Download KMZ File",
-      "export_pdf_report": "Export PDF Report",
+      "export_pdf_report": "Export Full Report",
       "download_active_pngs": "Download Repeaters",
       "reset": "Reset",
       "simulate": "Run Simulation",
@@ -124,13 +124,14 @@
     "show_legends": "Show Legends",
     "run_diagnostic_from_source": "Run diagnostic from this source",
     "los_clear_at_highest_point": "Line of sight clear (Highest point: {elevation}m)",
-    "export_pdf_disabled": "Export the KMZ before generating the PDF report.",
+    "export_pdf_disabled": "Load a KMZ to generate the report.",
     "download_active_repeaters": "Downloads only the active repeaters currently visible on the map",
     "run_signal_simulation": "Runs the signal simulation",
     "load_kmz": "Imports and loads a KMZ file",
     "export_kmz": "Downloads the complete project as a KMZ file",
+    "export_kmz_disabled": "Run a signal study to download the KMZ.",
     "reset": "Clears everything and starts a new project",
-    "export_pdf_report": "Generates a PDF report with the study summary"
+    "export_pdf_report": "Generates a bundle with the PDF report and the study's KMZ"
   },
   "messages": {
     "success": {
@@ -147,6 +148,7 @@
       "app_reset": "Application reset. New session in progress.",
       "los_diagnostic_complete": "Line of sight (LoS) analysis finished.",
       "kmz_export_preparing": "Preparing KMZ export...",
+      "kmz_export_complete": "KMZ exported successfully.",
       "pdf_export_preparing": "Preparing PDF report...",
       "pdf_export_complete": "PDF report generated successfully.",
       "pivot_distances_shown": "Distances between pivots shown.",

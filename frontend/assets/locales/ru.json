@@ -21,7 +21,7 @@
       "search_coordinates": "Найти по Координатам",
       "toggle_antenna_legends": "Легенды Антенн",
       "restore_original_name": "Восстановить Исходное Имя",
-      "export_pdf_report": "Экспорт Отчета в PDF",
+      "export_pdf_report": "Экспорт полного отчёта",
       "confirm_needed": "Требуется Подтверждение",
       "move_pivot_center": "Выберите, чтобы Переместить только Центр Пивота",
       "save_position": "Сохранить Позицию",
@@ -88,7 +88,7 @@
       "run_study": "Симулировать Покрытие",
       "run_los_diagnostic": "Диагностика Видимости",
       "export_kmz": "Скачать KMZ Файл",
-      "export_pdf_report": "Экспорт Отчета в PDF",
+      "export_pdf_report": "Экспорт полного отчёта",
       "download_active_pngs": "Скачать ретрансляторы",
       "reset": "Сброс",
       "simulate": "Запустить Симуляцию",
@@ -123,13 +123,14 @@
     "show_legends": "Показать Легенду",
     "run_diagnostic_from_source": "Запустить диагностику из этого источника",
     "los_clear_at_highest_point": "Прямая видимость свободна (Самая высокая точка: {elevation}м)",
-    "export_pdf_disabled": "Экспортируйте KMZ перед созданием отчета в PDF.",
+    "export_pdf_disabled": "Загрузите KMZ, чтобы создать отчет.",
     "download_active_repeaters": "Скачивает только активные ретрансляторы, которые видны на карте",
     "run_signal_simulation": "Выполняет симуляцию сигнала",
     "load_kmz": "Импортирует и загружает файл KMZ",
     "export_kmz": "Скачивает весь проект в формате KMZ",
+    "export_kmz_disabled": "Запустите анализ сигнала, чтобы скачать KMZ.",
     "reset": "Сбрасывает всё и начинает новый проект",
-    "export_pdf_report": "Создаёт PDF-отчёт с кратким итогом исследования"
+    "export_pdf_report": "Создаёт пакет с PDF-отчётом и файлом KMZ исследования"
   },
   "messages": {
     "success": {
@@ -146,6 +147,7 @@
       "app_reset": "Приложение сброшено. Новая сессия в процессе.",
       "los_diagnostic_complete": "Анализ прямой видимости (LoS) завершен.",
       "kmz_export_preparing": "Подготовка экспорта KMZ...",
+      "kmz_export_complete": "KMZ успешно экспортирован.",
       "pdf_export_preparing": "Подготовка отчета в PDF...",
       "pdf_export_complete": "Отчет в PDF успешно сгенерирован.",
       "pivot_distances_shown": "Расстояния между пивотами показаны.",
