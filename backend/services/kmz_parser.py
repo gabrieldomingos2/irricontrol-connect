@@ -609,6 +609,11 @@ def parse_gis_file(
         root = tree.getroot()
 
         pivot_num_regex = re.compile(r"(?:piv(?:o|ô|ot)?)\s*(\d+)", re.IGNORECASE)
+        # Some farms export pivot points as "PC01", "PC 04" (Ponto de Controle /
+        # Pivô Central) instead of "Pivô N". Recognized as a pivot fallback so
+        # the original field numbering survives instead of being dropped and
+        # later re-numbered sequentially/arbitrarily by orphan-circle naming.
+        pivot_pc_regex = re.compile(r"^pc\s*(\d+)$", re.IGNORECASE)
         bomba_name_regex = re.compile(r"^(casa\s+de\s+bomba|pump\s+house|bomba\s*\d*)$", re.IGNORECASE)
 
         for placemark_node in root.findall(".//kml:Placemark", KML_NAMESPACE):
@@ -640,9 +645,15 @@ def parse_gis_file(
                         "had_height_in_kmz": had_height, "altura_receiver": DEFAULT_RECEIVER_HEIGHT,
                         "nome": nome_original,
                     })
-                elif any(kw in nome_norm for kw in pivo_kws) or pivot_num_regex.search(nome_original):
+                elif (
+                    any(kw in nome_norm for kw in pivo_kws)
+                    or pivot_num_regex.search(nome_original)
+                    or pivot_pc_regex.match(nome_original.strip())
+                ):
                     final_pivo_name = nome_original
-                    match_pivot_num = pivot_num_regex.search(nome_original)
+                    match_pivot_num = pivot_num_regex.search(nome_original) or pivot_pc_regex.match(
+                        nome_original.strip()
+                    )
                     if match_pivot_num:
                         pivo_num = match_pivot_num.group(1)
                         final_pivo_name = f"{t('entity_names.pivot')} {pivo_num}"
