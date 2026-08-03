@@ -586,23 +586,10 @@
           integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
           crossorigin="anonymous" defer></script>
 
-  <!-- Módulos da aplicação -->
-  <script src="assets/js/i18n.js" defer></script>
-  <script src="assets/js/api.js" defer></script>
-  <script src="assets/js/map.js" defer></script>
-  <script src="assets/js/drawing/draw.core.js" defer></script>
-  <script src="assets/js/drawing/draw.markers.js" defer></script>
-  <script src="assets/js/drawing/draw.sector.js" defer></script>
-  <script src="assets/js/drawing/draw.pacman.js" defer></script>
-  <script src="assets/js/drawing/draw.circle.js" defer></script>
-  <script src="assets/js/drawing/draw.export.js" defer></script>
-  <script src="assets/js/drawing/index.js" defer></script>
-  <script src="assets/js/3d_analysis.js" defer></script>
-  <script src="assets/js/ui.js" defer></script>
-  <script src="assets/js/main/bootstrap.js" defer></script>
-
-  <!-- Inicialização dos ícones Lucide -->
-  <script src="assets/js/lucide-init.js" defer></script>
+  <!-- Módulos da aplicação (bundle único, gerado por npm run build:js -->
+  <!-- a partir dos arquivos individuais em assets/js/ - ordem definida  -->
+  <!-- em scripts/build-js.mjs) -->
+  <script src="dist/app.bundle.js" defer></script>
 
   <!-- Fallback sem JavaScript -->
   <noscript>

@@ -1,4 +1,7 @@
-const MAIN_MODULE_SCRIPTS = ["assets/js/main/core.state.js", "assets/js/main/core.modes.js", "assets/js/main/feature.los.js", "assets/js/main/feature.pivots.js", "assets/js/main/feature.repeaters.js"];
+// Bundle único (gerado por npm run build:js) com core.state.js, core.modes.js,
+// feature.los.js, feature.pivots.js e feature.repeaters.js, nessa ordem -
+// so carregado apos o login para nao pesar a tela inicial de quem nao logou.
+const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js"];
 
 function loadMainScript(src) {
   return new Promise((resolve, reject) => {

@@ -3,12 +3,16 @@
   "version": "1.0.1",
   "scripts": {
     "dev": "vite",
+    "predev": "npm run build:css && npm run build:js",
     "build:css": "tailwindcss -i ./assets/css/tailwind.css -o ./dist/output.css --minify",
-    "build": "npm run build:css"
+    "build:js": "node scripts/build-js.mjs",
+    "watch:js": "node scripts/build-js.mjs --watch",
+    "build": "npm run build:css && npm run build:js"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.13",
     "autoprefixer": "^10.4.21",
+    "esbuild": "^0.28.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.13",
     "vite": "^5.0.0"
