@@ -87,7 +87,28 @@ function initMap() {
     map && map.invalidateSize && map.invalidateSize();
   });
 
+  addVersionControl();
   applyVisadaVisibility();
+}
+
+function addVersionControl() {
+  const VersionControl = L.Control.extend({
+    options: { position: "bottomright" },
+    onAdd() {
+      const el = L.DomUtil.create("div", "map-version-badge");
+      el.style.display = "none";
+      fetch(`${window.BACKEND_URL}${window.API_PREFIX}/version`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!data?.version) return;
+          el.textContent = `v${data.version}`;
+          el.style.display = "";
+        })
+        .catch(() => {});
+      return el;
+    }
+  });
+  map.addControl(new VersionControl());
 }
 
 function setVisadaVisible(visible) {

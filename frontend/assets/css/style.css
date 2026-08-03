@@ -1722,3 +1722,15 @@ label[for="arquivo"] {
 #map-3d-container .mapboxgl-ctrl-attrib {
   display: none !important;
 }
+
+/* Selo de versão do app, ao lado da atribuição do Leaflet */
+.map-version-badge {
+  background: rgba(255, 255, 255, 0.75);
+  padding: 0 6px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.6);
+  border-radius: 3px;
+  user-select: none;
+}

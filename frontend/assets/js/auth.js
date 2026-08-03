@@ -392,10 +392,22 @@
     });
   }
 
+  function loadLoginVersion() {
+    const el = qs("#login-version");
+    if (!el) return;
+    fetch(`${window.BACKEND_URL}${window.API_PREFIX}/version`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.version) el.textContent = `v${data.version}`;
+      })
+      .catch(() => {});
+  }
+
   function init() {
     setupPasswordToggle();
     setupLoginForm();
     setupParticles();
+    loadLoginVersion();
     logoutBtn?.addEventListener("click", () => logout());
 
     const existingToken = getToken();

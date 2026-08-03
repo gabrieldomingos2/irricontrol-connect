@@ -416,6 +416,14 @@
   gap: 10px;
 }
 
+.login-version{
+  margin: 14px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: rgba(60,255,106,0.45);
+  user-select: none;
+}
+
 .login-overlay .dot{
   width: 10px;
   height: 10px;
