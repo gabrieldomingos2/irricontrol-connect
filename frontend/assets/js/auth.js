@@ -28,6 +28,7 @@
       loginOverlay.setAttribute("aria-hidden", "false"),
       uiWrapper?.classList.add("ui-locked")
     );
+    startParticles();
   }
 
   function hideLogin() {
@@ -36,6 +37,7 @@
       loginOverlay.setAttribute("aria-hidden", "true"),
       uiWrapper?.classList.remove("ui-locked")
     );
+    stopParticles();
   }
 
   function getToken() {
@@ -279,6 +281,19 @@
     });
   }
 
+  let particlesRAF = null;
+
+  function startParticles() {
+    if (!particlesCtx || particlesRAF !== null) return;
+    particlesRAF = requestAnimationFrame(animateParticles);
+  }
+
+  function stopParticles() {
+    if (particlesRAF === null) return;
+    cancelAnimationFrame(particlesRAF);
+    particlesRAF = null;
+  }
+
   function animateParticles() {
     if (!particlesCtx) return;
     particlesCtx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -356,14 +371,13 @@
       }
     }
 
-    requestAnimationFrame(animateParticles);
+    particlesRAF = requestAnimationFrame(animateParticles);
   }
 
   function setupParticles() {
     if (!particlesCanvas || !particlesCtx) return;
     resizeCanvas();
     initParticles();
-    requestAnimationFrame(animateParticles);
     window.addEventListener("resize", () => {
       resizeCanvas();
       initParticles();
