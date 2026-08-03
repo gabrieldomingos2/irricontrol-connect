@@ -44,8 +44,11 @@ function initMap() {
     maxZoom: 20,
     attribution: "",
     crossOrigin: true,
-    updateWhenZooming: true,
-    updateInterval: 50,
+    // Only fetch tiles once the zoom animation settles, instead of mid-animation:
+    // avoids firing dozens of concurrent tile requests during a fast wheel-zoom,
+    // which was overwhelming the tile proxy and tripping ERR_HTTP2_PROTOCOL_ERROR.
+    updateWhenZooming: false,
+    updateInterval: 150,
     keepBuffer: 4
   }).addTo(map);
 
