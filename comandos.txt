@@ -2,20 +2,26 @@ Shift + A  -> Alterna o “modo secreto” do template Brazil V6 90dBm (libera/b
 R          -> Recentra no pivô/fazenda (focusOnFarm) quando não estiver digitando em inputs.
 Esc        -> Cancela modos de desenho (pivô, setorial, pacman, irripump), desativa LoS pivot-a-pivot, desativa busca de locais de repetidora e remove marcador de posicionamento; mostra mensagem de cancelamento.
 
-
-
+-------------------------------------------------------------------------------
 
 cd C:\projetos\comercial-irricontrol\irricontrol-connect
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --port 8000
 
-
+-------------------------------------------------------------------------------
 
 cd C:\projetos\comercial-irricontrol\irricontrol-connect\frontend
 npm run dev
 (builda o CSS e o JS uma vez automaticamente antes de subir - "predev")
+
+-------------------------------------------------------------------------------
 
 Se for mexer em algum arquivo de assets/js/, roda isso num 3o terminal
 pra rebuildar o bundle sozinho a cada save (senao as mudancas nao aparecem
 no navegador, so os arquivos de dist/ sao servidos):
 cd C:\projetos\comercial-irricontrol\irricontrol-connect\frontend
 npm run watch:js
+
+-------------------------------------------------------------------------------
+verifica versão das lib
+
+pip list --outdatedS
