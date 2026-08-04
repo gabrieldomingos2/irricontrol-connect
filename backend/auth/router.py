@@ -34,6 +34,14 @@ def _client_ip(request: Request) -> str:
 async def login(payload: LoginRequest, request: Request, background_tasks: BackgroundTasks) -> LoginResponse:
     ip = _client_ip(request)
     user_agent = request.headers.get("user-agent", "")
+
+    if access_log.is_rate_limited(ip):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Muitas tentativas de login. Tente novamente em alguns minutos.",
+            headers={"Retry-After": str(access_log.LOGIN_RATE_LIMIT_WINDOW_MINUTES * 60)},
+        )
+
     success = payload.username == settings.AUTH_ADMIN_USER and payload.password == settings.AUTH_ADMIN_PASSWORD
 
     access_log.record_login(ip=ip, user_agent=user_agent, username=payload.username, success=success)

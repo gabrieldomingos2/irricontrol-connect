@@ -7,7 +7,7 @@ from __future__ import annotations
 import ipaddress
 import logging
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -18,6 +18,10 @@ from backend.config import settings
 logger = logging.getLogger("irricontrol")
 
 _DB_PATH: Path = settings.ARQUIVOS_DIR_PATH / "access_log.db"
+
+# Rate limit de login: acima disso, o IP fica bloqueado ate a janela passar.
+LOGIN_MAX_FAILED_ATTEMPTS = 5
+LOGIN_RATE_LIMIT_WINDOW_MINUTES = 15
 
 # Serviço gratuito de geolocalização por IP (45 req/min, sem chave).
 _GEO_API_URL = "http://ip-api.com/json/{ip}?fields=status,country,regionName,city,isp&lang=pt-BR"
@@ -57,6 +61,26 @@ def _is_private_ip(ip: str) -> bool:
         return ipaddress.ip_address(ip).is_private or ipaddress.ip_address(ip).is_loopback
     except ValueError:
         return True  # valor não-IP (ex.: "unknown") — não tentar geolocalizar
+
+
+def is_rate_limited(ip: str) -> bool:
+    """
+    True se esse IP passou do limite de tentativas de login falhas na janela
+    de tempo definida em LOGIN_RATE_LIMIT_WINDOW_MINUTES. Falha aberta (False)
+    se o SQLite estiver indisponivel - nao pode travar todo mundo por causa
+    de um erro de leitura do log.
+    """
+    try:
+        cutoff = (datetime.now(timezone.utc) - timedelta(minutes=LOGIN_RATE_LIMIT_WINDOW_MINUTES)).isoformat()
+        with _connect() as conn:
+            row = conn.execute(
+                "SELECT COUNT(*) c FROM access_log WHERE ip = ? AND success = 0 AND ts > ?",
+                (ip, cutoff),
+            ).fetchone()
+            return row[0] >= LOGIN_MAX_FAILED_ATTEMPTS
+    except Exception as e:
+        logger.warning("Falha ao checar rate limit de login: %s", e)
+        return False
 
 
 def record_login(ip: str, user_agent: str, username: str, success: bool) -> None:
