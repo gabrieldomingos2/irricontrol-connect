@@ -563,7 +563,7 @@ async function handlePivotSelectionForRepeaterSite(pivotData, marker) {
     }
   } catch (err) {
     console.error("Erro ao buscar locais para repetidora:", err);
-    mostrarMensagem(t("messages.errors.find_repeater_fail", { error: err.message || "Erro desconhecido" }), "erro");
+    mostrarMensagem(t("messages.errors.find_repeater_fail", { error: err.message || t("messages.errors.unknown_error") }), "erro");
   } finally {
     mostrarLoader(false);
     map && (map.getContainer().style.cursor = AppState.modoBuscaLocalRepetidora ? "crosshair" : "");

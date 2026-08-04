@@ -28,9 +28,15 @@
       "interactive_los_analysis": "Интерактивный анализ LoS",
       "confirmation_needed": "Требуется подтверждение",
       "remove_repeater": "Удалить репитер",
-      "toggle_password": "Показать/скрыть пароль"
+      "toggle_password": "Показать/скрыть пароль",
+      "login_region": "Вход Irricontrol",
+      "overlay_opacity": "Прозрачность наложения",
+      "map_region": "Карта",
+      "toggle_panel": "Свернуть/развернуть панель",
+      "close": "Закрыть"
     },
     "labels": {
+      "language": "Язык",
       "tools": "Инструменты",
       "legends_group": "Легенда",
       "draw_group": "Рисовать",
@@ -71,7 +77,8 @@
       "editor_group": "Редактировать Пивоты",
       "tower_height_m": "Высота башни (м):",
       "login_legal": "Вы входите в экспериментальную среду Irricontrol. Эта платформа предназначена исключительно для внутренних тестов, симуляций и валидаций.",
-      "secure_access": "Безопасный доступ"
+      "secure_access": "Безопасный доступ",
+      "template_info": "Шаблон:"
     },
     "languages": {
       "pt_br": "Португальский (Бразилия)",
@@ -134,6 +141,7 @@
   },
   "messages": {
     "success": {
+      "login_complete": "Вход выполнен успешно.",
       "new_session_started": "Сессия начата. Готово к загрузке KMZ или редактированию карты.",
       "kmz_loaded_select_tower": "KMZ импортирован. Выберите антенну для начала симуляции.",
       "simulation_complete": "Симуляция успешно завершена.",
@@ -167,6 +175,25 @@
     },
     "errors": {
         "session_expired": "Сессия истекла. Войдите снова.",
+        "auth_generic": "Ошибка аутентификации.",
+        "login_fill_fields": "Заполните имя пользователя и пароль.",
+        "invalid_password_status": "Ошибка {status}: неверный пароль.",
+        "login_token_missing": "Ошибка входа: токен отсутствует.",
+        "login_fail_generic": "Не удалось выполнить вход.",
+        "unknown_error": "Неизвестная ошибка",
+        "server_communication": "Ошибка связи с сервером",
+        "http_error_status": "Ошибка {status}: {message}",
+        "request_timeout": "Истекло время ожидания запроса.",
+        "start_session_fail": "Не удалось начать новую сессию: {error}",
+        "cloudrf_credentials_invalid": "Ошибка симуляции: отсутствуют или неверны учетные данные CloudRF (проверьте CLOUDRF_API_KEY на бэкенде).",
+        "unexpected_template_format": "Неожиданный формат при загрузке шаблонов",
+        "template_fetch_fail": "Не удалось получить шаблоны: {error}",
+        "elevation_profile_fail": "Ошибка диагностики видимости: {error}",
+        "kmz_export_fail": "Не удалось экспортировать KMZ: {error}",
+        "pivot_generation_fail": "Не удалось создать пивот: {error}",
+        "network_optimization_fail": "Не удалось оптимизировать сеть: {error}",
+        "bundle_export_fail": "Не удалось экспортировать отчет: {error}",
+        "missing_job_id": "В ответе сервера отсутствует идентификатор задания.",
       "session_start_fail": "Критическая ошибка при запуске новой сессии. Пожалуйста, перезагрузите страницу.",
       "select_kmz": "Сначала выберите KMZ файл.",
       "kmz_load_fail": "Не удалось загрузить KMZ: {error}",

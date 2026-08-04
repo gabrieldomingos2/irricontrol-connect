@@ -66,7 +66,7 @@
 
   function showError(message) {
     if (!errorBox) return;
-    errorBox.textContent = message || "Erro ao autenticar.";
+    errorBox.textContent = message || translate("messages.errors.auth_generic", "Erro ao autenticar.");
     errorBox.classList.add("is-on");
     document.querySelector("#login-overlay .card")?.animate?.([
       { transform: "translateX(0)" },
@@ -173,7 +173,7 @@
     });
 
     if (!response.ok) {
-      let errorMessage = `Erro ${response.status}: senha inválida.`;
+      let errorMessage = translate("messages.errors.invalid_password_status", "Erro {status}: senha inválida.").replace("{status}", response.status);
       try {
         const errorBody = await response.json();
         errorMessage = errorBody?.detail || errorBody?.message || errorMessage;
@@ -187,7 +187,7 @@
     }
 
     const data = await response.json();
-    if (!data?.access_token) throw new Error("Login falhou: token ausente.");
+    if (!data?.access_token) throw new Error(translate("messages.errors.login_token_missing", "Login falhou: token ausente."));
     return data.access_token;
   }
 
@@ -199,7 +199,7 @@
       const username = (emailInput?.value || "").trim();
       const password = (passwordInput?.value || "").trim();
       if (!username || !password) {
-        showError("Preencha usuário e senha.");
+        showError(translate("messages.errors.login_fill_fields", "Preencha usuário e senha."));
         return;
       }
 
@@ -213,11 +213,11 @@
           setSubmitLoading(false);
           hideLogin();
           window.dispatchEvent(new CustomEvent("auth:login"));
-          typeof window.mostrarMensagem == "function" && window.mostrarMensagem("Login realizado.", "sucesso");
+          typeof window.mostrarMensagem == "function" && window.mostrarMensagem(translate("messages.success.login_complete", "Login realizado."), "sucesso");
         }, 250);
       } catch (err) {
         setSubmitLoading(false);
-        const errorMessage = err?.message || "Falha ao autenticar.";
+        const errorMessage = err?.message || translate("messages.errors.login_fail_generic", "Falha ao autenticar.");
         showError(errorMessage);
         typeof window.mostrarMensagem == "function" && window.mostrarMensagem(errorMessage, "erro");
       }

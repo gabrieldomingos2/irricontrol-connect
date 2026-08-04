@@ -28,10 +28,16 @@
       "interactive_los_analysis": "Interactive LoS Analysis",
       "confirmation_needed": "Confirmation needed",
       "remove_repeater": "Remove Repeater",
-      "toggle_password": "Show/hide password"
+      "toggle_password": "Show/hide password",
+      "login_region": "Irricontrol Login",
+      "overlay_opacity": "Overlay opacity",
+      "map_region": "Map",
+      "toggle_panel": "Collapse/expand panel",
+      "close": "Close"
 
     },
     "labels": {
+      "language": "Language",
       "tools": "Tools",
       "legends_group": "Legends",
       "draw_group": "Draw",
@@ -72,7 +78,8 @@
       "editor_group": "Edit Pivots",
       "tower_height_m": "Tower Height (m):",
       "login_legal": "You are accessing an experimental Irricontrol environment. This platform is intended exclusively for internal testing, simulations, and validation.",
-      "secure_access": "Secure Access"
+      "secure_access": "Secure Access",
+      "template_info": "Template:"
     },
     "languages": {
       "pt_br": "Português (BR)",
@@ -135,6 +142,7 @@
   },
   "messages": {
     "success": {
+      "login_complete": "Login successful.",
       "new_session_started": "Session started. Ready to load KMZ or edit map.",
       "kmz_loaded_select_tower": "KMZ imported. Choose an antenna to start the simulation.",
       "simulation_complete": "Simulation completed successfully.",
@@ -168,6 +176,25 @@
     },
     "errors": {
         "session_expired": "Session expired. Please log in again.",
+        "auth_generic": "Authentication error.",
+        "login_fill_fields": "Fill in username and password.",
+        "invalid_password_status": "Error {status}: invalid password.",
+        "login_token_missing": "Login failed: token missing.",
+        "login_fail_generic": "Authentication failed.",
+        "unknown_error": "Unknown error",
+        "server_communication": "Server communication error",
+        "http_error_status": "Error {status}: {message}",
+        "request_timeout": "Request timed out.",
+        "start_session_fail": "Could not start a new session: {error}",
+        "cloudrf_credentials_invalid": "Simulation failed: missing or invalid CloudRF credentials (check CLOUDRF_API_KEY on the backend).",
+        "unexpected_template_format": "Unexpected format while loading templates",
+        "template_fetch_fail": "Failed to fetch templates: {error}",
+        "elevation_profile_fail": "Line-of-sight diagnostic failed: {error}",
+        "kmz_export_fail": "Failed to export KMZ: {error}",
+        "pivot_generation_fail": "Failed to create pivot: {error}",
+        "network_optimization_fail": "Failed to optimize network: {error}",
+        "bundle_export_fail": "Failed to export report: {error}",
+        "missing_job_id": "The server response did not include a job ID.",
       "session_start_fail": "Critical failure starting new session. Please reload the page.",
       "select_kmz": "Select a KMZ file first.",
       "kmz_load_fail": "Failed to load KMZ: {error}",

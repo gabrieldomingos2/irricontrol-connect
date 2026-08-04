@@ -28,9 +28,15 @@
       "interactive_los_analysis": "Análisis de Visión Interactivo",
       "confirmation_needed": "Confirmación necesaria",
       "remove_repeater": "Eliminar repetidora",
-      "toggle_password": "Mostrar/ocultar contraseña"
+      "toggle_password": "Mostrar/ocultar contraseña",
+      "login_region": "Inicio de sesión Irricontrol",
+      "overlay_opacity": "Opacidad de la superposición",
+      "map_region": "Mapa",
+      "toggle_panel": "Contraer/expandir panel",
+      "close": "Cerrar"
     },
     "labels": {
+      "language": "Idioma",
       "tools": "Herramientas",
       "legends_group": "Leyendas",
       "draw_group": "Dibujar",
@@ -71,7 +77,8 @@
       "editor_group": "Editar Pivotes",
       "tower_height_m": "Altura de la Torre (m):",
       "login_legal": "Está accediendo a un entorno experimental de Irricontrol. Esta plataforma está destinada exclusivamente a pruebas internas, simulaciones y validaciones.",
-      "secure_access": "Acceso Seguro"
+      "secure_access": "Acceso Seguro",
+      "template_info": "Plantilla:"
     },
     "languages": {
       "pt_br": "Portugués (BR)",
@@ -134,6 +141,7 @@
   },
   "messages": {
     "success": {
+      "login_complete": "Inicio de sesión exitoso.",
       "new_session_started": "Sesión iniciada. Listo para cargar KMZ o editar el mapa.",
       "kmz_loaded_select_tower": "KMZ importado. Elija una antena para iniciar la simulación.",
       "simulation_complete": "Simulación completada con éxito.",
@@ -167,6 +175,25 @@
     },
     "errors": {
         "session_expired": "Sesion expirada. Inicie sesion de nuevo.",
+        "auth_generic": "Error al autenticar.",
+        "login_fill_fields": "Complete usuario y contraseña.",
+        "invalid_password_status": "Error {status}: contraseña inválida.",
+        "login_token_missing": "Inicio de sesión fallido: falta el token.",
+        "login_fail_generic": "Error al autenticar.",
+        "unknown_error": "Error desconocido",
+        "server_communication": "Error de comunicación con el servidor",
+        "http_error_status": "Error {status}: {message}",
+        "request_timeout": "Tiempo de espera agotado.",
+        "start_session_fail": "No fue posible iniciar una nueva sesión: {error}",
+        "cloudrf_credentials_invalid": "Fallo en la simulación: credenciales de CloudRF ausentes o inválidas (verifique CLOUDRF_API_KEY en el backend).",
+        "unexpected_template_format": "Formato inesperado al cargar plantillas",
+        "template_fetch_fail": "Error al buscar plantillas: {error}",
+        "elevation_profile_fail": "Fallo en el diagnóstico de visibilidad: {error}",
+        "kmz_export_fail": "Error al exportar KMZ: {error}",
+        "pivot_generation_fail": "Error al crear pivote: {error}",
+        "network_optimization_fail": "Error al optimizar la red: {error}",
+        "bundle_export_fail": "Error al exportar el informe: {error}",
+        "missing_job_id": "La respuesta del servidor no incluyó un ID de trabajo.",
       "session_start_fail": "Fallo crítico al iniciar nueva sesión. Por favor, recargue la página.",
       "select_kmz": "Seleccione primero un archivo KMZ.",
       "kmz_load_fail": "Error al cargar KMZ: {error}",

@@ -28,9 +28,15 @@
         "interactive_los_analysis": "Análise de Visada Interativa",
         "confirmation_needed": "Confirmação necessária",
         "remove_repeater": "Remover Repetidora",
-        "toggle_password": "Mostrar/ocultar senha"
+        "toggle_password": "Mostrar/ocultar senha",
+        "login_region": "Login Irricontrol",
+        "overlay_opacity": "Opacidade do overlay",
+        "map_region": "Mapa",
+        "toggle_panel": "Recolher/expandir painel",
+        "close": "Fechar"
     },
     "labels": {
+        "language": "Idioma",
         "tools": "Ferramentas",
         "legends_group": "Legendas",
         "draw_group": "Desenhar",
@@ -71,7 +77,8 @@
         "editor_group": "Editar Pivôs",
         "tower_height_m": "Altura da Torre (m):",
         "login_legal": "Você está acessando um ambiente experimental da Irricontrol. Esta plataforma é destinada exclusivamente a testes, simulações e validações internas.",
-        "secure_access": "Acesso Seguro"
+        "secure_access": "Acesso Seguro",
+        "template_info": "Template:"
     },
     "languages": {
         "pt_br": "Português (BR)",
@@ -134,6 +141,7 @@
 },
     "messages": {
         "success": {
+        "login_complete": "Login realizado.",
         "new_session_started": "Sessão iniciada. KMZ pronto para ser carregado ou mapa para edição.",
         "kmz_loaded_select_tower": "KMZ importado. Escolha uma antena para iniciar a simulação.",
         "simulation_complete": "Simulação concluída com sucesso.",
@@ -167,6 +175,25 @@
     },
     "errors": {
         "session_expired": "Sessao expirada. Faca login novamente.",
+        "auth_generic": "Erro ao autenticar.",
+        "login_fill_fields": "Preencha usuário e senha.",
+        "invalid_password_status": "Erro {status}: senha inválida.",
+        "login_token_missing": "Login falhou: token ausente.",
+        "login_fail_generic": "Falha ao autenticar.",
+        "unknown_error": "Erro desconhecido",
+        "server_communication": "Erro de comunicação com o servidor",
+        "http_error_status": "Erro {status}: {message}",
+        "request_timeout": "Tempo de solicitação esgotado (timeout).",
+        "start_session_fail": "Não foi possível iniciar uma nova sessão: {error}",
+        "cloudrf_credentials_invalid": "Falha na simulação: credenciais da CloudRF ausentes ou inválidas (verifique CLOUDRF_API_KEY no backend).",
+        "unexpected_template_format": "Formato inesperado ao carregar templates",
+        "template_fetch_fail": "Falha ao buscar templates: {error}",
+        "elevation_profile_fail": "Falha no diagnóstico de visada: {error}",
+        "kmz_export_fail": "Falha ao exportar KMZ: {error}",
+        "pivot_generation_fail": "Falha ao criar pivô: {error}",
+        "network_optimization_fail": "Falha ao otimizar rede: {error}",
+        "bundle_export_fail": "Falha ao exportar relatório: {error}",
+        "missing_job_id": "A resposta do servidor não incluiu um ID de job.",
         "session_start_fail": "Falha crítica ao iniciar nova sessão. Recarregue a página.",
         "select_kmz": "Selecione um arquivo KMZ primeiro.",
         "kmz_load_fail": "Falha ao carregar KMZ: {error}",

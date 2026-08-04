@@ -84,15 +84,15 @@ async function apiRequest(path, options = {}) {
           errorBody = { detail: await response.text() || response.statusText };
         } catch {}
       }
-      const errorMessage = pickErrorMessage(errorBody, response.statusText || "Erro de comunicação com o servidor");
+      const errorMessage = pickErrorMessage(errorBody, response.statusText || tOr("messages.errors.server_communication", "Erro de comunicação com o servidor"));
       response.status === 401 && handleUnauthorized();
-      throw new Error(`Erro ${response.status}: ${errorMessage}`);
+      throw new Error(tOr("messages.errors.http_error_status", "Erro {status}: {message}").replace("{status}", response.status).replace("{message}", errorMessage));
     }
     if (response.status === 204) return null;
     if (expects === "blob") return response;
     return (response.headers.get("content-type") || "").includes("application/json") ? await response.json() : await response.text();
   } catch (err) {
-    if (err.name === "AbortError") throw new Error("Tempo de solicitação esgotado (timeout).");
+    if (err.name === "AbortError") throw new Error(tOr("messages.errors.request_timeout", "Tempo de solicitação esgotado (timeout)."));
     console.error(`Erro na requisição ${url}:`, err);
     throw err;
   } finally {
@@ -104,7 +104,7 @@ async function startEmptyJob() {
   return apiRequest("/kmz/iniciar_job_vazio", {
     method: "POST"
   }).catch((err) => {
-    notify(`Não foi possível iniciar uma nova sessão: ${err.message}`, "erro");
+    notify(tOr("messages.errors.start_session_fail", "Não foi possível iniciar uma nova sessão: {error}").replace("{error}", err.message), "erro");
     throw err;
   });
 }
@@ -114,13 +114,15 @@ async function processKmz(formData) {
     method: "POST",
     body: formData
   }).catch((err) => {
-    notify(`Falha ao carregar KMZ: ${err.message}`, "erro");
+    notify(tOr("messages.errors.kmz_load_fail", "Falha ao carregar KMZ: {error}").replace("{error}", err.message), "erro");
     throw err;
   });
 }
 
 function friendlyCloudRFError(message) {
-  return /401/.test(message) && /key/i.test(message) ? "Falha na simulação: credenciais da CloudRF ausentes ou inválidas (verifique CLOUDRF_API_KEY no backend)." : `Falha na simulação: ${message}`;
+  return /401/.test(message) && /key/i.test(message)
+    ? tOr("messages.errors.cloudrf_credentials_invalid", "Falha na simulação: credenciais da CloudRF ausentes ou inválidas (verifique CLOUDRF_API_KEY no backend).")
+    : tOr("messages.errors.simulation_fail", "Falha na simulação: {error}").replace("{error}", message);
 }
 
 async function simulateSignal(payload) {
@@ -148,7 +150,7 @@ async function reevaluatePivots(payload) {
     method: "POST",
     body: JSON.stringify(payload)
   }).catch((err) => {
-    notify(`Falha ao reavaliar cobertura: ${err.message}`, "erro");
+    notify(tOr("messages.errors.reevaluate_fail", "Falha ao reavaliar cobertura: {error}").replace("{error}", err.message), "erro");
     throw err;
   });
 }
@@ -163,9 +165,9 @@ async function getTemplates() {
         disabled: Array.isArray(result.disabled) ? result.disabled : []
       };
     }
-    throw new Error("Formato inesperado ao carregar templates");
+    throw new Error(tOr("messages.errors.unexpected_template_format", "Formato inesperado ao carregar templates"));
   } catch (err) {
-    notify(`Falha ao buscar templates: ${err.message}`, "erro");
+    notify(tOr("messages.errors.template_fetch_fail", "Falha ao buscar templates: {error}").replace("{error}", err.message), "erro");
     throw err;
   }
 }
@@ -175,7 +177,7 @@ async function getElevationProfile(payload) {
     method: "POST",
     body: JSON.stringify(payload)
   }).catch((err) => {
-    notify(`Falha no diagnóstico de visada: ${err.message}`, "erro");
+    notify(tOr("messages.errors.elevation_profile_fail", "Falha no diagnóstico de visada: {error}").replace("{error}", err.message), "erro");
     throw err;
   });
 }
@@ -221,7 +223,7 @@ async function exportKmz(payload, fileHandle) {
     const blob = await response.blob();
     await saveBlobToTarget(fileHandle, blob, filename);
   } catch (err) {
-    notify(`Falha ao exportar KMZ: ${err.message}`, "erro");
+    notify(tOr("messages.errors.kmz_export_fail", "Falha ao exportar KMZ: {error}").replace("{error}", err.message), "erro");
     throw err;
   }
 }
@@ -231,7 +233,7 @@ async function findHighPointsForRepeater(payload) {
     method: "POST",
     body: JSON.stringify(payload)
   }).catch((err) => {
-    notify(`Falha na busca por locais de repetidora: ${err.message}`, "erro");
+    notify(tOr("messages.errors.find_repeater_fail", "Falha ao buscar locais para repetidora: {error}").replace("{error}", err.message), "erro");
     throw err;
   });
 }
@@ -241,7 +243,7 @@ async function generatePivotInCircle(payload) {
     method: "POST",
     body: JSON.stringify(payload)
   }).catch((err) => {
-    notify(`Falha ao criar pivô: ${err.message}`, "erro");
+    notify(tOr("messages.errors.pivot_generation_fail", "Falha ao criar pivô: {error}").replace("{error}", err.message), "erro");
     throw err;
   });
 }
@@ -258,11 +260,11 @@ async function optimizeNetwork(payload) {
       try {
         return await apiRequest("/simulation/optimize-network", requestOptions);
       } catch (fallbackErr) {
-        notify(`Falha ao otimizar rede: ${fallbackErr.message}`, "erro");
+        notify(tOr("messages.errors.network_optimization_fail", "Falha ao otimizar rede: {error}").replace("{error}", fallbackErr.message), "erro");
         throw fallbackErr;
       }
     }
-    notify(`Falha ao otimizar rede: ${err.message}`, "erro");
+    notify(tOr("messages.errors.network_optimization_fail", "Falha ao otimizar rede: {error}").replace("{error}", err.message), "erro");
     throw err;
   }
 }
@@ -278,7 +280,7 @@ async function exportPdfReport(payload, fileHandle) {
     const blob = await response.blob();
     await saveBlobToTarget(fileHandle, blob, filename);
   } catch (err) {
-    notify(safeT("Falha ao exportar PDF: {error}", { error: err.message }), "erro");
+    notify(safeT("messages.errors.pdf_export_fail", { error: err.message }), "erro");
     throw err;
   }
 }
@@ -294,7 +296,7 @@ async function exportBundle(payload, fileHandle) {
     const blob = await response.blob();
     await saveBlobToTarget(fileHandle, blob, filename);
   } catch (err) {
-    notify(safeT("Falha ao exportar relatório: {error}", { error: err.message }), "erro");
+    notify(safeT("messages.errors.bundle_export_fail", { error: err.message }), "erro");
     throw err;
   }
 }

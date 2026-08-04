@@ -782,7 +782,7 @@ async function handlePacmanPivotDrawClick(event) {
     mostrarMensagem(t("messages.success.pacman_pivot_created", { name: pivot.nome }), "sucesso");
   } catch (err) {
     console.error("Erro ao criar pivô Pac-Man:", err);
-    mostrarMensagem(err.message, "erro");
+    mostrarMensagem(t("messages.errors.generic_error", { error: err.message }), "erro");
   } finally {
     AppState.centroPivoTemporario = null;
     AppState.pontoRaioTemporario = null;

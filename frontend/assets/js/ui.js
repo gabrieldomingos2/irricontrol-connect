@@ -231,7 +231,7 @@ function atualizarPainelDados() {
 
   totalPivosEl && (totalPivosEl.textContent = `${t("ui.labels.total_pivots")} ${totalPivos}`);
   foraCoberturaEl && (foraCoberturaEl.textContent = `${t("ui.labels.out_of_coverage")} ${foraCobertura}`);
-  templateInfoEl && (templateInfoEl.textContent = `Template: ${AppState.templateSelecionado || "--"}`);
+  templateInfoEl && (templateInfoEl.textContent = `${t("ui.labels.template_info")} ${AppState.templateSelecionado || "--"}`);
   totalRepetidorasEl && (totalRepetidorasEl.textContent = `${t("ui.labels.total_repeaters")} ${totalRepetidoras}`);
   totalCentraisEl && centralCountValueEl && (
     centralCountValueEl.textContent = totalCentrais,

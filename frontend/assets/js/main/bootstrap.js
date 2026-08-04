@@ -90,7 +90,7 @@ async function startNewSession() {
   mostrarLoader(true);
   try {
     const result = await startEmptyJob();
-    if (!result.job_id) throw new Error("A resposta do servidor não incluiu um ID de job.");
+    if (!result.job_id) throw new Error(t("messages.errors.missing_job_id"));
     AppState.setJobId(result.job_id);
     AppState.jobId && mostrarMensagem(t("messages.success.new_session_started"), "sucesso");
     AppState.currentProcessedKmzData = { antenas: [], pivos: [], ciclos: [], bombas: [] };
@@ -152,7 +152,7 @@ async function handleKmzFileSelect(event) {
 
     const result = await processKmz(formData);
     console.log("KMZ processado:", result);
-    if (!result.job_id) throw new Error("A resposta do servidor não incluiu um ID de job.");
+    if (!result.job_id) throw new Error(t("messages.errors.missing_job_id"));
 
     AppState.setJobId(result.job_id);
     AppState.currentProcessedKmzData = JSON.parse(JSON.stringify(result));

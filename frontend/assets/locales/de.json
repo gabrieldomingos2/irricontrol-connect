@@ -28,9 +28,15 @@
       "interactive_los_analysis": "Interaktive Sichtlinienanalyse",
       "confirmation_needed": "Bestätigung erforderlich",
       "remove_repeater": "Repeater entfernen",
-      "toggle_password": "Passwort anzeigen/ausblenden"
+      "toggle_password": "Passwort anzeigen/ausblenden",
+      "login_region": "Irricontrol-Anmeldung",
+      "overlay_opacity": "Overlay-Deckkraft",
+      "map_region": "Karte",
+      "toggle_panel": "Panel ein-/ausklappen",
+      "close": "Schließen"
     },
     "labels": {
+      "language": "Sprache",
       "tools": "Werkzeuge",
       "legends_group": "Legenden",
       "draw_group": "Zeichnen",
@@ -71,7 +77,8 @@
       "editor_group": "Pivots bearbeiten",
       "tower_height_m": "Turmhöhe (m):",
       "login_legal": "Sie greifen auf eine experimentelle Irricontrol-Umgebung zu. Diese Plattform ist ausschließlich für interne Tests, Simulationen und Validierungen bestimmt.",
-      "secure_access": "Sicherer Zugang"
+      "secure_access": "Sicherer Zugang",
+      "template_info": "Vorlage:"
     },
     "languages": {
       "pt_br": "Portugiesisch (BR)",
@@ -134,6 +141,7 @@
   },
   "messages": {
     "success": {
+      "login_complete": "Anmeldung erfolgreich.",
       "new_session_started": "Sitzung gestartet. Bereit zum Laden von KMZ oder Bearbeiten der Karte.",
       "kmz_loaded_select_tower": "KMZ importiert. Wählen Sie eine Antenne, um die Simulation zu starten.",
       "simulation_complete": "Simulation erfolgreich abgeschlossen.",
@@ -167,6 +175,25 @@
     },
     "errors": {
         "session_expired": "Sitzung abgelaufen. Bitte erneut anmelden.",
+        "auth_generic": "Fehler bei der Anmeldung.",
+        "login_fill_fields": "Benutzername und Passwort eingeben.",
+        "invalid_password_status": "Fehler {status}: ungültiges Passwort.",
+        "login_token_missing": "Anmeldung fehlgeschlagen: Token fehlt.",
+        "login_fail_generic": "Anmeldung fehlgeschlagen.",
+        "unknown_error": "Unbekannter Fehler",
+        "server_communication": "Fehler bei der Kommunikation mit dem Server",
+        "http_error_status": "Fehler {status}: {message}",
+        "request_timeout": "Zeitüberschreitung der Anfrage.",
+        "start_session_fail": "Neue Sitzung konnte nicht gestartet werden: {error}",
+        "cloudrf_credentials_invalid": "Simulation fehlgeschlagen: CloudRF-Zugangsdaten fehlen oder sind ungültig (CLOUDRF_API_KEY im Backend prüfen).",
+        "unexpected_template_format": "Unerwartetes Format beim Laden der Vorlagen",
+        "template_fetch_fail": "Vorlagen konnten nicht abgerufen werden: {error}",
+        "elevation_profile_fail": "Sichtlinien-Diagnose fehlgeschlagen: {error}",
+        "kmz_export_fail": "KMZ-Export fehlgeschlagen: {error}",
+        "pivot_generation_fail": "Pivot konnte nicht erstellt werden: {error}",
+        "network_optimization_fail": "Netzwerkoptimierung fehlgeschlagen: {error}",
+        "bundle_export_fail": "Bericht konnte nicht exportiert werden: {error}",
+        "missing_job_id": "Die Serverantwort enthielt keine Job-ID.",
       "session_start_fail": "Kritischer Fehler beim Starten der neuen Sitzung. Bitte laden Sie die Seite neu.",
       "select_kmz": "Wählen Sie zuerst eine KMZ-Datei aus.",
       "kmz_load_fail": "Fehler beim Laden der KMZ: {error}",
