@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import secrets
 from typing import Any, Dict
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
@@ -42,7 +43,9 @@ async def login(payload: LoginRequest, request: Request, background_tasks: Backg
             headers={"Retry-After": str(access_log.LOGIN_RATE_LIMIT_WINDOW_MINUTES * 60)},
         )
 
-    success = payload.username == settings.AUTH_ADMIN_USER and payload.password == settings.AUTH_ADMIN_PASSWORD
+    success = secrets.compare_digest(payload.username, settings.AUTH_ADMIN_USER) and secrets.compare_digest(
+        payload.password, settings.AUTH_ADMIN_PASSWORD
+    )
 
     access_log.record_login(ip=ip, user_agent=user_agent, username=payload.username, success=success)
     background_tasks.add_task(access_log.ensure_ip_location, ip)
