@@ -14,6 +14,7 @@ __pycache__/
 Thumbs.db
 
 # === Temporários e logs ===
+logs/
 *.log
 *.tmp
 *.bak
@@ -45,10 +46,9 @@ backend/static/imagens/*/
 backend/static/arquivos/*
 !backend/static/arquivos/.keep
 
-# === Scripts e logs locais ===
+# === Scripts locais ===
 *.bat
 *.sh
-irricontrol_app.log
 *.ps1
 
 # === Runtime uploads/cache (NÃO versionar) ===
