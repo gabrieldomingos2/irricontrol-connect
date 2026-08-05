@@ -25,9 +25,21 @@ class LoginResponse(BaseModel):
 
 
 def _client_ip(request: Request) -> str:
+    """
+    Resolve o IP real do cliente para fins de rate limit de login.
+
+    X-Forwarded-For pode conter uma cadeia "cliente, proxy1, proxy2, ...".
+    O primeiro valor é enviado pelo próprio cliente e pode ser forjado
+    livremente (bastava mandar um X-Forwarded-For diferente a cada
+    tentativa para contornar o bloqueio de força bruta). O nosso proxy
+    confiável (edge da Render) sempre acrescenta o IP real da conexão como
+    o ÚLTIMO valor da lista, então é esse que usamos.
+    """
     forwarded = request.headers.get("x-forwarded-for")
     if forwarded:
-        return forwarded.split(",")[0].strip()
+        parts = [p.strip() for p in forwarded.split(",") if p.strip()]
+        if parts:
+            return parts[-1]
     return request.client.host if request.client else "unknown"
 
 
