@@ -116,7 +116,7 @@ function mostrarMensagem(message, type = "sucesso") {
   }
 
   mensagemDiv.classList.add(borderClass);
-  mensagemDiv.innerHTML = `${icon}<span>${message}</span>`;
+  mensagemDiv.innerHTML = `${icon}<span>${escapeHtml(message)}</span>`;
   lucide?.createIcons?.();
 
   _hideMsgTimer = setTimeout(() => {

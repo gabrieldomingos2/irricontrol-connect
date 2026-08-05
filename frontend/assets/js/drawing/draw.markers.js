@@ -90,7 +90,7 @@ function drawAntenaCandidates(candidates) {
     const labelMarker = L.marker([candidate.lat, candidate.lon], {
       icon: L.divIcon({
         className: "label-pivo",
-        html: label,
+        html: escapeHtml(label),
         iconSize: [labelWidth, 20],
         iconAnchor: [labelWidth / 2, 45]
       }),
@@ -156,7 +156,7 @@ function drawPivos(pivots, useEditedPositions = false) {
     });
     const marker = L.marker(position, { icon }).addTo(map);
 
-    let labelHtml = pivot.nome;
+    let labelHtml = escapeHtml(pivot.nome);
     let hasSourceInfo = false;
     let labelWidth = pivot.nome.length * 6.5 + 15;
 
@@ -183,7 +183,7 @@ function drawPivos(pivots, useEditedPositions = false) {
             });
           }
         }
-        labelHtml = `${pivot.nome}<br><span class="source-name-pivo">${sourceName}</span><br><span class="distancia-pivo">${distanceLabel}</span>`;
+        labelHtml = `${escapeHtml(pivot.nome)}<br><span class="source-name-pivo">${escapeHtml(sourceName)}</span><br><span class="distancia-pivo">${escapeHtml(distanceLabel)}</span>`;
         hasSourceInfo = true;
         labelWidth = Math.max(labelWidth, sourceName.length * 6.5 + 15, distanceLabel.length * 6.5 + 15);
       }
@@ -277,7 +277,7 @@ function updateAntenaOrRepeaterLabel(entity) {
   const labelWidth = label.length * 7 + 10;
   entity.label.setIcon(L.divIcon({
     className: "label-pivo",
-    html: label,
+    html: escapeHtml(label),
     iconSize: [labelWidth, 20],
     iconAnchor: [labelWidth / 2, 45]
   }));
@@ -333,7 +333,7 @@ function drawBombas(bombas) {
       typeof mostrarMensagem == "function" && mostrarMensagem(t("messages.success.irripump_removed", { name: bombaName }), "sucesso");
     });
 
-    let labelHtml = bombaName;
+    let labelHtml = escapeHtml(bombaName);
     let hasSourceInfo = false;
     let labelWidth = bombaName.length * 6.5 + 15;
 
@@ -360,7 +360,7 @@ function drawBombas(bombas) {
             });
           }
         }
-        labelHtml = `${bombaName}<br><span class="source-name-pivo">${sourceName}</span><br><span class="distancia-pivo">${distanceLabel}</span>`;
+        labelHtml = `${escapeHtml(bombaName)}<br><span class="source-name-pivo">${escapeHtml(sourceName)}</span><br><span class="distancia-pivo">${escapeHtml(distanceLabel)}</span>`;
         hasSourceInfo = true;
         labelWidth = Math.max(labelWidth, sourceName.length * 6.5 + 15, distanceLabel.length * 6.5 + 15);
       }
@@ -401,7 +401,7 @@ function addRepetidoraNoPainel(repeater) {
     </button>`;
 
   item.innerHTML = `
-    <span class="text-white/80 text-sm">${getFormattedAntennaOrRepeaterName(repeater)}</span>
+    <span class="text-white/80 text-sm">${escapeHtml(getFormattedAntennaOrRepeaterName(repeater))}</span>
     <div class="flex gap-3 items-center">
       ${diagnosticBtnHtml}
       <button class="text-white/60 hover:text-sky-300 transition"
@@ -482,7 +482,7 @@ function addAntenaAoPainel(antenna) {
     </button>`;
 
   item.innerHTML = `
-    <span class="text-white/80 text-sm">${getFormattedAntennaOrRepeaterName(antenna)}</span>
+    <span class="text-white/80 text-sm">${escapeHtml(getFormattedAntennaOrRepeaterName(antenna))}</span>
     <div class="flex gap-3 items-center">
       ${diagnosticBtnHtml}
       <button class="text-white/60 hover:text-sky-300 transition"

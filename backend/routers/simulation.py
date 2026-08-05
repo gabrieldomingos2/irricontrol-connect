@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from backend.config import settings
 from backend.services import cloudrf_service, analysis_service
 from backend.exceptions import CloudRFAPIError, DEMProcessingError
+from backend.routers.validators import ensure_valid_job_id
 
 logger = logging.getLogger("irricontrol")
 router = APIRouter(prefix="/simulation", tags=["Simulation & Analysis"])
@@ -178,6 +179,7 @@ async def generate_pivot_in_circle_endpoint(payload: GeneratePivotPayload):
 @router.post("/run_main")
 async def run_main_simulation_endpoint(payload: AntenaSimPayload, request: Request):
     try:
+        ensure_valid_job_id(payload.job_id)
         _validate_template_id_with_override(payload.template, allow_disabled=True)
         logger.info("Starting main simulation for session: %s", payload.job_id)
 
@@ -235,6 +237,7 @@ async def run_main_simulation_endpoint(payload: AntenaSimPayload, request: Reque
 @router.post("/run_manual")
 async def run_manual_simulation_endpoint(payload: ManualSimPayload, request: Request):
     try:
+        ensure_valid_job_id(payload.job_id)
         _validate_template_id_with_override(payload.template, allow_disabled=True)
         logger.info("Starting manual simulation for session: %s", payload.job_id)
 
@@ -282,6 +285,7 @@ async def run_manual_simulation_endpoint(payload: ManualSimPayload, request: Req
 async def reevaluate_pivots_endpoint(payload: ReavaliarPayload):
     """Reevaluates pivot and pump coverage based on active signal overlays."""
     try:
+        ensure_valid_job_id(payload.job_id)
         logger.info("Reevaluating coverage for session %s with %d overlays.", payload.job_id, len(payload.overlays))
 
         overlays_para_analise = []
@@ -321,6 +325,8 @@ async def reevaluate_pivots_endpoint(payload: ReavaliarPayload):
 
         logger.info("Coverage reevaluation completed for session %s.", payload.job_id)
         return {"pivos": pivos_atualizados, "bombas": bombas_atualizadas}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Error in /simulation/reevaluate (session %s): %s", payload.job_id, e, exc_info=True)
         msg = f"Erro ao reavaliar cobertura: {e}" if DEBUG else "Erro interno ao reavaliar cobertura."
@@ -350,6 +356,7 @@ async def get_elevation_profile_endpoint(payload: PerfilPayload):
 @router.post("/find_repeater_sites")
 async def find_repeater_sites_endpoint(payload: FindRepeaterSitesPayload):
     try:
+        ensure_valid_job_id(payload.job_id)
         logger.info(
             "Searching repeater sites for pivot '%s' in session %s.",
             payload.target_pivot_nome, payload.job_id,

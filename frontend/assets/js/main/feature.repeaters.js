@@ -128,7 +128,7 @@ async function startMainSimulation(candidate) {
     const labelMarker = L.marker([AppState.antenaGlobal.lat, AppState.antenaGlobal.lon], {
       icon: L.divIcon({
         className: "label-pivo",
-        html: label,
+        html: escapeHtml(label),
         iconSize: [labelWidth, 20],
         iconAnchor: [labelWidth / 2, 45]
       }),
@@ -381,7 +381,7 @@ async function handleConfirmRepetidoraClick() {
     const labelMarker = L.marker(AppState.coordenadaClicada, {
       icon: L.divIcon({
         className: "label-pivo",
-        html: label,
+        html: escapeHtml(label),
         iconSize: [labelWidth, 20],
         iconAnchor: [labelWidth / 2, 45]
       }),

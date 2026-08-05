@@ -1,3 +1,19 @@
+// Nomes de pivôs/antenas/repetidoras vêm de arquivos KMZ enviados pelo
+// usuário (ou de renomeações manuais) e são exibidos via innerHTML/L.divIcon
+// em vários pontos da UI. Sem escapar, um placemark chamado por exemplo
+// `<img src=x onerror=...>` executaria como XSS armazenado assim que
+// desenhado no mapa. Toda string de origem externa que vira HTML deve
+// passar por aqui antes.
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[ch]));
+}
+
 const TORRE_ICON_PATH = "assets/images/cloudrf.png";
 const BOMBA_ICON_AZUL_PATH = "assets/images/homegardenbusiness.png";
 const BOMBA_ICON_VERMELHO_PATH = "assets/images/homegardenbusiness-red.png";
@@ -427,12 +443,13 @@ function drawDiagnostico(fromLatLng, toLatLng, bloqueio, pontoMaisAlto, label, d
   const isCriticallyBlocked = bloqueio?.diff > 0.1;
 
   let iconPath, iconSize, markerLatLng, tooltipHtml, accentColor;
+  const safeLabel = escapeHtml(label);
 
   if (isCriticallyBlocked) {
     iconPath = ATTENTION_ICON_PATH;
     iconSize = [24, 24];
     markerLatLng = [bloqueio.lat, bloqueio.lon];
-    tooltipHtml = `<strong>${label}</strong>`;
+    tooltipHtml = `<strong>${safeLabel}</strong>`;
     distanceLabel && (tooltipHtml += `<br>${t("ui.labels.pivo_distance_label")} ${distanceLabel}`);
     tooltipHtml += `<br>${t("tooltips.blockage_point", { elevation: bloqueio.elev.toFixed(1) })}`;
     accentColor = "#FF9800";
@@ -441,7 +458,7 @@ function drawDiagnostico(fromLatLng, toLatLng, bloqueio, pontoMaisAlto, label, d
     iconPath = MOUNTAIN_ICON_PATH;
     iconSize = [22, 22];
     markerLatLng = [pontoMaisAlto.lat, pontoMaisAlto.lon];
-    tooltipHtml = `<strong>${label}</strong>`;
+    tooltipHtml = `<strong>${safeLabel}</strong>`;
     distanceLabel && (tooltipHtml += `<br>${t("ui.labels.pivo_distance_label")} ${distanceLabel}`);
     accentColor = "#FF9800";
     tooltipHtml += `<br><span style="color:${accentColor};">${t("tooltips.highest_point_short", { elevation: pontoMaisAlto.elev.toFixed(1) })}</span>`;
