@@ -33,7 +33,9 @@
       "overlay_opacity": "Overlay-Deckkraft",
       "map_region": "Karte",
       "toggle_panel": "Panel ein-/ausklappen",
-      "close": "Schließen"
+      "close": "Schließen",
+      "screenshot_mode": "Vollbild für Screenshot",
+      "screenshot_mode_off": "Vollbild verlassen"
     },
     "labels": {
       "language": "Sprache",
@@ -266,7 +268,9 @@
       "find_repeater_long_process_warning": "Die Suche nach Repeater-Standorten kann eine Minute oder länger dauern. Bitte warten.",
       "pdf_report_unlocked": "PDF-Bericht zum Download freigegeben.",
       "move_pivot_center_on": "Pivot-Zentrum verschieben Modus aktiviert. Der Kreis wird sich NICHT bewegen. Klicken Sie erneut auf die Schaltfläche, um zu deaktivieren.",
-      "move_pivot_center_off": "Pivot-Zentrum verschieben Modus deaktiviert. Position wurde aktualisiert, bitte bewerten Sie die Abdeckung neu."
+      "move_pivot_center_off": "Pivot-Zentrum verschieben Modus deaktiviert. Position wurde aktualisiert, bitte bewerten Sie die Abdeckung neu.",
+      "delete_pivot_mode_on": "Pivot-löschen-Modus aktiviert: Tippen Sie auf einen Pivot, um ihn zu entfernen.",
+      "delete_pivot_mode_off": "Pivot-löschen-Modus deaktiviert."
     },
     "confirm": {
       "remove_pivot": "Sind Sie sicher, dass Sie den Pivot \"{name}\" und die zugehörigen Bereiche entfernen möchten?",

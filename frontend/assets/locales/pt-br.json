@@ -33,7 +33,9 @@
         "overlay_opacity": "Opacidade do overlay",
         "map_region": "Mapa",
         "toggle_panel": "Recolher/expandir painel",
-        "close": "Fechar"
+        "close": "Fechar",
+        "screenshot_mode": "Tela cheia para captura",
+        "screenshot_mode_off": "Sair da tela cheia"
     },
     "labels": {
         "language": "Idioma",
@@ -267,7 +269,9 @@
         "pdf_report_unlocked": "Relatório em PDF liberado para download.",
         "move_pivot_center_on": "Modo de mover o centro do pivô ativado. O círculo NÃO se moverá. Clique no botão novamente para desativar.",
         "move_pivot_center_off": "Modo de mover o centro do pivô desativado. A posição foi atualizada, reavalie a cobertura.",
-        "no_active_png_overlays": "Nenhuma cobertura ativa (antena/repetidora) para baixar."
+        "no_active_png_overlays": "Nenhuma cobertura ativa (antena/repetidora) para baixar.",
+        "delete_pivot_mode_on": "Modo de excluir pivô ativado: toque num pivô para removê-lo.",
+        "delete_pivot_mode_off": "Modo de excluir pivô desativado."
     },
     "confirm": {
         "remove_pivot": "Tem certeza que deseja remover o pivô \"{name}\" e suas áreas associadas?",

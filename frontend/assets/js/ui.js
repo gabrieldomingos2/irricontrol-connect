@@ -189,6 +189,61 @@ function updateLegendImage(templateId) {
   legendImage.src = match.path;
 }
 
+// Modo de captura de tela: esconde toda a UI ao redor (sidebar,
+// topbar, painéis, barra do mobile) via a classe "screenshot-mode" no
+// <body> (ver style.css) e, quando o navegador suporta, também pede
+// tela cheia de verdade (Fullscreen API) pra esconder a barra de
+// endereço no celular. Em navegadores sem suporte (ex.: Safari no
+// iPhone, que só permite Fullscreen API em <video>) o pedido falha
+// silenciosamente e o modo continua funcionando só com o CSS.
+function toggleScreenshotMode() {
+  const active = document.body.classList.toggle("screenshot-mode");
+  const btn = document.getElementById("btn-screenshot-mode");
+
+  if (active) {
+    try {
+      const requestFs = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+      requestFs && requestFs.call(document.documentElement)?.catch?.(() => {});
+    } catch (err) {
+      // Ambiente sem suporte real a Fullscreen API — sem problema,
+      // o modo já funciona só com CSS.
+    }
+    if (btn) {
+      btn.innerHTML = '<i data-lucide="minimize" class="w-5 h-5"></i>';
+      btn.title = t("ui.titles.screenshot_mode_off");
+      btn.setAttribute("aria-label", t("ui.titles.screenshot_mode_off"));
+      btn.setAttribute("aria-pressed", "true");
+    }
+  } else {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      try {
+        const exitFs = document.exitFullscreen || document.webkitExitFullscreen;
+        exitFs && exitFs.call(document)?.catch?.(() => {});
+      } catch (err) {}
+    }
+    if (btn) {
+      btn.innerHTML = '<i data-lucide="maximize" class="w-5 h-5"></i>';
+      btn.title = t("ui.titles.screenshot_mode");
+      btn.setAttribute("aria-label", t("ui.titles.screenshot_mode"));
+      btn.setAttribute("aria-pressed", "false");
+    }
+  }
+
+  lucide?.createIcons?.();
+}
+
+// Se o usuário sair da tela cheia por fora do botão (ESC, gesto de
+// voltar do celular, Safari antigo com prefixo webkit etc.), desliga
+// o modo de captura junto em vez de deixar a UI escondida com o mapa
+// não mais em tela cheia.
+function handleFullscreenExit() {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement && document.body.classList.contains("screenshot-mode")) {
+    toggleScreenshotMode();
+  }
+}
+document.addEventListener("fullscreenchange", handleFullscreenExit);
+document.addEventListener("webkitfullscreenchange", handleFullscreenExit);
+
 function atualizarPainelDados() {
   ensureAppState();
 
@@ -313,6 +368,7 @@ function togglePivoEditing() {
     typeof enablePivoEditingMode == "function" && enablePivoEditingMode();
   } else {
     AppState.modoMoverPivoSemCirculo && typeof toggleModoMoverPivoSemCirculo == "function" && toggleModoMoverPivoSemCirculo();
+    AppState.modoExcluirPivo && typeof toggleModoExcluirPivo == "function" && toggleModoExcluirPivo();
     typeof disablePivoEditingMode == "function" && disablePivoEditingMode();
   }
 
@@ -371,7 +427,6 @@ function setupUIEventListeners() {
     localStorage.setItem("templateSelecionado", AppState.templateSelecionado);
     atualizarPainelDados();
     updateLegendImage(event.target.value);
-    console.log("Template selecionado:", AppState.templateSelecionado);
   }));
 
   const fecharPainelRepBtn = document.getElementById("fechar-painel-rep");

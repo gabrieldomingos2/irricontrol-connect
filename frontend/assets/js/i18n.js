@@ -53,7 +53,6 @@ async function fetchLocaleDict(lang) {
     if (!response.ok) throw new Error(`Could not load ${lang}.json`);
     const dict = await response.json();
     translationsCache.set(lang, dict);
-    console.log(`i18n: ${lang} loaded.`);
     return dict;
   } catch (err) {
     console.warn(`i18n: failed to load ${lang}.json ->`, err);
@@ -129,7 +128,6 @@ function applyTranslations(root = document) {
   titleEl && (document.title = titleEl.textContent);
 
   document.dispatchEvent(new CustomEvent("i18n:applied", { detail: { lang: currentLanguage } }));
-  console.log(`i18n: translations applied (${currentLanguage}).`);
 }
 
 async function setLanguage(lang) {

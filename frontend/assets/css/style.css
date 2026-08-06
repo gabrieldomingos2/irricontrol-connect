@@ -1,4 +1,13 @@
 /* ============================================================
+    🌐 IDIOMA: seletor fica só na tela de login (.login-langs).
+    O grupo de bandeiras da topbar do app (#topbar-group-lang)
+    não é mais exibido depois de logado, em nenhum tamanho de tela.
+   ============================================================ */
+#topbar-group-lang {
+  display: none !important;
+}
+
+/* ============================================================
     TOKENS
    ============================================================ */
 
@@ -771,60 +780,11 @@ body {
   }
 }
 
-/* Layout mobile / tablet (sidebar some, mapa em tela cheia) */
-@media (max-width: 768px) {
-  .absolute.top-14.bottom-14.left-0.w-\[280px\] {
-    display: none;
-  }
-
-  .absolute.top-14.bottom-14.left-\[280px\].right-12 {
-    left: 0 !important;
-    right: 0 !important;
-  }
-
-  div.absolute.top-0 .flex.items-center > span {
-    display: none;
-  }
-
-  #overlay-panels-container {
-    top: 50% !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translate(-50%, -50%) !important;
-    width: 90% !important;
-  }
-
-  .los-vertical-slider {
-    height: 18vh;
-    max-height: 150px;
-  }
-}
-
-/* Layout ultra-mobile (esconde quase toda UI, só mapa) */
-@media (max-width: 480px) {
-  div.absolute.top-0.left-0.right-0 {
-    display: none;
-  }
-
-  #map {
-    height: 100vh;
-  }
-
-  #overlay-panels-container {
-    display: none;
-  }
-
-  #mobile-buttons-container {
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 50;
-
-    display: flex;
-    gap: 1rem;
-  }
-}
+/* Layout mobile / tablet: ver assets/css/mobile.css (carregado depois
+   deste arquivo). Ficava aqui uma primeira tentativa incompleta que
+   escondia toda a topbar/sidebar em telas pequenas sem nenhum
+   substituto (inclusive referenciando um #mobile-buttons-container
+   que nunca existiu no HTML) — foi substituída pelo mobile.css. */
 
 /* =====================================================
     AUMENTO DOS ÍCONES DA TOPBAR (SVG + LUCIDE)
@@ -1723,14 +1683,34 @@ label[for="arquivo"] {
   display: none !important;
 }
 
-/* Selo de versão do app, ao lado da atribuição do Leaflet */
-.map-version-badge {
-  background: rgba(255, 255, 255, 0.75);
-  padding: 0 6px;
-  margin: 0;
-  font-size: 11px;
-  line-height: 1.6;
-  color: rgba(0, 0, 0, 0.6);
-  border-radius: 3px;
-  user-select: none;
+/* -----------------------------------------------------------
+    Modo de captura de tela (#btn-screenshot-mode, ver ui.js):
+    esconde toda a UI ao redor e expande o mapa (com os desenhos do
+    estudo) + a legenda de cores pro tamanho inteiro da tela -- pra
+    tirar um print limpo do resultado, sem sidebar/topbar/painéis
+    atrapalhando. Vale tanto pro desktop quanto pro mobile.
+   ----------------------------------------------------------- */
+body.screenshot-mode #app-topbar,
+body.screenshot-mode #sidebar-left,
+body.screenshot-mode #overlay-panels-container,
+body.screenshot-mode #painel-repetidora,
+body.screenshot-mode #footer-logo-link,
+body.screenshot-mode #mensagem,
+body.screenshot-mode #mobile-menu-toggle,
+body.screenshot-mode #mobile-drawer-backdrop,
+body.screenshot-mode #mobile-bottom-toolbar,
+body.screenshot-mode #mobile-tools-flyout {
+  display: none !important;
 }
+
+body.screenshot-mode #map-wrapper {
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+body.screenshot-mode #btn-screenshot-mode {
+  background: rgba(0, 0, 0, 0.55);
+}
+

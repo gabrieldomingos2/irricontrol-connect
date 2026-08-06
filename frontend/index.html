@@ -13,7 +13,7 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
 
   <!-- Config frontend -> backend (local vs prod) -->
-  <script src="assets/js/config.js"></script>
+  <script src="assets/js/config.js?v=2"></script>
 
   <!-- ===========================
       PERFORMANCE: PRECONNECT
@@ -26,7 +26,7 @@
       BIBLIOTECAS DE TERCEIROS
       =========================== -->
   <!-- Tailwind CSS (build local) -->
-  <link rel="stylesheet" href="dist/output.css">
+  <link rel="stylesheet" href="dist/output.css?v=4">
   <!-- Ícones Lucide (SVG) -->
   <script src="https://unpkg.com/lucide@1.28.0/dist/umd/lucide.min.js"
           integrity="sha384-VrnzGPiSyQxm3mI2VhlssyR85zugSHtxMkgO42qV3wUAbNk1oRdZkCWjXKOhuVu6"
@@ -50,8 +50,10 @@
   <!-- ===========================
       CSS DA APLICAÇÃO
       =========================== -->
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <link rel="stylesheet" href="assets/css/login.css" />
+  <link rel="stylesheet" href="assets/css/style.css?v=5" />
+  <link rel="stylesheet" href="assets/css/login.css?v=2" />
+  <!-- Layout mobile/tablet (modo visualização) - só atua em telas <=768px -->
+  <link rel="stylesheet" href="assets/css/mobile.css?v=48" />
 </head>
 
 <body class="bg-[#060B10] text-white h-screen w-screen overflow-hidden">
@@ -206,10 +208,15 @@
   <!-- =========================================
       TOPBAR
       ========================================= -->
-  <div class="absolute top-0 left-0 right-0 h-14 bg-[#060B10] border-b-[2px] border-white/15 z-50 flex items-center justify-start px-4 relative">
+  <div id="app-topbar" class="absolute top-0 left-0 right-0 h-14 bg-[#060B10] border-b-[2px] border-white/15 z-50 flex items-center justify-start px-4 relative">
+
+    <!-- Botão de menu (drawer) - somente mobile -->
+    <button id="mobile-menu-toggle" type="button" aria-label="Abrir menu" aria-controls="sidebar-left" aria-expanded="false">
+      <i data-lucide="menu" class="w-5 h-5"></i>
+    </button>
 
     <!-- Idiomas -->
-    <div class="flex items-center gap-3" aria-label="Idioma" data-i18n="ui.labels.language" data-i18n-attr="aria-label">
+    <div id="topbar-group-lang" class="flex items-center gap-3" aria-label="Idioma" data-i18n="ui.labels.language" data-i18n-attr="aria-label">
       <button data-lang="pt-br" class="hover:scale-110 transition" title="Português (BR)" type="button" aria-label="Português (BR)">
         <img src="assets/images/br.svg" class="w-8 h-5" alt="Português">
       </button>
@@ -228,7 +235,7 @@
     </div>
 
     <!-- Ferramentas -->
-    <div class="flex items-center gap-2 ml-24">
+    <div id="topbar-group-tools" class="flex items-center gap-2 ml-24">
       <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.tools"></span>
 
       <button id="btn-los-pivot-a-pivot" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.los_pivots" type="button" aria-label="Linha de visada entre pivôs">
@@ -241,7 +248,7 @@
     </div>
 
     <!-- Legendas -->
-    <div class="flex items-center gap-2 ml-[20px]">
+    <div id="topbar-group-legends" class="flex items-center gap-2 ml-[20px]">
       <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.legends_group"></span>
 
       <button id="btn-visada" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.line_of_sight" type="button" aria-label="Linha de visada">
@@ -261,56 +268,90 @@
       </button>
     </div>
 
-    <!-- Desenho/Edição -->
-    <div class="flex items-center gap-2 ml-[20px]">
-      <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.draw_group"></span>
-
-      <button id="btn-draw-pivot" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_pivot" type="button" aria-label="Desenhar pivô circular">
-        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/circle.svg); mask-image: url(assets/images/circle.svg);"></span>
-      </button>
-
-      <button id="btn-draw-pivot-setorial" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_sector_pivot" type="button" aria-label="Desenhar pivô setorial">
-        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/half-circle.svg); mask-image: url(assets/images/half-circle.svg);"></span>
-      </button>
-
-      <button id="btn-draw-pivot-pacman" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_pacman_pivot" type="button" aria-label="Desenhar pivô Pac-Man">
-        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/circle-dashed.svg); mask-image: url(assets/images/circle-dashed.svg);"></span>
-      </button>
-
-      <button id="btn-draw-irripump" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_irripump" type="button" aria-label="Adicionar casa de bombas">
-        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/irripump.svg); mask-image: url(assets/images/irripump.svg);"></span>
-      </button>
-    </div>
-
-    <!-- Editor -->
-    <div class="flex items-center gap-2 ml-[20px]">
-      <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.editor_group"></span>
-
-      <button id="btn-mover-pivo-sem-circulo" class="glass-button p-2 hidden" data-i18n-attr="title,aria-label" data-i18n="ui.titles.move_pivot_center" type="button" aria-label="Mover pivô sem círculo">
-        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/pin.svg); mask-image: url(assets/images/pin.svg);"></span>
-      </button>
-
-      <button id="editar-pivos" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.edit_pivots" type="button" aria-label="Editar pivôs">
+    <!-- Desenho + Editor: no mobile este wrapper vira uma barra fixa
+         embaixo da tela (ver #mobile-bottom-toolbar em mobile.css).
+         No desktop é `display:contents` e não altera nada aqui. -->
+    <div id="mobile-bottom-toolbar">
+      <!-- Abre/fecha o menu de ferramentas (Desenho + Editor) -
+           só existe no mobile, ver mobile.css/mobile.js. -->
+      <button id="mobile-tools-toggle" type="button" aria-label="Ferramentas de edição" title="Ferramentas de edição" aria-expanded="false" aria-controls="mobile-tools-flyout">
         <i data-lucide="pencil" class="w-5 h-5"></i>
       </button>
 
-      <button id="desfazer-edicao" class="glass-button p-2 hidden" data-i18n-attr="title,aria-label" data-i18n="ui.titles.undo_edit" type="button" aria-label="Desfazer edição">
-        <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/undo-2.svg); mask-image: url(assets/images/undo-2.svg);"></span>
-      </button>
+      <!-- Menu de ferramentas (Desenho + Editor): no mobile fica
+           oculto até tocar em #mobile-tools-toggle, e então vira um
+           cartão flutuante acima da barra (ver mobile.css). No
+           desktop é `display:contents`, igual ao wrapper de fora, e
+           não muda nada aqui. -->
+      <div id="mobile-tools-flyout">
+        <!-- Desenho/Edição -->
+        <div id="topbar-group-draw" class="flex items-center gap-2 ml-[20px]">
+          <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.draw_group"></span>
+
+          <button id="btn-draw-pivot" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_pivot" type="button" aria-label="Desenhar pivô circular">
+            <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/circle.svg); mask-image: url(assets/images/circle.svg);"></span>
+          </button>
+
+          <button id="btn-draw-pivot-setorial" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_sector_pivot" type="button" aria-label="Desenhar pivô setorial">
+            <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/half-circle.svg); mask-image: url(assets/images/half-circle.svg);"></span>
+          </button>
+
+          <button id="btn-draw-pivot-pacman" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_pacman_pivot" type="button" aria-label="Desenhar pivô Pac-Man">
+            <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/circle-dashed.svg); mask-image: url(assets/images/circle-dashed.svg);"></span>
+          </button>
+
+          <button id="btn-draw-irripump" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_irripump" type="button" aria-label="Adicionar casa de bombas">
+            <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/irripump.svg); mask-image: url(assets/images/irripump.svg);"></span>
+          </button>
+        </div>
+
+        <!-- Editor -->
+        <div id="topbar-group-editor" class="flex items-center gap-2 ml-[20px]">
+          <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.editor_group"></span>
+
+          <button id="btn-mover-pivo-sem-circulo" class="glass-button p-2 hidden" data-i18n-attr="title,aria-label" data-i18n="ui.titles.move_pivot_center" type="button" aria-label="Mover pivô sem círculo">
+            <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/pin.svg); mask-image: url(assets/images/pin.svg);"></span>
+          </button>
+
+          <!-- Modo de excluir pivô: quando ativo, o pino vermelho do
+               centro de cada pivô vira um X e um toque nele já exclui
+               (com confirmação) — mais direto que toque longo. -->
+          <button id="btn-toggle-delete-pivo" class="glass-button p-2" type="button" aria-label="Alternar modo de excluir pivô" title="Alternar modo de excluir pivô">
+            <i data-lucide="trash-2" class="w-5 h-5"></i>
+          </button>
+
+          <button id="editar-pivos" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.edit_pivots" type="button" aria-label="Editar pivôs">
+            <i data-lucide="pencil" class="w-5 h-5"></i>
+          </button>
+
+          <button id="desfazer-edicao" class="glass-button p-2 hidden" data-i18n-attr="title,aria-label" data-i18n="ui.titles.undo_edit" type="button" aria-label="Desfazer edição">
+            <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/undo-2.svg); mask-image: url(assets/images/undo-2.svg);"></span>
+          </button>
+        </div>
+      </div>
     </div>
     
     <!-- Logout -->
-    <div class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+    <div id="topbar-group-logout" class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
       <button id="btn-logout" class="glass-button p-2" type="button" title="Sair" aria-label="Sair" data-i18n="ui.buttons.logout" data-i18n-attr="title,aria-label">
         <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/log-out.svg); mask-image: url(assets/images/log-out.svg);"></span>
+        <!-- Texto só aparece quando o mobile.js move este botão pra
+             dentro do drawer da sidebar (ver mobile.css/mobile.js) -->
+        <span class="btn-logout-label text-sm font-medium" data-i18n="ui.buttons.logout">Sair</span>
       </button>
     </div>
   </div>
 
+  <!-- Fundo do drawer mobile (fecha ao tocar fora) -->
+  <div id="mobile-drawer-backdrop"></div>
+
   <!-- =========================================
       SIDEBAR ESQUERDA
       ========================================= -->
-  <div class="absolute top-14 bottom-14 left-0 w-[280px] bg-[#060B10] z-50 p-4 overflow-y-auto">
+  <div id="sidebar-left" class="absolute top-14 bottom-14 left-0 w-[280px] bg-[#060B10] z-50 p-4 overflow-y-auto">
+    <!-- Fecha o drawer - somente mobile -->
+    <button id="sidebar-mobile-close" type="button" aria-label="Fechar menu">✖</button>
+
     <!-- Template/modelo -->
     <div class="mb-4 backdrop-blur bg-white/5 border border-white/15 px-3 py-[6px] rounded-lg shadow-sm flex items-center gap-2">
       <label for="template-modelo" class="text-sm text-white/70 whitespace-nowrap" data-i18n="ui.labels.template"></label>
@@ -399,7 +440,7 @@
   <!-- =========================================
       CONTROLES FLUTUANTES
       ========================================= -->
-  <div class="absolute bottom-6 left-72 flex items-center gap-2 z-50">
+  <div id="opacity-control" class="absolute bottom-6 left-72 flex items-center gap-2 z-50">
     <span class="text-xs text-white/60" data-i18n=""></span>
     <input id="range-opacidade" type="range" min="0" max="1" step="0.1" value="1" class="range-slider-custom w-24" aria-label="Opacidade do overlay" data-i18n="ui.titles.overlay_opacity" data-i18n-attr="aria-label" />
   </div>
@@ -413,7 +454,7 @@
   <!-- =========================================
       ÁREA DO MAPA
       ========================================= -->
-  <div class="absolute top-14 bottom-14 left-[280px] right-12 z-10">
+  <div id="map-wrapper" class="absolute top-14 bottom-14 left-[280px] right-12 z-10">
     <div id="map" class="w-full h-full bg-neutral-900" role="application" aria-label="Mapa" data-i18n="ui.titles.map_region" data-i18n-attr="aria-label"></div>
   </div>
 
@@ -493,8 +534,18 @@
   <span class="mt-4 text-lg font-bold text-green-500" data-i18n="ui.labels.processing"></span>
 </div>
 
+  <!-- Modo de captura (só mobile, ver mobile.css): esconde toda a UI
+       ao redor (sidebar, topbar, painéis, barra do mobile) e deixa só
+       o mapa com os desenhos em tela cheia de verdade quando o
+       navegador suporta -- pensado pra tirar um print limpo do
+       estudo pronto. Elemento próprio, separado do #legend-container
+       (cada um com seu fundo, sem caixa comum por trás dos dois). -->
+  <button id="btn-screenshot-mode" type="button" class="absolute top-6 right-6 w-9 h-9 flex items-center justify-center rounded-full bg-black/70 border border-white/20 text-white shadow-md hover:bg-black/90 transition" data-i18n-attr="title,aria-label" data-i18n="ui.titles.screenshot_mode" aria-label="Tela cheia para captura" title="Tela cheia para captura" aria-pressed="false">
+    <i data-lucide="maximize" class="w-5 h-5"></i>
+  </button>
+
   <!-- Legenda (imagem) -->
-  <div id="legend-container" class="absolute top-6 right-6 hidden">
+  <div id="legend-container" class="absolute top-16 right-6 hidden">
     <img id="legend-image" src="" alt="Legenda de Cores" class="block h-auto rounded-md shadow-lg" />
   </div>
 
@@ -578,7 +629,7 @@
   </div>
 
     <!-- Login controller (overlay + auth) - precisa vir ANTES do api.js -->
-  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/auth.js?v=2"></script>
 <!-- =========================================
       SCRIPTS (ORDEM IMPORTA)
       ========================================= -->
@@ -589,7 +640,10 @@
   <!-- Módulos da aplicação (bundle único, gerado por npm run build:js -->
   <!-- a partir dos arquivos individuais em assets/js/ - ordem definida  -->
   <!-- em scripts/build-js.mjs) -->
-  <script src="dist/app.bundle.js" defer></script>
+  <script src="dist/app.bundle.js?v=6" defer></script>
+
+  <!-- Drawer da sidebar no layout mobile (independente do bundle) -->
+  <script src="assets/js/mobile.js?v=21" defer></script>
 
   <!-- Fallback sem JavaScript -->
   <noscript>

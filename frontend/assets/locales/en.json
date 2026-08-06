@@ -33,7 +33,9 @@
       "overlay_opacity": "Overlay opacity",
       "map_region": "Map",
       "toggle_panel": "Collapse/expand panel",
-      "close": "Close"
+      "close": "Close",
+      "screenshot_mode": "Fullscreen for screenshot",
+      "screenshot_mode_off": "Exit fullscreen"
 
     },
     "labels": {
@@ -268,7 +270,9 @@
       "pdf_report_unlocked": "PDF report unlocked for download.",
       "move_pivot_center_on": "Move pivot center mode enabled. The circle will NOT move. Click the button again to disable.",
       "move_pivot_center_off": "Move pivot center mode disabled. Position has been updated, please re-evaluate coverage.",
-      "no_active_png_overlays": "No active (visible) antenna/repeater coverages to download."
+      "no_active_png_overlays": "No active (visible) antenna/repeater coverages to download.",
+      "delete_pivot_mode_on": "Delete pivot mode enabled: tap a pivot to remove it.",
+      "delete_pivot_mode_off": "Delete pivot mode disabled."
     },
     "confirm": {
       "remove_pivot": "Are you sure you want to remove the pivot \"{name}\" and its associated areas?",

@@ -302,7 +302,6 @@ async function handleConfirmRepetidoraClick() {
 
   try {
     if (AppState.antenaGlobal && AppState.clickedCandidateData && AppState.clickedCandidateData.lat === AppState.antenaGlobal.lat && AppState.clickedCandidateData.lon === AppState.antenaGlobal.lon) {
-      console.log("Ressimulando a antena principal...");
       const updatedCandidate = { ...AppState.antenaGlobal, altura: alturaAntena, altura_receiver: alturaReceiver };
       await startMainSimulation(updatedCandidate);
       AppState.clickedCandidateData = null;
@@ -312,10 +311,8 @@ async function handleConfirmRepetidoraClick() {
     if (!AppState.antenaGlobal) {
       let candidate;
       if (AppState.clickedCandidateData) {
-        console.log("Iniciando simulação principal com candidato KMZ.");
         candidate = { ...AppState.clickedCandidateData };
       } else if (AppState.coordenadaClicada) {
-        console.log("Iniciando simulação principal com ponto manual.");
         const nextId = AppState.idsDisponiveis.length > 0 ? AppState.idsDisponiveis.shift() : ++AppState.contadorRepetidoras;
         const name = `${t("ui.labels.repeater")} ${nextId}`;
         candidate = {

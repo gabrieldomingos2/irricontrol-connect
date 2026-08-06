@@ -14,6 +14,7 @@ const AppState = {
   modoDesenhoPivoPacman: false,
   modoDesenhoIrripump: false,
   modoMoverPivoSemCirculo: false,
+  modoExcluirPivo: false,
   pontoRaioTemporario: null,
   distanciasPivosVisiveis: false,
   legendasAtivas: true,
@@ -48,11 +49,9 @@ const AppState = {
 
   setJobId(jobId) {
     this.jobId = jobId;
-    console.log(`SESSION_INFO: Novo Job ID definido: ${this.jobId}`);
   },
 
   reset() {
-    console.log("Resetando o estado da aplicação...");
     this.jobId = null;
     this.currentProcessedKmzData = null;
     this.antenaGlobal = null;
@@ -99,5 +98,6 @@ const AppState = {
     this.linhasDiagnostico = [];
     this.marcadoresBloqueio = [];
     this.modoMoverPivoSemCirculo = false;
+    this.modoExcluirPivo = false;
   }
 };

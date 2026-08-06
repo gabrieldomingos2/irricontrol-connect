@@ -3,7 +3,13 @@ function deactivateAllModes() {
   AppState.modoDesenhoPivoSetorial && toggleModoDesenhoPivoSetorial();
   AppState.modoDesenhoPivoPacman && toggleModoDesenhoPivoPacman();
   AppState.modoDesenhoIrripump && toggleModoDesenhoIrripump();
-  AppState.modoEdicaoPivos && togglePivoEditing();
+  // No mobile, selecionar uma ferramenta de desenho NÃO desliga mais
+  // o modo de edição — os pivôs já desenhados continuam com o pino/
+  // alça de raio arrastáveis no mapa o tempo todo (era isso que
+  // "sumia" ao clicar em Desenhar). No desktop continua exatamente
+  // como antes: desenhar desliga a edição pra evitar os dois modos
+  // ativos ao mesmo tempo.
+  (!(typeof isMobileDrawMode == "function" && isMobileDrawMode()) && AppState.modoEdicaoPivos) && togglePivoEditing();
   AppState.modoLoSPivotAPivot && toggleLoSPivotAPivotMode();
   AppState.modoBuscaLocalRepetidora && handleBuscarLocaisRepetidoraActivation();
 }
@@ -99,4 +105,23 @@ function toggleModoMoverPivoSemCirculo() {
   isActive
     ? mostrarMensagem(t("messages.info.move_pivot_center_on"), "sucesso")
     : mostrarMensagem(t("messages.info.move_pivot_center_off"), "sucesso");
+}
+
+// Modo de excluir pivô: enquanto ativo, o pino de cada pivô editável
+// vira um X vermelho e um toque/clique nele já exclui (com
+// confirmação), sem precisar de toque longo/clique direito. Reaproveita
+// confirmAndDeletePivot (feature.pivots.js) e refreshPivotMarkerIcons
+// pra trocar o ícone dos marcadores já existentes na hora.
+function toggleModoExcluirPivo() {
+  const isActive = !AppState.modoExcluirPivo;
+  AppState.modoExcluirPivo = isActive;
+
+  const btn = document.getElementById("btn-toggle-delete-pivo");
+  btn && btn.classList.toggle("glass-button-active", isActive);
+
+  typeof refreshPivotMarkerIcons == "function" && refreshPivotMarkerIcons();
+
+  isActive
+    ? mostrarMensagem(t("messages.info.delete_pivot_mode_on"), "info")
+    : mostrarMensagem(t("messages.info.delete_pivot_mode_off"), "sucesso");
 }

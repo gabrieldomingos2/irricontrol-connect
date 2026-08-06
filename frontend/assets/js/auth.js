@@ -230,7 +230,11 @@
   let pixelRatio = 1;
   let particles = [];
 
-  const PARTICLE_COUNT = 600;
+  // Menos partículas em telas pequenas: além de "poluir" menos a tela de
+  // login no mobile, evita pesar a animação (as linhas de conexão entre
+  // partículas são O(n²) por frame — 600 partículas já é bem mais custoso
+  // num celular do que num desktop).
+  const PARTICLE_COUNT = window.innerWidth <= 768 ? 180 : 600;
   const CLUSTER_COUNT = 8;
   const CLUSTER_SPREAD = 0.18;
   const mousePos = { x: -9999, y: -9999 };

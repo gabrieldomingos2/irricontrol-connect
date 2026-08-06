@@ -33,7 +33,9 @@
       "overlay_opacity": "Opacidad de la superposición",
       "map_region": "Mapa",
       "toggle_panel": "Contraer/expandir panel",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "screenshot_mode": "Pantalla completa para captura",
+      "screenshot_mode_off": "Salir de pantalla completa"
     },
     "labels": {
       "language": "Idioma",
@@ -266,7 +268,9 @@
       "find_repeater_long_process_warning": "La búsqueda de ubicaciones para repetidores puede tardar un minuto o más. Por favor, espere.",
       "pdf_report_unlocked": "Informe PDF desbloqueado para descarga.",
       "move_pivot_center_on": "Modo de mover el centro del pivote activado. El círculo NO se moverá. Haga clic en el botón de nuevo para desactivar.",
-      "move_pivot_center_off": "Modo de mover el centro del pivote desactivado. La posición ha sido actualizada, reevalúe la cobertura."
+      "move_pivot_center_off": "Modo de mover el centro del pivote desactivado. La posición ha sido actualizada, reevalúe la cobertura.",
+      "delete_pivot_mode_on": "Modo de eliminar pivote activado: toque un pivote para eliminarlo.",
+      "delete_pivot_mode_off": "Modo de eliminar pivote desactivado."
     },
     "confirm": {
       "remove_pivot": "¿Está seguro de que desea eliminar el pivote \"{name}\" y sus áreas asociadas?",

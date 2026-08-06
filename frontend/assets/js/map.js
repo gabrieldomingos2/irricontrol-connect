@@ -1,15 +1,6 @@
 let map;
 
-function ensureAppState() {
-  window.AppState || (window.AppState = {});
-  const state = window.AppState;
-  "visadaVisivel" in state || (state.visadaVisivel = true);
-  "visadaLayerGroup" in state || (state.visadaLayerGroup = null);
-  "antenaCandidatesLayerGroup" in state || (state.antenaCandidatesLayerGroup = null);
-}
-
 function initMap() {
-  ensureAppState();
   if (map && map.remove) {
     try {
       map.off();
@@ -57,10 +48,7 @@ function initMap() {
 
   typeof criarGradienteVisada == "function" && criarGradienteVisada();
 
-  window.candidateRepeaterSitesLayerGroup || (
-    window.candidateRepeaterSitesLayerGroup = L.layerGroup().addTo(map),
-    console.log("candidateRepeaterSitesLayerGroup inicializado e adicionado ao mapa.")
-  );
+  window.candidateRepeaterSitesLayerGroup || (window.candidateRepeaterSitesLayerGroup = L.layerGroup().addTo(map));
 
   const visadaBtn = document.getElementById("btn-visada");
   if (visadaBtn) {
@@ -87,28 +75,7 @@ function initMap() {
     map && map.invalidateSize && map.invalidateSize();
   });
 
-  addVersionControl();
   applyVisadaVisibility();
-}
-
-function addVersionControl() {
-  const VersionControl = L.Control.extend({
-    options: { position: "bottomright" },
-    onAdd() {
-      const el = L.DomUtil.create("div", "map-version-badge");
-      el.style.display = "none";
-      fetch(`${window.BACKEND_URL}${window.API_PREFIX}/version`)
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
-          if (!data?.version) return;
-          el.textContent = `v${data.version}`;
-          el.style.display = "";
-        })
-        .catch(() => {});
-      return el;
-    }
-  });
-  map.addControl(new VersionControl());
 }
 
 function setVisadaVisible(visible) {
@@ -171,7 +138,6 @@ function applyVisadaVisibility() {
   };
 
   visadaLayerGroup.eachLayer(applyToLayer);
-  console.log(`Visada: ${isVisible ? "Ativada" : "Desativada"}`);
 }
 
 function toggleVisada() {
@@ -203,7 +169,6 @@ function setupCandidateRemovalListener() {
 
       if (layersToRemove.length) {
         layersToRemove.forEach((layer) => window.candidateRepeaterSitesLayerGroup.removeLayer(layer));
-        console.log("Candidato removido:", markerId);
         typeof mostrarMensagem == "function" && mostrarMensagem(t("messages.success.repeater_suggestion_removed"), "sucesso");
       } else {
         console.warn("Nenhuma camada encontrada para remover:", markerId);

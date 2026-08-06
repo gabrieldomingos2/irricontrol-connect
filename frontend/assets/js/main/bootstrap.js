@@ -1,7 +1,7 @@
 // Bundle único (gerado por npm run build:js) com core.state.js, core.modes.js,
 // feature.los.js, feature.pivots.js e feature.repeaters.js, nessa ordem -
 // so carregado apos o login para nao pesar a tela inicial de quem nao logou.
-const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js"];
+const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=23"];
 
 function loadMainScript(src) {
   return new Promise((resolve, reject) => {
@@ -30,21 +30,16 @@ function onMainModulesReady() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   await onMainModulesReady();
-  if (!window.Auth?.getToken?.()) {
-    console.log("Sem token: aguardando login para iniciar a plataforma.");
-    return;
-  }
+  if (!window.Auth?.getToken?.()) return;
   await initApp();
 });
 
 window.addEventListener("auth:login", async () => {
   await onMainModulesReady();
-  console.log("Login OK: iniciando plataforma.");
   await initApp();
 }, { once: true });
 
 async function initApp() {
-  console.log("DOM carregado. Iniciando aplicação...");
   const lang = localStorage.getItem("preferredLanguage") || "pt-br";
   await setLanguage(lang);
   initMap();
@@ -57,7 +52,6 @@ async function initApp() {
   document.addEventListener("i18n:applied", () => {
     updateActionButtonsI18n();
   });
-  console.log("Aplicação pronta.");
 }
 
 function updatePdfButtonState(enabled) {
@@ -116,6 +110,8 @@ function setupMainActionListeners() {
   document.getElementById("btn-draw-pivot-pacman")?.addEventListener("click", toggleModoDesenhoPivoPacman);
   document.getElementById("btn-draw-irripump")?.addEventListener("click", toggleModoDesenhoIrripump);
   document.getElementById("btn-mover-pivo-sem-circulo")?.addEventListener("click", toggleModoMoverPivoSemCirculo);
+  document.getElementById("btn-toggle-delete-pivo")?.addEventListener("click", toggleModoExcluirPivo);
+  document.getElementById("btn-screenshot-mode")?.addEventListener("click", toggleScreenshotMode);
   map?.on("click", handleMapClick);
   map?.on("contextmenu", handleCancelDraw);
   document.addEventListener("keydown", handleGlobalKeys);
@@ -151,7 +147,6 @@ async function handleKmzFileSelect(event) {
     mostrarLoader(true);
 
     const result = await processKmz(formData);
-    console.log("KMZ processado:", result);
     if (!result.job_id) throw new Error(t("messages.errors.missing_job_id"));
 
     AppState.setJobId(result.job_id);
@@ -333,12 +328,11 @@ async function handleExportPdfReportClick() {
 }
 
 async function handleResetClick(notify = true) {
-  notify && console.log("Resetando aplicação...");
   clearMapLayers();
   AppState.reset();
   await startNewSession();
 
-  ["btn-los-pivot-a-pivot", "btn-buscar-locais-repetidora", "btn-visada", "toggle-legenda", "toggle-antenas-legendas", "toggle-distancias-pivos", "btn-draw-pivot", "btn-draw-pivot-setorial", "btn-draw-pivot-pacman", "btn-draw-irripump", "editar-pivos", "btn-mover-pivo-sem-circulo", "desfazer-edicao"].forEach((id) => {
+  ["btn-los-pivot-a-pivot", "btn-buscar-locais-repetidora", "btn-visada", "toggle-legenda", "toggle-antenas-legendas", "toggle-distancias-pivos", "btn-draw-pivot", "btn-draw-pivot-setorial", "btn-draw-pivot-pacman", "btn-draw-irripump", "editar-pivos", "btn-mover-pivo-sem-circulo", "btn-toggle-delete-pivo", "desfazer-edicao"].forEach((id) => {
     const el = document.getElementById(id);
     el && el.classList.remove("glass-button-active");
   });

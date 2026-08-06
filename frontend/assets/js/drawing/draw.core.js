@@ -23,22 +23,6 @@ const MOUNTAIN_ICON_PATH = "assets/images/attention-icon-original.svg";
 const CAPTIONS_ON_ICON_PATH = "assets/images/captions.svg";
 const CAPTIONS_OFF_ICON_PATH = "assets/images/captions-off.svg";
 
-(function() {
-  window.AppState || (window.AppState = {});
-  AppState.marcadoresLegenda ??= [];
-  AppState.marcadoresPivos ??= [];
-  AppState.marcadoresBombas ??= [];
-  AppState.circulosPivos ??= [];
-  AppState.overlaysVisiveis ??= [];
-  AppState.pivotsMap ??= {};
-  AppState.idsDisponiveis ??= [];
-  AppState.repetidoras ??= [];
-  AppState.lastPivosDataDrawn ??= [];
-  AppState.lastBombasDataDrawn ??= [];
-  AppState.visadaLayerGroup ??= null;
-  AppState.antenaCandidatesLayerGroup ??= null;
-})();
-
 const antenaIcon = L.divIcon({
   className: "leaflet-div-icon-transparent",
   html: `<div class="selection-effect-wrapper"><img src="${TORRE_ICON_PATH}" style="width:28px;height:28px;"></div>`,
