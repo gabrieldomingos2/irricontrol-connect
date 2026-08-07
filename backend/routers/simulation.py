@@ -160,6 +160,18 @@ async def get_templates_endpoint():
     }
 
 
+@router.get("/mapbox_token")
+async def get_mapbox_token_endpoint() -> Dict[str, str]:
+    """
+    Serves the Mapbox access token to authenticated frontend sessions only
+    (this router is mounted with require_auth in main.py). Keeps the token
+    out of the public JS bundle/source control — see .env.example.
+    """
+    if not settings.MAPBOX_ACCESS_TOKEN:
+        raise HTTPException(status_code=503, detail="Mapbox não configurado no servidor.")
+    return {"token": settings.MAPBOX_ACCESS_TOKEN}
+
+
 @router.post("/generate_pivot_in_circle")
 async def generate_pivot_in_circle_endpoint(payload: GeneratePivotPayload):
     try:

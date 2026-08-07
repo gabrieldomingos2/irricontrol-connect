@@ -172,6 +172,13 @@ async function getTemplates() {
   }
 }
 
+async function getMapboxToken() {
+  return apiRequest("/simulation/mapbox_token").catch((err) => {
+    console.warn("Falha ao buscar token do Mapbox:", err.message);
+    throw err;
+  });
+}
+
 async function getElevationProfile(payload) {
   return apiRequest("/simulation/elevation_profile", {
     method: "POST",

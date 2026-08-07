@@ -216,6 +216,7 @@
       "invalid_coordinate_format": "Invalid coordinate format. Use DMS (e.g., 19°26'S 44°29'W) or Decimal (e.g., -19.44 -44.49).",
       "draw_pivot_radius_too_small": "Radius too small. Drawing cancelled. Click again to set the center.",
       "generic_error": "Unexpected error. Please try again.",
+      "mapbox_token_unavailable": "3D map is currently unavailable.",
       "template_load_fail": "Failed to fetch templates. Check your connection.",
       "pdf_export_fail": "Failed to export PDF report: {error}",
       "load_kmz_first": "Import a KMZ file before generating the report.",

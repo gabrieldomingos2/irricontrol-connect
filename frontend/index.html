@@ -12,6 +12,17 @@
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" sizes="any">
 
+  <!-- ===========================
+      PWA (instalar na tela inicial)
+      =========================== -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#060B10" />
+  <!-- iOS não lê manifest.json pra ícone/tela cheia — precisa dessas tags à parte. -->
+  <link rel="apple-touch-icon" href="assets/images/pwa/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Irricontrol" />
+
   <!-- Config frontend -> backend (local vs prod) -->
   <script src="assets/js/config.js?v=2"></script>
 
@@ -50,7 +61,7 @@
   <!-- ===========================
       CSS DA APLICAÇÃO
       =========================== -->
-  <link rel="stylesheet" href="assets/css/style.css?v=5" />
+  <link rel="stylesheet" href="assets/css/style.css?v=7" />
   <link rel="stylesheet" href="assets/css/login.css?v=2" />
   <!-- Layout mobile/tablet (modo visualização) - só atua em telas <=768px -->
   <link rel="stylesheet" href="assets/css/mobile.css?v=48" />
@@ -640,10 +651,13 @@
   <!-- Módulos da aplicação (bundle único, gerado por npm run build:js -->
   <!-- a partir dos arquivos individuais em assets/js/ - ordem definida  -->
   <!-- em scripts/build-js.mjs) -->
-  <script src="dist/app.bundle.js?v=6" defer></script>
+  <script src="dist/app.bundle.js?v=8" defer></script>
 
   <!-- Drawer da sidebar no layout mobile (independente do bundle) -->
   <script src="assets/js/mobile.js?v=21" defer></script>
+
+  <!-- Registra o service worker (PWA) — independente do bundle, não precisa de login -->
+  <script src="assets/js/pwa-register.js?v=1" defer></script>
 
   <!-- Fallback sem JavaScript -->
   <noscript>

@@ -305,8 +305,12 @@
     margin-left: 0 !important;
   }
 
-  /* #topbar-group-lang: escondido globalmente em style.css (só
-     aparece na tela de login), nada a fazer aqui no mobile. */
+  /* #topbar-group-lang: no desktop aparece na topbar do app (ver
+     style.css); no mobile não há espaço na topbar, então some aqui
+     e o idioma continua trocável pela tela de login (.login-langs). */
+  #topbar-group-lang {
+    display: none !important;
+  }
 
   /* Legendas: mantém, mas some o rótulo de texto pra caber. Com
      "Ferramentas" escondido ao lado, centraliza no espaço livre da

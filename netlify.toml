@@ -23,7 +23,8 @@
       style-src-attr 'unsafe-inline';
       img-src 'self' data: blob: https://irricontrol-connect.onrender.com https://*.mapbox.com https://*.openstreetmap.org https://*.tile.openstreetmap.org https://*.google.com https://*.googleapis.com;
       connect-src 'self' https://irricontrol-connect.onrender.com https://api.mapbox.com https://events.mapbox.com https://*.mapbox.com https://unpkg.com https://cdn.jsdelivr.net;
-      worker-src blob:;
+      worker-src 'self' blob:;
+      manifest-src 'self';
       frame-src 'none';
       frame-ancestors 'none';
       object-src 'none';

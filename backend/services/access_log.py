@@ -23,14 +23,24 @@ _DB_PATH: Path = settings.ARQUIVOS_DIR_PATH / "access_log.db"
 LOGIN_MAX_FAILED_ATTEMPTS = 5
 LOGIN_RATE_LIMIT_WINDOW_MINUTES = 15
 
-# Serviço gratuito de geolocalização por IP (45 req/min, sem chave).
-_GEO_API_URL = "http://ip-api.com/json/{ip}?fields=status,country,regionName,city,isp&lang=pt-BR"
+# Serviço gratuito de geolocalização por IP, servido via HTTPS (ip-api.com
+# só oferece HTTPS no plano pago — ipwho.is é gratuito, sem chave, e
+# criptografado). Não suporta lang=pt-BR como o antigo; país/cidade voltam
+# no idioma padrão da API (geralmente inglês) em vez de português.
+_GEO_API_URL = "https://ipwho.is/{ip}?fields=success,message,country,region,city,connection.isp"
 _GEO_TIMEOUT = 5.0
 
 
 def _connect() -> sqlite3.Connection:
     _DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(_DB_PATH)
+    # WAL permite leitores e escritores concorrentes sem se bloquearem
+    # mutuamente, e busy_timeout faz uma escrita concorrente ESPERAR até
+    # 5s por um lock livre em vez de falhar na hora com "database is
+    # locked" — reduz bem a chance de cair nos except abaixo sob uso
+    # simultâneo (mesmo já sendo fail-safe hoje).
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=5000")
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS access_log (
@@ -119,15 +129,16 @@ async def ensure_ip_location(ip: str) -> None:
             resp = await client.get(_GEO_API_URL.format(ip=ip))
             data: Dict[str, Any] = resp.json()
 
-        if data.get("status") != "success":
+        if not data.get("success"):
             return
 
-        parts = [p for p in (data.get("city"), data.get("regionName"), data.get("country")) if p]
+        parts = [p for p in (data.get("city"), data.get("region"), data.get("country")) if p]
         location = ", ".join(parts) or "Desconhecido"
+        isp = (data.get("connection") or {}).get("isp") or "-"
         with _connect() as conn:
             conn.execute(
                 "INSERT OR REPLACE INTO ip_locations (ip, location, isp, updated_ts) VALUES (?, ?, ?, ?)",
-                (ip, location, data.get("isp") or "-", datetime.now(timezone.utc).isoformat()),
+                (ip, location, isp, datetime.now(timezone.utc).isoformat()),
             )
     except Exception as e:
         logger.warning("Falha ao geolocalizar IP %s: %s", ip, e)

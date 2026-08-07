@@ -375,6 +375,79 @@ function togglePivoEditing() {
   lucide?.createIcons?.();
 }
 
+// Deixa um painel arrastável pela sua barra de título, tipo o balão de
+// chamada do WhatsApp — funciona com mouse e toque (Pointer Events cobre
+// os dois). Usa setProperty(..., "important") porque o painel de
+// repetidora tem posição fixa forçada com !important no mobile.css (pra
+// flutuar certinho quando o mobile.js o move pra fora da sidebar); sem
+// isso, a posição arrastada seria sobrescrita pelo CSS.
+function makeDraggable(panel, handle) {
+  if (!panel || !handle || handle.dataset.dragBound) return;
+  handle.dataset.dragBound = "1";
+  handle.classList.add("drag-handle");
+
+  let startX = 0;
+  let startY = 0;
+  let startLeft = 0;
+  let startTop = 0;
+  let dragging = false;
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function onPointerMove(event) {
+    if (!dragging) return;
+    const deltaX = event.clientX - startX;
+    const deltaY = event.clientY - startY;
+    const maxLeft = Math.max(0, window.innerWidth - panel.offsetWidth);
+    const maxTop = Math.max(0, window.innerHeight - panel.offsetHeight);
+    const newLeft = clamp(startLeft + deltaX, 0, maxLeft);
+    const newTop = clamp(startTop + deltaY, 0, maxTop);
+    panel.style.setProperty("left", `${newLeft}px`, "important");
+    panel.style.setProperty("top", `${newTop}px`, "important");
+  }
+
+  function onPointerUp(event) {
+    dragging = false;
+    panel.classList.remove("panel-dragging");
+    handle.releasePointerCapture?.(event.pointerId);
+    document.removeEventListener("pointermove", onPointerMove);
+    document.removeEventListener("pointerup", onPointerUp);
+  }
+
+  handle.addEventListener("pointerdown", (event) => {
+    // Não inicia arrasto ao clicar no botão de fechar (ou qualquer outro
+    // controle interativo que algum dia entre na barra de título).
+    if (event.target.closest("button, input, select, textarea, a")) return;
+    if (event.button !== undefined && event.button !== 0) return; // só botão esquerdo do mouse
+
+    const rect = panel.getBoundingClientRect();
+    startX = event.clientX;
+    startY = event.clientY;
+    startLeft = rect.left;
+    startTop = rect.top;
+    dragging = true;
+
+    // Congela a posição atual como "fixed" antes de mover — assim o
+    // painel não pula de lugar no primeiro movimento, seja qual for a
+    // posição de origem (fluxo normal da sidebar no desktop, ou fixed
+    // flutuante no mobile).
+    panel.style.setProperty("position", "fixed", "important");
+    panel.style.setProperty("left", `${rect.left}px`, "important");
+    panel.style.setProperty("top", `${rect.top}px`, "important");
+    panel.style.setProperty("right", "auto", "important");
+    panel.style.setProperty("bottom", "auto", "important");
+    panel.style.setProperty("margin", "0", "important");
+    panel.classList.add("panel-dragging");
+
+    handle.setPointerCapture?.(event.pointerId);
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
+    event.preventDefault();
+  });
+}
+
 function setupUIEventListeners() {
   if (document.body.dataset.uiBound === "1") return;
   document.body.dataset.uiBound = "1";
@@ -434,6 +507,10 @@ function setupUIEventListeners() {
     painelConfigRepetidoraDiv?.classList.add("hidden");
     typeof removePositioningMarker == "function" && removePositioningMarker();
   }));
+
+  // Arrastar o painel de repetidora pela barra de título (mouse e toque).
+  const painelRepHeader = painelConfigRepetidoraDiv?.querySelector(":scope > .flex.justify-between.items-center");
+  painelRepHeader && makeDraggable(painelConfigRepetidoraDiv, painelRepHeader);
 
   const editarPivosBtn = document.getElementById("editar-pivos");
   editarPivosBtn && !editarPivosBtn.dataset.bound && (editarPivosBtn.dataset.bound = "1", editarPivosBtn.addEventListener("click", togglePivoEditing));

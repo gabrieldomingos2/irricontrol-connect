@@ -31,6 +31,8 @@ class AppSettings(BaseSettings):
 
     # --- Auth (test environment) ---
     # Fixed admin credentials — override via .env in production.
+    # These defaults are only safe in dev/staging: see _validate_production_secrets,
+    # which refuses to boot in production if any of them is left unchanged.
     AUTH_ADMIN_USER: str = "admin"
     AUTH_ADMIN_PASSWORD: str = "123"
 
@@ -154,6 +156,11 @@ class AppSettings(BaseSettings):
     HTTP_TIMEOUT: float = 60.0
     LOG_LEVEL: str = "INFO"
 
+    # --- Mapbox (3D line-of-sight view) ---
+    # Served to the frontend only after login via GET /simulation/mapbox_token
+    # instead of being hardcoded in the JS bundle. See .env.example.
+    MAPBOX_ACCESS_TOKEN: Optional[str] = None
+
     @property
     def LOG_LEVEL_INT(self) -> int:
         return getattr(logging, str(self.LOG_LEVEL).upper(), logging.INFO)
@@ -220,6 +227,26 @@ class AppSettings(BaseSettings):
     def template_desabilitado(self, template_id: str | TemplateID) -> bool:
         tid = template_id.value if isinstance(template_id, TemplateID) else str(template_id)
         return tid in set(self.TEMPLATES_DESABILITADOS)
+
+    @model_validator(mode="after")
+    def _validate_production_secrets(self):
+        """Refuses to boot in production with dev-only auth defaults."""
+        if self.ENVIRONMENT != "production":
+            return self
+
+        weak: list[str] = []
+        if self.AUTH_ADMIN_PASSWORD == "123":
+            weak.append("AUTH_ADMIN_PASSWORD")
+        if self.AUTH_JWT_SECRET == "dev-secret-change-me":
+            weak.append("AUTH_JWT_SECRET")
+
+        if weak:
+            raise ValueError(
+                "CONFIGURAÇÃO DE SEGURANÇA CRÍTICA AUSENTE: "
+                f"Em modo 'production', {', '.join(weak)} ainda está com o valor "
+                "de desenvolvimento. Defina um valor forte via .env antes de subir."
+            )
+        return self
 
     @model_validator(mode="after")
     def _validate_templates(self):

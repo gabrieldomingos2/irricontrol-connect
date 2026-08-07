@@ -46,12 +46,28 @@ async function initApp() {
   setupUIEventListeners();
   setupMainActionListeners();
   await loadAndPopulateTemplates();
+  loadMapboxToken();
   lucide?.createIcons?.();
   await handleResetClick(false);
   updateActionButtonsI18n();
   document.addEventListener("i18n:applied", () => {
     updateActionButtonsI18n();
   });
+}
+
+// Busca o token do Mapbox do backend (só disponível após login — ver
+// simulation.py:/mapbox_token) e guarda em window pra 3d_analysis.js usar.
+// Não bloqueia o carregamento do resto do app: a análise 3D só é aberta
+// bem depois, sob demanda, então um "fire and forget" aqui é suficiente.
+// Se falhar (token não configurado no servidor, rede etc.), window.MAPBOX_ACCESS_TOKEN
+// fica undefined e o Analysis3D avisa o usuário só quando ele tentar abrir o modal.
+async function loadMapboxToken() {
+  try {
+    const result = await getMapboxToken();
+    window.MAPBOX_ACCESS_TOKEN = result?.token || null;
+  } catch (err) {
+    console.warn("Análise 3D indisponível: token do Mapbox não foi carregado.", err);
+  }
 }
 
 function updatePdfButtonState(enabled) {

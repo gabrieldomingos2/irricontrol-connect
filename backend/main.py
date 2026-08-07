@@ -71,6 +71,10 @@ async def lifespan(app: FastAPI):
     yield
 
     cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        pass
     logger.info("Application shutting down (lifespan shutdown).")
 
 

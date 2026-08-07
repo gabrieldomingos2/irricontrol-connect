@@ -115,7 +115,9 @@ window.Analysis3D = (() => {
   }
 
   function initMapboxScene(profile, losLine, context) {
-    mapboxgl.accessToken = "pk.eyJ1IjoiMzYzMzUzMzZnYSIsImEiOiJjbWVsaHZmN2YwaGZvMmxwemtyOHlzczNwIn0.V6Y5GLafCzXd6Bnqjtu89Q";
+    // Token buscado do backend (bootstrap.js:loadMapboxToken), não mais
+    // hardcoded aqui — ver simulation.py:/mapbox_token.
+    mapboxgl.accessToken = window.MAPBOX_ACCESS_TOKEN;
     mapboxMap = new mapboxgl.Map({
       container: mapContainerEl,
       style: "mapbox://styles/mapbox/satellite-streets-v12",
@@ -233,7 +235,12 @@ window.Analysis3D = (() => {
 
     const losLine = computeLosLine(towerHeight);
     setTimeout(() => {
-      initMapboxScene(elevationProfile, losLine, context);
+      if (window.MAPBOX_ACCESS_TOKEN) {
+        initMapboxScene(elevationProfile, losLine, context);
+      } else {
+        console.warn("Mapa 3D indisponível: token do Mapbox não foi carregado do servidor.");
+        typeof mostrarMensagem == "function" && mostrarMensagem(t("messages.errors.mapbox_token_unavailable"), "erro");
+      }
       renderProfileChart(losLine);
     }, 50);
 

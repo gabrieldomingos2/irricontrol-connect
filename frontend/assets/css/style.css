@@ -1,11 +1,9 @@
 /* ============================================================
-    🌐 IDIOMA: seletor fica só na tela de login (.login-langs).
-    O grupo de bandeiras da topbar do app (#topbar-group-lang)
-    não é mais exibido depois de logado, em nenhum tamanho de tela.
+    🌐 IDIOMA: seletor da tela de login (.login-langs) + grupo de
+    bandeiras na topbar do app (#topbar-group-lang), visível no
+    desktop depois de logado. No mobile ele é escondido em
+    mobile.css (topbar mobile não tem espaço para o grupo).
    ============================================================ */
-#topbar-group-lang {
-  display: none !important;
-}
 
 /* ============================================================
     TOKENS
@@ -463,6 +461,27 @@ body {
   margin-bottom: .45rem !important;
 }
 
+/* Arrastar o painel pela barra de título (ver ui.js:makeDraggable),
+   igual ao balão de chamada do WhatsApp. touch-action:none evita que o
+   dedo arraste a página junto no mobile em vez de mover o painel. */
+.drag-handle {
+  cursor: grab;
+  touch-action: none;
+}
+
+.drag-handle button {
+  cursor: pointer; /* o botão de fechar não deve "parecer" arrastável */
+}
+
+.panel-dragging {
+  transition: none !important;
+  user-select: none;
+}
+
+.panel-dragging .drag-handle {
+  cursor: grabbing;
+}
+
 /* Título do painel de repetidora */
 #painel-repetidora h2 {
   font-size: .9rem !important;
@@ -792,7 +811,16 @@ body {
 
 /* Botões da topbar */
 #ui-wrapper .absolute.top-0.left-0.right-0 .glass-button {
-  padding: 10px !important; /* opcional: aumenta só um pouco o botão */
+  padding: 7px !important; /* opcional: aumenta só um pouco o botão */
+}
+
+/* Um pouco mais de respiro entre os botões dentro de cada grupo da
+   topbar (Ferramentas/Legendas/Desenho/Editor usavam gap-2 = 8px). */
+#topbar-group-tools,
+#topbar-group-legends,
+#topbar-group-draw,
+#topbar-group-editor {
+  gap: 12px !important;
 }
 
 /* Ícones SVG usando mask-image */
@@ -1685,9 +1713,9 @@ label[for="arquivo"] {
 
 /* -----------------------------------------------------------
     Modo de captura de tela (#btn-screenshot-mode, ver ui.js):
-    esconde toda a UI ao redor e expande o mapa (com os desenhos do
-    estudo) + a legenda de cores pro tamanho inteiro da tela -- pra
-    tirar um print limpo do resultado, sem sidebar/topbar/painéis
+    esconde toda a UI ao redor (sidebar/topbar/painéis/legenda) e
+    expande o mapa (com os desenhos do estudo) pro tamanho inteiro da
+    tela -- pra tirar um print limpo do resultado, sem nada
     atrapalhando. Vale tanto pro desktop quanto pro mobile.
    ----------------------------------------------------------- */
 body.screenshot-mode #app-topbar,
@@ -1696,6 +1724,7 @@ body.screenshot-mode #overlay-panels-container,
 body.screenshot-mode #painel-repetidora,
 body.screenshot-mode #footer-logo-link,
 body.screenshot-mode #mensagem,
+body.screenshot-mode #legend-container,
 body.screenshot-mode #mobile-menu-toggle,
 body.screenshot-mode #mobile-drawer-backdrop,
 body.screenshot-mode #mobile-bottom-toolbar,
