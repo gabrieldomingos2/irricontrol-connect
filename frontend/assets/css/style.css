@@ -432,6 +432,15 @@ body {
   width: 260px;
 }
 
+/* Painel "Repetidoras" sem nenhum item: sem isso, o `flex-grow` da
+   classe no HTML estica o card pra preencher o espaço livre da coluna
+   mesmo vazio, deixando um card "gordinho" só com o título. Some com o
+   crescimento quando a lista (#lista-repetidoras) não tem filhos —
+   volta a crescer normal assim que a primeira repetidora é adicionada. */
+#painel-repetidoras:has(#lista-repetidoras:empty) {
+  flex-grow: 0;
+}
+
 /* ============================================================
     📡 PAINEL REPETIDORA (CONFIGURAÇÃO)
    ============================================================ */
