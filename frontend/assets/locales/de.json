@@ -286,6 +286,7 @@
     "tower": "Turm",
     "pole": "Pfosten",
     "water_tank": "Wassertank",
+    "irrimesh": "Irrimesh",
     "central_repeater_combined": "Zentrale + Repeater",
     "central_repeater_combined_solar": "Zentrale + Solar-Repeater",
     "default": "Standard"

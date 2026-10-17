@@ -123,6 +123,12 @@ function setupMainActionListeners() {
   document.getElementById("btn-los-pivot-a-pivot")?.addEventListener("click", toggleLoSPivotAPivotMode);
   document.getElementById("btn-buscar-locais-repetidora")?.addEventListener("click", handleBuscarLocaisRepetidoraActivation);
   document.getElementById("coord-search-btn")?.addEventListener("click", handleCoordinateSearch);
+  document.getElementById("lat-long-input-field")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleCoordinateSearch();
+    }
+  });
   document.getElementById("btn-draw-pivot-pacman")?.addEventListener("click", toggleModoDesenhoPivoPacman);
   document.getElementById("btn-draw-irripump")?.addEventListener("click", toggleModoDesenhoIrripump);
   document.getElementById("btn-mover-pivo-sem-circulo")?.addEventListener("click", toggleModoMoverPivoSemCirculo);

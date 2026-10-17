@@ -286,6 +286,7 @@
     "tower": "Torre",
     "pole": "Poste",
     "water_tank": "Tanque de Agua",
+    "irrimesh": "Irrimesh",
     "central_repeater_combined": "Central + Repetidor",
     "central_repeater_combined_solar": "Central + Repetidor Solar",
     "default": "Predeterminado"

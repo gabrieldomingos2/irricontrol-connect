@@ -150,6 +150,8 @@ def _get_formatted_entity_name_for_backend(
             return t("kml.repeaters.solar_type_repeater", type_name=t("entity_names.pole"), height=altura_str)
         elif entity_type == "water_tank":
             return t("kml.repeaters.solar_type_repeater", type_name=t("entity_names.water_tank"), height=altura_str)
+        elif entity_type == "irrimesh":
+            return t("kml.repeaters.solar_type_repeater", type_name=t("entity_names.irrimesh"), height=altura_str)
         else:
             if entity_data.get("sobre_pivo"):
                 return t("kml.repeaters.solar_pivot_repeater", height=altura_str)
