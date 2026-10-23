@@ -11,6 +11,7 @@ class TemplateID(str, Enum):
     BRAZIL_V6_100DBM = "Brazil_V6_100dBm"
     EUROPE_V6_XR = "Europe_V6_XR"
     BRAZIL_V6_90DBM = "Brazil_V6_90dBm"
+    BRAZIL_V7_XBEE900HP_90DBM = "Brazil_V7_XBee900HP_90dBm"
 
 
 # ---------------------------------------------------------------------------

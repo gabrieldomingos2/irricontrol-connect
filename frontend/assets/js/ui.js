@@ -592,8 +592,8 @@ function toggleTemplateOverrideShortcut() {
   }
 
   const message = templateOverrideEnabled
-    ? (typeof t == "function" && t("messages.success.template_unlocked")) || "Template Brazil V6 90dBm liberado nesta sessão."
-    : (typeof t == "function" && t("messages.success.template_locked")) || "Template Brazil V6 90dBm bloqueado novamente.";
+    ? (typeof t == "function" && t("messages.success.template_unlocked")) || "Templates avançados liberados nesta sessão."
+    : (typeof t == "function" && t("messages.success.template_locked")) || "Templates avançados bloqueados novamente.";
 
   typeof mostrarMensagem == "function" && mostrarMensagem(message, "sucesso");
 }
