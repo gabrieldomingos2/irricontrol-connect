@@ -13,6 +13,7 @@ function showRenameRepeaterMenu(marker, currentName, isMainAntenna, repeaterId) 
         { text: t("entity_names.tower"), value: "tower" },
         { text: t("entity_names.pole"), value: "pole" },
         { text: t("entity_names.water_tank"), value: "water_tank" },
+        { text: t("entity_names.irrimesh"), value: "irrimesh" },
         { text: t("entity_names.central"), value: "central" },
         { text: t("entity_names.central_repeater_combined"), value: "central_repeater_combined" }
       ];
