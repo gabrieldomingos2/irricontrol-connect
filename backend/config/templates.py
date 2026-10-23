@@ -81,4 +81,19 @@ def default_templates() -> list[dict[str, Any]]:
             "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -90},
             "antenna": {"txg": 3, "fbr": 3},
         },
+        # XBee-PRO 900HP @ 200 kbps (sensibilidade -101 dBm)
+        # Limiar -90 dBm = 11 dB de margem de seguranca
+        {
+            "id": "Brazil_V7_XBee900HP_90dBm",
+            "nome": "Brazil V7 XBee 900HP 90dBm",
+            "frq": 920,                      # versao Brasil do 900HP (915-928 MHz)
+            "col": "CONTROL90.dBm",          # trocar pela escala de 3 faixas quando criar
+            "site": "Brazil_V7_XBee900HP_90dBm",
+            "rxs": -90,
+            "transmitter": {"txw": 0.25, "bwi": 0.1},   # 24 dBm = max do 900HP
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -90},
+            "antenna": {"txg": 3, "fbr": 3},
+            "feeder": {"flt": 1, "fll": 5, "fcc": 2},   # AJUSTAR: cabo (m) e conectores reais
+            "model": {"ter": 3, "cli": 2},              # Farmland + Continental subtropical
+        },
     ]
