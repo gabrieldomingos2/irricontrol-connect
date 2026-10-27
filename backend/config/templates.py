@@ -104,7 +104,7 @@ def default_templates() -> list[dict[str, Any]]:
             "id": "Brazil_V7_XBee900HP_95dBm",
             "nome": "Brazil V7 XBee 900HP 95dBm",
             "frq": 920,
-            "col": "CONTROL90.dBm",          # escala de cores (ver obs. abaixo)
+            "col": "IRRI95DBM.dBm",          # escala de cores -95 criada no CloudRF
             "site": "Brazil_V7_XBee900HP_95dBm",
             "rxs": -95,
             "transmitter": {"txw": 0.25, "bwi": 0.1},

@@ -171,6 +171,7 @@ function updateLegendImage(templateId) {
   const match = [
     { test: /brazil[_-\s]?v6[_-\s]?100dbm/i, path: "assets/images/IRRICONTRO.dBm.key.png" },
     { test: /brazil[_-\s]?v6[_-\s]?90dbm/i, path: "assets/images/CONTROL90.dBm.key.png" },
+    { test: /brazil[_-\s]?v7.*95dbm/i, path: "assets/images/IRRI95DBM.dBm.key.png" },
     { test: /brazil[_-\s]?v7/i, path: "assets/images/CONTROL90.dBm.key.png" },
     { test: /europe[_-\s]?v6/i, path: "assets/images/IRRIEUROPE.dBm.key.png" }
   ].find((entry) => entry.test.test(normalized));
