@@ -98,8 +98,6 @@ def default_templates() -> list[dict[str, Any]]:
             "feeder": {"flt": 1, "fll": 5, "fcc": 2},   # AJUSTAR: cabo (m) e conectores reais
             "model": {"ter": 3, "cli": 2},              # Farmland + Continental subtropical
         },
-    ]
-
         # XBee-PRO 900HP @ 200 kbps (sensibilidade -101 dBm)
         # Limiar -95 dBm = 6 dB de margem de seguranca (TESTE)
         {
@@ -115,3 +113,4 @@ def default_templates() -> list[dict[str, Any]]:
             "feeder": {"flt": 1, "fll": 5, "fcc": 2},
             "model": {"ter": 3, "cli": 2},
         },
+    ]
