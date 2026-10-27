@@ -320,7 +320,8 @@ async function loadAndPopulateTemplates() {
     templateOverrideEnabled = !!window.AppState?.templateOverrideEnabled;
 
     const disabledSet = new Set(templateOverrideEnabled ? [] : disabled);
-    const uniqueTemplates = [...new Set(templates)];
+    const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm"];
+    const uniqueTemplates = [...new Set(templates)].filter((id) => !HIDDEN_TEMPLATES.includes(id));
 
     templateSelect.innerHTML = uniqueTemplates.map((templateName) => {
       const flag = /brazil/i.test(templateName) ? "🇧🇷 " : /europe/i.test(templateName) ? "🇪🇺 " : "🌐 ";
