@@ -324,6 +324,7 @@ async function handleExportPdfReportClick() {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const mapImageBase64 = await captureMapSnapshot();
+    typeof syncCiclosComPivos == "function" && syncCiclosComPivos();
     const payload = {
       job_id: AppState.jobId,
       language: localStorage.getItem("preferredLanguage") || "pt-br",
@@ -475,6 +476,7 @@ async function handleExportClick() {
       imagemFilename && (boundsFile = imagemFilename.replace(/\.png$/, ".json"));
     }
 
+    typeof syncCiclosComPivos == "function" && syncCiclosComPivos();
     const payload = {
       job_id: AppState.jobId,
       template_id: AppState.templateSelecionado || document.getElementById("template-modelo").value,

@@ -321,12 +321,12 @@ def _add_secondary_folders(doc, pivos, ciclos, bombas, style, t: Callable):
             try:
                 if pivo_tipo == "setorial":
                     coords_area = _generate_sector_coords(
-                        lat=pivo_data["lat"], lon=pivo_data["lon"], radius_m=pivo_data["raio"],
+                        lat=pivo_data.get("circle_center_lat") or pivo_data["lat"], lon=pivo_data.get("circle_center_lon") or pivo_data["lon"], radius_m=pivo_data["raio"],
                         bearing_deg=pivo_data["angulo_central"], arc_width_deg=pivo_data["abertura_arco"],
                     )
                 elif pivo_tipo == "pacman":
                     coords_area = _generate_pacman_coords(
-                        lat=pivo_data["lat"], lon=pivo_data["lon"], radius_m=pivo_data["raio"],
+                        lat=pivo_data.get("circle_center_lat") or pivo_data["lat"], lon=pivo_data.get("circle_center_lon") or pivo_data["lon"], radius_m=pivo_data["raio"],
                         start_angle_deg=pivo_data["angulo_inicio"], end_angle_deg=pivo_data["angulo_fim"],
                     )
 

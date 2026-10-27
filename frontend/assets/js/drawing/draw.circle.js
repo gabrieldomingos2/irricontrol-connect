@@ -50,6 +50,41 @@ function drawCirculos() {
       AppState.circulosPivos.push(circle);
     }
   });
+
+  // Mantém AppState.ciclosGlobais (o que vai pro KMZ/PDF) igual ao que
+  // está desenhado no mapa. Sem isso, editar o pivô (mover/redimensionar)
+  // só mudava o desenho na tela e o KMZ saía com a 1ª versão do círculo.
+  syncCiclosComPivos();
+}
+
+// Recalcula as coordenadas de cada "Ciclo <nome>" a partir do estado
+// ATUAL do pivô (centro + raio, ou polígono custom). Setorial/pacman
+// não entram: o backend gera a área deles direto dos dados do pivô.
+function syncCiclosComPivos() {
+  if (!Array.isArray(AppState.ciclosGlobais)) AppState.ciclosGlobais = [];
+  const ciclos = AppState.ciclosGlobais;
+
+  (AppState.lastPivosDataDrawn || []).forEach((pivot) => {
+    if (!pivot || pivot.tipo === "setorial" || pivot.tipo === "pacman") return;
+
+    const nomeCiclo = `Ciclo ${pivot.nome}`;
+    const existing = ciclos.find((c) => c.nome_original_circulo === nomeCiclo);
+    const temRaio = typeof pivot.raio === "number" && pivot.raio > 0;
+
+    let coords = null;
+    if (pivot.tipo === "custom" && Array.isArray(pivot.coordenadas) && pivot.coordenadas.length > 2) {
+      coords = pivot.coordenadas.map(([lat, lon]) => [lat, lon]);
+    } else if (temRaio) {
+      const center = pivot.circle_center_lat !== undefined && pivot.circle_center_lon !== undefined
+        ? L.latLng(pivot.circle_center_lat, pivot.circle_center_lon)
+        : L.latLng(pivot.lat, pivot.lon);
+      coords = generateCircleCoords(center, pivot.raio);
+    }
+    if (!coords) return;
+
+    if (existing) existing.coordenadas = coords;
+    else if (temRaio) ciclos.push({ nome_original_circulo: nomeCiclo, coordenadas: coords });
+  });
 }
 
 let tempCircle = null;
