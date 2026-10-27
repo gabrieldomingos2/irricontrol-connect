@@ -12,6 +12,7 @@ class TemplateID(str, Enum):
     EUROPE_V6_XR = "Europe_V6_XR"
     BRAZIL_V6_90DBM = "Brazil_V6_90dBm"
     BRAZIL_V7_XBEE900HP_90DBM = "Brazil_V7_XBee900HP_90dBm"
+    BRAZIL_V7_XBEE900HP_95DBM = "Brazil_V7_XBee900HP_95dBm"
 
 
 # ---------------------------------------------------------------------------
@@ -98,3 +99,19 @@ def default_templates() -> list[dict[str, Any]]:
             "model": {"ter": 3, "cli": 2},              # Farmland + Continental subtropical
         },
     ]
+
+        # XBee-PRO 900HP @ 200 kbps (sensibilidade -101 dBm)
+        # Limiar -95 dBm = 6 dB de margem de seguranca (TESTE)
+        {
+            "id": "Brazil_V7_XBee900HP_95dBm",
+            "nome": "Brazil V7 XBee 900HP 95dBm",
+            "frq": 920,
+            "col": "CONTROL90.dBm",          # escala de cores (ver obs. abaixo)
+            "site": "Brazil_V7_XBee900HP_95dBm",
+            "rxs": -95,
+            "transmitter": {"txw": 0.25, "bwi": 0.1},
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -95},
+            "antenna": {"txg": 3, "fbr": 3},
+            "feeder": {"flt": 1, "fll": 5, "fcc": 2},
+            "model": {"ter": 3, "cli": 2},
+        },
