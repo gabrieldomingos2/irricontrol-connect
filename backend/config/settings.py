@@ -26,7 +26,7 @@ class AppSettings(BaseSettings):
     APP_NAME: str = "Irricontrol Signal Simulator API"
     APP_VERSION: str = "1.1.0"
     API_V1_STR: str = "/api/v1"
-    DEFAULT_TEMPLATE_ID: TemplateID = TemplateID.BRAZIL_V6_100DBM
+    DEFAULT_TEMPLATE_ID: TemplateID = TemplateID.BRAZIL_V6_90DBM
     ENVIRONMENT: str = "development"
 
     # --- Auth (test environment) ---
@@ -182,7 +182,7 @@ class AppSettings(BaseSettings):
     # --- Templates ---
     TEMPLATES_DISPONIVEIS: list[TemplateSettings] = Field(default_factory=default_templates)
     TEMPLATES_DESABILITADOS: list[str] = Field(
-        default_factory=lambda: [TemplateID.BRAZIL_V6_90DBM.value, TemplateID.BRAZIL_V7_XBEE900HP_90DBM.value],
+        default_factory=lambda: [TemplateID.BRAZIL_V6_100DBM.value],
         description="Templates listados mas temporariamente bloqueados",
     )
 
