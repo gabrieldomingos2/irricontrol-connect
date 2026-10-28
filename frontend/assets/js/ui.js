@@ -322,7 +322,9 @@ async function loadAndPopulateTemplates() {
 
     const disabledSet = new Set(templateOverrideEnabled ? [] : disabled);
     const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm"];
-    const uniqueTemplates = [...new Set(templates)].filter((id) => !HIDDEN_TEMPLATES.includes(id));
+    const uniqueTemplates = [...new Set(templates)]
+      .filter((id) => !HIDDEN_TEMPLATES.includes(id))
+      .sort((a, b) => disabled.includes(a) - disabled.includes(b));
 
     templateSelect.innerHTML = uniqueTemplates.map((templateName) => {
       const flag = /brazil/i.test(templateName) ? "🇧🇷 " : /europe/i.test(templateName) ? "🇪🇺 " : "🌐 ";

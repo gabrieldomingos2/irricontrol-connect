@@ -182,7 +182,7 @@ class AppSettings(BaseSettings):
     # --- Templates ---
     TEMPLATES_DISPONIVEIS: list[TemplateSettings] = Field(default_factory=default_templates)
     TEMPLATES_DESABILITADOS: list[str] = Field(
-        default_factory=lambda: [TemplateID.BRAZIL_V6_100DBM.value],
+        default_factory=lambda: [TemplateID.BRAZIL_V6_100DBM.value, TemplateID.BRAZIL_V7_95DBM.value],
         description="Templates listados mas temporariamente bloqueados",
     )
 
