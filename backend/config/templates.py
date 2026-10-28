@@ -11,8 +11,8 @@ class TemplateID(str, Enum):
     BRAZIL_V6_100DBM = "Brazil_V6_100dBm"
     EUROPE_V6_XR = "Europe_V6_XR"
     BRAZIL_V6_90DBM = "Brazil_V6_90dBm"
-    BRAZIL_V7_XBEE900HP_90DBM = "Brazil_V7_XBee900HP_90dBm"
-    BRAZIL_V7_XBEE900HP_95DBM = "Brazil_V7_XBee900HP_95dBm"
+    BRAZIL_V7_90DBM = "Brazil_V7_90dBm"
+    BRAZIL_V7_95DBM = "Brazil_V7_95dBm"
 
 
 # ---------------------------------------------------------------------------
@@ -67,9 +67,9 @@ def default_templates() -> list[dict[str, Any]]:
             "frq": 868,
             "col": "IRRIEUROPE.dBm",
             "site": "Europe_V6_XR",
-            "rxs": -105,
+            "rxs": -100,
             "transmitter": {"txw": 0.02, "bwi": 0.05},
-            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 2.1, "rxs": -105},
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 2.1, "rxs": -100},
             "antenna": {"txg": 2.1, "fbr": 2.1},
         },
         {
@@ -86,11 +86,11 @@ def default_templates() -> list[dict[str, Any]]:
         # XBee-PRO 900HP @ 200 kbps (sensibilidade -101 dBm)
         # Limiar -90 dBm = 11 dB de margem de seguranca
         {
-            "id": "Brazil_V7_XBee900HP_90dBm",
-            "nome": "Brazil V7 XBee 900HP 90dBm",
+            "id": "Brazil_V7_90dBm",
+            "nome": "Brazil V7 90dBm",
             "frq": 920,                      # versao Brasil do 900HP (915-928 MHz)
             "col": "CONTROL90.dBm",          # trocar pela escala de 3 faixas quando criar
-            "site": "Brazil_V7_XBee900HP_90dBm",
+            "site": "Brazil_V7_90dBm",
             "rxs": -90,
             "transmitter": {"txw": 0.25, "bwi": 0.1},   # 24 dBm = max do 900HP
             "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -90},
@@ -101,11 +101,11 @@ def default_templates() -> list[dict[str, Any]]:
         # XBee-PRO 900HP @ 200 kbps (sensibilidade -101 dBm)
         # Limiar -95 dBm = 6 dB de margem de seguranca (TESTE)
         {
-            "id": "Brazil_V7_XBee900HP_95dBm",
-            "nome": "Brazil V7 XBee 900HP 95dBm",
+            "id": "Brazil_V7_95dBm",
+            "nome": "Brazil V7 95dBm",
             "frq": 920,
             "col": "IRRI95DBM.dBm",          # escala de cores -95 criada no CloudRF
-            "site": "Brazil_V7_XBee900HP_95dBm",
+            "site": "Brazil_V7_95dBm",
             "rxs": -95,
             "transmitter": {"txw": 0.25, "bwi": 0.1},
             "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -95},

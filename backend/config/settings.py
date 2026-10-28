@@ -26,7 +26,7 @@ class AppSettings(BaseSettings):
     APP_NAME: str = "Irricontrol Signal Simulator API"
     APP_VERSION: str = "1.1.0"
     API_V1_STR: str = "/api/v1"
-    DEFAULT_TEMPLATE_ID: TemplateID = TemplateID.BRAZIL_V7_XBEE900HP_90DBM
+    DEFAULT_TEMPLATE_ID: TemplateID = TemplateID.BRAZIL_V7_90DBM
     ENVIRONMENT: str = "development"
 
     # --- Auth (test environment) ---
