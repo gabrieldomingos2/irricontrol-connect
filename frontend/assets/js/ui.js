@@ -321,7 +321,7 @@ async function loadAndPopulateTemplates() {
     templateOverrideEnabled = !!window.AppState?.templateOverrideEnabled;
 
     const disabledSet = new Set(templateOverrideEnabled ? [] : disabled);
-    const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm"];
+    const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm", "Brazil_V6_100dBm"];
     const uniqueTemplates = [...new Set(templates)]
       .filter((id) => !HIDDEN_TEMPLATES.includes(id))
       .sort((a, b) => disabled.includes(a) - disabled.includes(b));
