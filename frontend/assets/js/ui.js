@@ -322,9 +322,15 @@ async function loadAndPopulateTemplates() {
 
     const disabledSet = new Set(templateOverrideEnabled ? [] : disabled);
     const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm", "Brazil_V6_100dBm"];
+    const TEMPLATE_ORDER = ["Brazil_V7_95dBm", "Brazil_V7_90dBm", "Europe_V6_XR"];
+    const orderIndex = (id) => {
+    const i = TEMPLATE_ORDER.indexOf(id);
+      return i === -1 ? TEMPLATE_ORDER.length : i;
+    };
+    
     const uniqueTemplates = [...new Set(templates)]
       .filter((id) => !HIDDEN_TEMPLATES.includes(id))
-      .sort((a, b) => disabled.includes(a) - disabled.includes(b));
+      .sort((a, b) => (disabled.includes(a) - disabled.includes(b)) || (orderIndex(a) - orderIndex(b)));
 
     templateSelect.innerHTML = uniqueTemplates.map((templateName) => {
       const flag = /brazil/i.test(templateName) ? "🇧🇷 " : /europe/i.test(templateName) ? "🇪🇺 " : "🌐 ";
