@@ -88,7 +88,7 @@ def default_templates() -> list[dict[str, Any]]:
         {
             "id": "Brazil_V7_90dBm",
             "nome": "Brazil V7 90dBm",
-            "frq": 920,                      # versao Brasil do 900HP (915-928 MHz)
+            "frq": 915,                      # versao Brasil do 900HP (915-928 MHz)
             "col": "CONTROL90.dBm",          # trocar pela escala de 3 faixas quando criar
             "site": "Brazil_V7_90dBm",
             "rxs": -90,
@@ -103,7 +103,7 @@ def default_templates() -> list[dict[str, Any]]:
         {
             "id": "Brazil_V7_95dBm",
             "nome": "Brazil V7 95dBm",
-            "frq": 920,
+            "frq": 915,
             "col": "IRRI95DBM.dBm",          # escala de cores -95 criada no CloudRF
             "site": "Brazil_V7_95dBm",
             "rxs": -95,
