@@ -487,7 +487,8 @@ async function handleExportClick() {
       pivos_data: AppState.lastPivosDataDrawn,
       ciclos_data: AppState.ciclosGlobais,
       bombas_data: AppState.lastBombasDataDrawn,
-      repetidoras_data: repetidorasDataKmz
+      repetidoras_data: repetidorasDataKmz,
+      document_name: fileHandle?.name ? fileHandle.name.replace(/\.(kmz|kml)$/i, "") : null
     };
 
     await exportKmz(payload, fileHandle);

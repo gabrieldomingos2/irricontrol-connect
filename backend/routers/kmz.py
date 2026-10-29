@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import json
 import logging
 import uuid
@@ -130,6 +131,16 @@ class ExportPayload(BaseModel):
     ciclos_data: List[Dict[str, Any]]
     bombas_data: List[Dict[str, Any]]
     repetidoras_data: List[Dict[str, Any]]
+    document_name: Optional[str] = None  # nome escolhido pelo usuário ao salvar (aparece no Google Earth)
+
+
+def _sanitize_document_name(raw: Optional[str]) -> Optional[str]:
+    """Limpa o nome vindo do front (remove extensão .kmz/.kml, caracteres de controle e espaços extras)."""
+    if not raw:
+        return None
+    name = re.sub(r"\.(kmz|kml)$", "", str(raw).strip(), flags=re.IGNORECASE)
+    name = re.sub(r"[\x00-\x1f\x7f]", "", name).strip()
+    return name[:150] or None
 
 
 @router.post("/processar")
@@ -226,7 +237,8 @@ def build_kmz_file(payload: ExportPayload) -> tuple[Path, str]:
     selected_template = settings.obter_template(payload.template_id)
 
     t = i18n_service.get_translator(payload.language)
-    kml = simplekml.Kml(name=t("kml.main_name"))
+    nome_documento = _sanitize_document_name(payload.document_name) or t("kml.main_name")
+    kml = simplekml.Kml(name=nome_documento)
 
     caminho_kml_temp = job_input_dir / "estudo_temp.kml"
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
