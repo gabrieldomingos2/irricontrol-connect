@@ -144,8 +144,8 @@
       "action_undone_delete": "Löschung des Pivots \"{pivot_name}\" rückgängig gemacht.",
       "main_antenna_renamed": "Hauptantenne umbenannt in \"{name}\".",
       "repeater_renamed": "Repeater umbenannt in \"{name}\".",
-      "template_unlocked": "Template Brazil V6 90dBm für diese Sitzung vorübergehend freigeschaltet.",
-      "template_locked": "Template Brazil V6 90dBm wieder gesperrt."
+      "template_unlocked": "Template Brazil V6 100dBm für diese Sitzung vorübergehend freigeschaltet.",
+      "template_locked": "Template Brazil V6 100dBm wieder gesperrt."
     },
     "errors": {
       "session_start_fail": "Kritischer Fehler beim Starten der neuen Sitzung. Bitte laden Sie die Seite neu.",

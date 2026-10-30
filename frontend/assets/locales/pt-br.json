@@ -172,8 +172,8 @@
         "action_undone_delete": "Exclusão do pivô \"{pivot_name}\" revertida.",
         "main_antenna_renamed": "Antena principal renomeada para \"{name}\".",
         "repeater_renamed": "Repetidora renomeada para \"{name}\".",
-        "template_unlocked": "Template Brazil V6 90dBm liberado nesta sessão.",
-        "template_locked": "Template Brazil V6 90dBm bloqueado novamente."
+        "template_unlocked": "Template Brazil V6 100dBm liberado nesta sessão.",
+        "template_locked": "Template Brazil V6 100dBm bloqueado novamente."
     },
     "errors": {
         "session_expired": "Sessao expirada. Faca login novamente.",

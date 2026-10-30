@@ -9,7 +9,7 @@ class TemplateID(str, Enum):
     """Unique identifiers for each simulation template."""
 
     BRAZIL_V6_100DBM = "Brazil_V6_100dBm"
-    EUROPE_V6_XR = "Europe_V6_XR"
+    EUROPE_V6_XR = "Europe_V7_XR"
     BRAZIL_V6_90DBM = "Brazil_V6_90dBm"
     BRAZIL_V7_90DBM = "Brazil_V7_90dBm"
     BRAZIL_V7_95DBM = "Brazil_V7_95dBm"
@@ -62,11 +62,11 @@ def default_templates() -> list[dict[str, Any]]:
             "antenna": {"txg": 3, "fbr": 3},
         },
         {
-            "id": "Europe_V6_XR",
-            "nome": "Europe V6 XR",
+            "id": "Europe_V7_XR",
+            "nome": "Europe V7 XR",
             "frq": 868,
             "col": "IRRIEUROPE.dBm",
-            "site": "Europe_V6_XR",
+            "site": "Europe_V7_XR",
             "rxs": -100,
             "transmitter": {"txw": 0.02, "bwi": 0.05},
             "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 2.1, "rxs": -100},

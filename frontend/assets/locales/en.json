@@ -173,8 +173,8 @@
       "action_undone_delete": "Deletion of pivot \"{pivot_name}\" reverted.",
       "main_antenna_renamed": "Main antenna renamed to \"{name}\".",
       "repeater_renamed": "Repeater renamed to \"{name}\".",
-      "template_unlocked": "Template Brazil V6 90dBm temporarily unlocked for this session.",
-      "template_locked": "Template Brazil V6 90dBm locked again."
+      "template_unlocked": "Template Brazil V6 100dBm temporarily unlocked for this session.",
+      "template_locked": "Template Brazil V6 100dBm locked again."
     },
     "errors": {
         "session_expired": "Session expired. Please log in again.",

@@ -144,8 +144,8 @@
       "action_undone_delete": "Удаление пивота \"{pivot_name}\" отменено.",
       "main_antenna_renamed": "Основная антенна переименована в \"{name}\".",
       "repeater_renamed": "Ретранслятор переименован в \"{name}\".",
-      "template_unlocked": "Шаблон Brazil V6 90dBm временно разблокирован для этой сессии.",
-      "template_locked": "Шаблон Brazil V6 90dBm снова заблокирован."
+      "template_unlocked": "Шаблон Brazil V6 100dBm временно разблокирован для этой сессии.",
+      "template_locked": "Шаблон Brazil V6 100dBm снова заблокирован."
     },
     "errors": {
       "session_start_fail": "Критическая ошибка при запуске новой сессии. Пожалуйста, перезагрузите страницу.",

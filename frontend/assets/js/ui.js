@@ -310,6 +310,35 @@ function reposicionarPaineisLaterais() {
   });
 }
 
+// Templates bloqueados (TEMPLATES_DESABILITADOS no backend, ex.: Brazil_V6_100dBm)
+// ficam invisíveis no select. Shift+A libera: eles aparecem e já ficam selecionáveis.
+const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm"];
+const TEMPLATE_ORDER = ["Brazil_V7_95dBm", "Brazil_V7_90dBm", "Europe_V6_XR"];
+window.__templateAllList = window.__templateAllList || [];
+
+function renderTemplateOptions(preferredValue) {
+  if (!templateSelect) return;
+  const disabledSet = new Set(templateDisabledList || []);
+  const orderIndex = (id) => {
+    const i = TEMPLATE_ORDER.indexOf(id);
+    return i === -1 ? TEMPLATE_ORDER.length : i;
+  };
+
+  const visibleTemplates = [...new Set(window.__templateAllList)]
+    .filter((id) => !HIDDEN_TEMPLATES.includes(id))
+    .filter((id) => templateOverrideEnabled || !disabledSet.has(id))
+    .sort((a, b) => orderIndex(a) - orderIndex(b));
+
+  templateSelect.innerHTML = visibleTemplates.map((templateName) => {
+    const flag = /brazil/i.test(templateName) ? "🇧🇷 " : /europe/i.test(templateName) ? "🇪🇺 " : "🌐 ";
+    return `<option value="${templateName}">${flag}${templateName}</option>`;
+  }).join("");
+
+  const valid = preferredValue && visibleTemplates.includes(preferredValue);
+  templateSelect.value = valid ? preferredValue : visibleTemplates[0] || "";
+  templateSelect.dispatchEvent(new Event("change"));
+}
+
 async function loadAndPopulateTemplates() {
   try {
     const result = await getTemplates();
@@ -319,32 +348,9 @@ async function loadAndPopulateTemplates() {
     const disabled = Array.isArray(result?.disabled) ? result.disabled : [];
     templateDisabledList = disabled.slice();
     templateOverrideEnabled = !!window.AppState?.templateOverrideEnabled;
+    window.__templateAllList = templates;
 
-    const disabledSet = new Set(templateOverrideEnabled ? [] : disabled);
-    const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm", "Brazil_V6_100dBm"];
-    const TEMPLATE_ORDER = ["Brazil_V7_95dBm", "Brazil_V7_90dBm", "Europe_V6_XR"];
-    const orderIndex = (id) => {
-    const i = TEMPLATE_ORDER.indexOf(id);
-      return i === -1 ? TEMPLATE_ORDER.length : i;
-    };
-    
-    const uniqueTemplates = [...new Set(templates)]
-      .filter((id) => !HIDDEN_TEMPLATES.includes(id))
-      .sort((a, b) => (disabled.includes(a) - disabled.includes(b)) || (orderIndex(a) - orderIndex(b)));
-
-    templateSelect.innerHTML = uniqueTemplates.map((templateName) => {
-      const flag = /brazil/i.test(templateName) ? "🇧🇷 " : /europe/i.test(templateName) ? "🇪🇺 " : "🌐 ";
-      const isDisabled = disabledSet.has(templateName);
-      const label = `${flag}${templateName}`;
-      return `<option value="${templateName}"${isDisabled ? ' disabled aria-disabled="true"' : ""}>${label}</option>`;
-    }).join("");
-
-    const savedTemplate = localStorage.getItem("templateSelecionado");
-    const savedIsValid = savedTemplate && uniqueTemplates.includes(savedTemplate) && !disabledSet.has(savedTemplate);
-    const firstEnabled = uniqueTemplates.find((templateName) => !disabledSet.has(templateName)) ?? "";
-
-    templateSelect.value = savedIsValid ? savedTemplate : firstEnabled || uniqueTemplates[0] || "";
-    templateSelect.dispatchEvent(new Event("change"));
+    renderTemplateOptions(localStorage.getItem("templateSelecionado"));
   } catch (err) {
     console.error("Erro ao carregar templates:", err);
     mostrarMensagem(t("messages.errors.template_load_fail"), "erro");
@@ -584,23 +590,15 @@ function toggleTemplateOverrideShortcut() {
   templateOverrideEnabled = !templateOverrideEnabled;
   AppState.templateOverrideEnabled = templateOverrideEnabled;
 
-  const disabledSet = new Set(templateOverrideEnabled ? [] : templateDisabledList);
-
-  if (templateSelect) {
-    Array.from(templateSelect.options || []).forEach((option) => {
-      const isDisabled = disabledSet.has(option.value);
-      option.disabled = isDisabled;
-      isDisabled ? option.setAttribute("aria-disabled", "true") : option.removeAttribute("aria-disabled");
-    });
-
-    const currentValue = templateSelect.value;
-    if (disabledSet.has(currentValue)) {
-      const firstEnabled = Array.from(templateSelect.options).find((option) => !option.disabled);
-      firstEnabled && (templateSelect.value = firstEnabled.value);
-    }
-
-    templateSelect.dispatchEvent(new Event("change"));
-  }
+  // Liberou: mostra os bloqueados e já seleciona o primeiro deles (ex.: 100dBm).
+  // Bloqueou: some com eles e volta pro template salvo / primeiro da lista.
+  const firstUnlocked = (templateDisabledList || []).find(
+    (id) => window.__templateAllList.includes(id) && !HIDDEN_TEMPLATES.includes(id)
+  );
+  const preferred = templateOverrideEnabled
+    ? firstUnlocked || templateSelect?.value
+    : templateSelect?.value;
+  renderTemplateOptions(preferred);
 
   const message = templateOverrideEnabled
     ? (typeof t == "function" && t("messages.success.template_unlocked")) || "Templates avançados liberados nesta sessão."
@@ -610,7 +608,14 @@ function toggleTemplateOverrideShortcut() {
 }
 
 window.__tplShortcutBound || (window.__tplShortcutBound = true, window.addEventListener("keydown", (event) => {
-  event.shiftKey && String(event.key || "").toLowerCase() === "a" && (event.preventDefault(), toggleTemplateOverrideShortcut());
+  if (!event.shiftKey || event.ctrlKey || event.metaKey || event.altKey || event.repeat) return;
+  if (String(event.key || "").toLowerCase() !== "a") return;
+  // Não dispara enquanto digita (senão um "A" maiúsculo num campo liberava o template)
+  const el = event.target;
+  const tag = (el?.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || tag === "select" || el?.isContentEditable) return;
+  event.preventDefault();
+  toggleTemplateOverrideShortcut();
 }));
 
 window.showCustomConfirm = showCustomConfirm;
