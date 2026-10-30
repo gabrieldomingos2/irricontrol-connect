@@ -173,7 +173,8 @@ function updateLegendImage(templateId) {
     { test: /brazil[_-\s]?v6[_-\s]?90dbm/i, path: "assets/images/CONTROL90.dBm.key.png" },
     { test: /brazil[_-\s]?v7.*95dbm/i, path: "assets/images/IRRI95DBM.dBm.key.png" },
     { test: /brazil[_-\s]?v7/i, path: "assets/images/CONTROL90.dBm.key.png" },
-    { test: /europe[_-\s]?v6/i, path: "assets/images/IRRIEUROPE.dBm.key.png" }
+    // Europe_V7_XR (antes Europe_V6_XR): qualquer template Europe usa a mesma escala
+    { test: /europe/i, path: "assets/images/IRRIEUROPE.dBm.key.png" }
   ].find((entry) => entry.test.test(normalized));
 
   if (!match) {
@@ -251,53 +252,24 @@ function atualizarPainelDados() {
 
   const pivos = Array.isArray(AppState.lastPivosDataDrawn) ? AppState.lastPivosDataDrawn : [];
   const bombas = Array.isArray(AppState.lastBombasDataDrawn) ? AppState.lastBombasDataDrawn : [];
-  const repetidoras = Array.isArray(AppState.repetidoras) ? AppState.repetidoras : [];
-  const totalPivos = pivos.length;
   const foraCobertura = pivos.filter((p) => p?.fora).length;
 
-  let totalRepetidoras = 0;
-  let totalCentrais = 0;
-
-  if (AppState.antenaGlobal) {
-    const type = AppState.antenaGlobal.type;
-    if (type === "central") {
-      totalCentrais++;
-    } else {
-      type === "central_repeater_combined" && totalCentrais++;
-      totalRepetidoras++;
-    }
-  }
-
-  repetidoras.forEach((rep) => {
-    const type = rep?.type;
-    if (type === "central") {
-      totalCentrais++;
-    } else {
-      type === "central_repeater_combined" && totalCentrais++;
-      totalRepetidoras++;
-    }
-  });
-
+  const templateInfoEl = document.getElementById("template-info");
   const totalPivosEl = document.getElementById("total-pivos");
   const foraCoberturaEl = document.getElementById("fora-cobertura");
-  const templateInfoEl = document.getElementById("template-info");
-  const totalRepetidorasEl = document.getElementById("total-repetidoras");
-  const totalCentraisEl = document.getElementById("total-centrais");
-  const centralCountValueEl = document.getElementById("central-count-value");
+  const foraCoberturaStatEl = document.getElementById("fora-cobertura-stat");
   const totalBombasEl = document.getElementById("total-bombas");
+  const totalBombasValueEl = document.getElementById("total-bombas-value");
 
-  totalPivosEl && (totalPivosEl.textContent = `${t("ui.labels.total_pivots")} ${totalPivos}`);
-  foraCoberturaEl && (foraCoberturaEl.textContent = `${t("ui.labels.out_of_coverage")} ${foraCobertura}`);
-  templateInfoEl && (templateInfoEl.textContent = `${t("ui.labels.template_info")} ${AppState.templateSelecionado || "--"}`);
-  totalRepetidorasEl && (totalRepetidorasEl.textContent = `${t("ui.labels.total_repeaters")} ${totalRepetidoras}`);
-  totalCentraisEl && centralCountValueEl && (
-    centralCountValueEl.textContent = totalCentrais,
-    totalCentraisEl.classList.toggle("hidden", totalCentrais === 0)
-  );
-  totalBombasEl && (
-    totalBombasEl.textContent = `${t("ui.labels.pump_houses")} ${bombas.length}`,
-    totalBombasEl.classList.toggle("hidden", bombas.length === 0)
-  );
+  // Antes da primeira simulação AppState.templateSelecionado ainda está
+  // vazio; mostra o que está escolhido no select (o padrão já vem marcado).
+  const templateAtual = AppState.templateSelecionado || templateSelect?.value || "--";
+  templateInfoEl && (templateInfoEl.textContent = `${t("ui.labels.template_info")} ${templateAtual}`);
+  totalPivosEl && (totalPivosEl.textContent = pivos.length);
+  foraCoberturaEl && (foraCoberturaEl.textContent = foraCobertura);
+  // Vermelho só quando tem pivô sem sinal; com 0 fica neutro.
+  foraCoberturaStatEl && foraCoberturaStatEl.classList.toggle("is-zero", foraCobertura === 0);
+  totalBombasValueEl && (totalBombasValueEl.textContent = bombas.length);
 }
 
 function reposicionarPaineisLaterais() {
@@ -313,7 +285,7 @@ function reposicionarPaineisLaterais() {
 // Templates bloqueados (TEMPLATES_DESABILITADOS no backend, ex.: Brazil_V6_100dBm)
 // ficam invisíveis no select. Shift+A libera: eles aparecem e já ficam selecionáveis.
 const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm"];
-const TEMPLATE_ORDER = ["Brazil_V7_95dBm", "Brazil_V7_90dBm", "Europe_V6_XR"];
+const TEMPLATE_ORDER = ["Brazil_V7_95dBm", "Brazil_V7_90dBm", "Europe_V7_XR"];
 window.__templateAllList = window.__templateAllList || [];
 
 function renderTemplateOptions(preferredValue) {
@@ -351,6 +323,7 @@ async function loadAndPopulateTemplates() {
     window.__templateAllList = templates;
 
     renderTemplateOptions(localStorage.getItem("templateSelecionado"));
+    atualizarPainelDados();
   } catch (err) {
     console.error("Erro ao carregar templates:", err);
     mostrarMensagem(t("messages.errors.template_load_fail"), "erro");
@@ -398,6 +371,28 @@ function togglePivoEditing() {
 // repetidora tem posição fixa forçada com !important no mobile.css (pra
 // flutuar certinho quando o mobile.js o move pra fora da sidebar); sem
 // isso, a posição arrastada seria sobrescrita pelo CSS.
+// No desktop o painel de repetidora fica fixo na sidebar (ver
+// syncRepPanelLock); só no mobile, onde ele flutua sobre o mapa, é que
+// arrastar faz sentido.
+function isPanelDraggable(panel) {
+  return panel.id !== "painel-repetidora" || !window.matchMedia("(min-width: 769px)").matches;
+}
+
+// Desktop: o painel de repetidora fica sempre à mostra na sidebar. O resto
+// do app continua usando a classe "hidden" pra abrir/fechar o painel; aqui
+// ela vira "travado" (rep-locked + campos desabilitados) até um clique no
+// mapa tirar o "hidden". No mobile o "hidden" segue escondendo o painel
+// normalmente (mobile.css), e os campos desabilitados nem aparecem.
+function syncRepPanelLock() {
+  const panel = painelConfigRepetidoraDiv;
+  if (!panel) return;
+  const locked = panel.classList.contains("hidden");
+  panel.classList.toggle("rep-locked", locked);
+  panel.querySelectorAll("input, #confirmar-repetidora").forEach((el) => {
+    el.disabled = locked;
+  });
+}
+
 function makeDraggable(panel, handle) {
   if (!panel || !handle || handle.dataset.dragBound) return;
   handle.dataset.dragBound = "1";
@@ -437,6 +432,7 @@ function makeDraggable(panel, handle) {
     // Não inicia arrasto ao clicar no botão de fechar (ou qualquer outro
     // controle interativo que algum dia entre na barra de título).
     if (event.target.closest("button, input, select, textarea, a")) return;
+    if (!isPanelDraggable(panel)) return;
     if (event.button !== undefined && event.button !== 0) return; // só botão esquerdo do mouse
 
     const rect = panel.getBoundingClientRect();
@@ -529,6 +525,12 @@ function setupUIEventListeners() {
   const painelRepHeader = painelConfigRepetidoraDiv?.querySelector(":scope > .flex.justify-between.items-center");
   painelRepHeader && makeDraggable(painelConfigRepetidoraDiv, painelRepHeader);
 
+  if (painelConfigRepetidoraDiv && !painelConfigRepetidoraDiv.dataset.lockBound) {
+    painelConfigRepetidoraDiv.dataset.lockBound = "1";
+    new MutationObserver(syncRepPanelLock).observe(painelConfigRepetidoraDiv, { attributes: true, attributeFilter: ["class"] });
+    syncRepPanelLock();
+  }
+
   const editarPivosBtn = document.getElementById("editar-pivos");
   editarPivosBtn && !editarPivosBtn.dataset.bound && (editarPivosBtn.dataset.bound = "1", editarPivosBtn.addEventListener("click", togglePivoEditing));
 
@@ -544,7 +546,59 @@ function setupUIEventListeners() {
     }));
   });
 
+  setupLangDropdown();
+
+  // Lista de repetidoras: nome cortado com "..." mostra o nome completo
+  // num balão (title) ao passar o mouse. Lido na hora do hover, então
+  // acompanha renomeações (feature.repeaters.js troca o texto do span).
+  const listaRepetidoras = document.getElementById("lista-repetidoras");
+  listaRepetidoras && !listaRepetidoras.dataset.nameTipBound && (listaRepetidoras.dataset.nameTipBound = "1", listaRepetidoras.addEventListener("mouseover", (event) => {
+    const nameEl = event.target.closest?.(".rep-item-name");
+    if (!nameEl) return;
+    nameEl.scrollWidth > nameEl.clientWidth ? nameEl.setAttribute("title", nameEl.textContent.trim()) : nameEl.removeAttribute("title");
+  }));
+
   lucide?.createIcons?.();
+}
+
+// Dropdown de idioma da topbar (#topbar-group-lang): abre/fecha o menu
+// e mantém bandeira/nome do botão iguais ao idioma atual. Segue o
+// atributo `lang` do <html>, que o i18n.js atualiza a cada troca.
+function setupLangDropdown() {
+  const group = document.getElementById("topbar-group-lang");
+  const toggle = document.getElementById("topbar-lang-toggle");
+  const menu = document.getElementById("topbar-lang-menu");
+  if (!group || !toggle || !menu || toggle.dataset.bound) return;
+  toggle.dataset.bound = "1";
+
+  const setOpen = (open) => {
+    menu.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+    group.classList.toggle("open", open);
+  };
+
+  toggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    setOpen(menu.hidden);
+  });
+  menu.querySelectorAll("[data-lang]").forEach((btn) => btn.addEventListener("click", () => setOpen(false)));
+  document.addEventListener("click", (event) => {
+    !menu.hidden && !group.contains(event.target) && setOpen(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    event.key === "Escape" && !menu.hidden && setOpen(false);
+  });
+
+  const syncCurrent = () => {
+    const lang = document.documentElement.lang;
+    const option = menu.querySelector(`[data-lang="${lang}"]`);
+    if (!option) return;
+    document.getElementById("topbar-lang-flag").src = option.querySelector("img").src;
+    document.getElementById("topbar-lang-name").textContent = option.querySelector("span").textContent;
+    menu.querySelectorAll("[data-lang]").forEach((btn) => btn.classList.toggle("active", btn === option));
+  };
+  new MutationObserver(syncCurrent).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  syncCurrent();
 }
 
 function expandAllPanels() {

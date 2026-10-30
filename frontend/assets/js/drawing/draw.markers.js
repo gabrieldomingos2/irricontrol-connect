@@ -384,36 +384,50 @@ function drawBombas(bombas) {
   updateLegendsVisibility();
 }
 
+// Item da lista de repetidoras (repetidora ou antena principal):
+// bolinha de status, nome, altura e os botões montanha / olho / lixeira.
+// O nome precisa ser o PRIMEIRO <span> do item (feature.repeaters.js
+// renomeia via `#rep-item-X span`) e o olho precisa manter
+// `button[data-visible]` (vários arquivos sincronizam por ele). A
+// bolinha fica cinza via CSS quando a cobertura está oculta.
+function buildRepeaterItemHtml(entity, idAttr) {
+  const altura = Number(entity?.altura);
+  const heightHtml = Number.isFinite(altura) && altura > 0
+    ? `<em class="rep-item-height" title="${t("ui.labels.tx_height_short")}">${altura} m</em>`
+    : "";
+
+  return `
+    <i class="rep-item-dot" aria-hidden="true"></i>
+    <span class="rep-item-name">${escapeHtml(getFormattedAntennaOrRepeaterName(entity))}</span>
+    ${heightHtml}
+    <div class="rep-item-actions">
+      <button type="button" class="rep-item-btn"
+        title="${t("tooltips.run_diagnostic_from_source")}"
+        ${idAttr} data-action="diagnostico">
+        <i class="sidebar-icon rep-item-mask-icon"
+          style="-webkit-mask-image:url(assets/images/mountain.svg);mask-image:url(assets/images/mountain.svg);"></i>
+      </button>
+      <button type="button" class="rep-item-btn"
+        title="${t("tooltips.show_hide_coverage")}"
+        ${idAttr} data-action="toggle-visibility" data-visible="true">
+        <i data-lucide="eye" class="w-4 h-4 text-green-500"></i>
+      </button>
+      <button type="button" class="rep-item-btn rep-item-btn--danger"
+        title="${t("ui.titles.remove_repeater")}"
+        ${idAttr} data-action="remover">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+      </button>
+    </div>`;
+}
+
 function addRepetidoraNoPainel(repeater) {
   const list = document.getElementById("lista-repetidoras");
   if (!list) return;
 
   const item = document.createElement("div");
-  item.className = "flex justify-between items-center bg-gray-800/60 px-3 py-2 rounded-lg border border-white/10";
+  item.className = "rep-item";
   item.id = `rep-item-${repeater.id}`;
-
-  const diagnosticBtnHtml = `
-    <button class="text-white/60 hover:text-sky-300 transition relative top-px"
-      title="${t("tooltips.run_diagnostic_from_source")}"
-      data-id="${repeater.id}" data-action="diagnostico">
-      <span class="sidebar-icon w-4 h-4"
-        style="-webkit-mask-image:url(assets/images/mountain.svg);mask-image:url(assets/images/mountain.svg);">
-      </span>
-    </button>`;
-
-  item.innerHTML = `
-    <span class="text-white/80 text-sm">${escapeHtml(getFormattedAntennaOrRepeaterName(repeater))}</span>
-    <div class="flex gap-3 items-center">
-      ${diagnosticBtnHtml}
-      <button class="text-white/60 hover:text-sky-300 transition"
-        title="${t("tooltips.show_hide_coverage")}"
-        data-id="${repeater.id}" data-action="toggle-visibility" data-visible="true">
-        <i data-lucide="eye" class="w-4 h-4 text-green-500"></i>
-      </button>
-      <button class="text-red-500 hover:text-red-400 text-xs font-bold transition"
-        title="${t("ui.titles.remove_repeater")}"
-        data-id="${repeater.id}" data-action="remover">❌</button>
-    </div>`;
+  item.innerHTML = buildRepeaterItemHtml(repeater, `data-id="${repeater.id}"`);
 
   list.appendChild(item);
   lucide?.createIcons?.();
@@ -470,31 +484,9 @@ function addAntenaAoPainel(antenna) {
   if (!list) return;
 
   const item = document.createElement("div");
-  item.className = "flex justify-between items-center bg-gray-800/60 px-3 py-2 rounded-lg border border-white/10";
+  item.className = "rep-item";
   item.id = "antena-item";
-
-  const diagnosticBtnHtml = `
-    <button class="text-white/60 hover:text-sky-300 transition relative top-px"
-      title="${t("tooltips.run_diagnostic_from_source")}"
-      data-action="diagnostico">
-      <span class="sidebar-icon w-4 h-4"
-        style="-webkit-mask-image:url(assets/images/mountain.svg);mask-image:url(assets/images/mountain.svg);">
-      </span>
-    </button>`;
-
-  item.innerHTML = `
-    <span class="text-white/80 text-sm">${escapeHtml(getFormattedAntennaOrRepeaterName(antenna))}</span>
-    <div class="flex gap-3 items-center">
-      ${diagnosticBtnHtml}
-      <button class="text-white/60 hover:text-sky-300 transition"
-        title="${t("tooltips.show_hide_coverage")}"
-        data-action="toggle-visibility" data-visible="true">
-        <i data-lucide="eye" class="w-4 h-4 text-green-500"></i>
-      </button>
-      <button class="text-red-500 hover:text-red-400 text-xs font-bold transition"
-        title="${t("ui.titles.remove_repeater")}"
-        data-action="remover">❌</button>
-    </div>`;
+  item.innerHTML = buildRepeaterItemHtml(antenna, "");
 
   list.firstChild ? list.insertBefore(item, list.firstChild) : list.appendChild(item);
   lucide?.createIcons?.();

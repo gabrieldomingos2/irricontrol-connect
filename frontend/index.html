@@ -61,7 +61,7 @@
   <!-- ===========================
       CSS DA APLICAÇÃO
       =========================== -->
-  <link rel="stylesheet" href="assets/css/style.css?v=8" />
+  <link rel="stylesheet" href="assets/css/style.css?v=31" />
   <link rel="stylesheet" href="assets/css/login.css?v=2" />
   <!-- Layout mobile/tablet (modo visualização) - só atua em telas <=768px -->
   <link rel="stylesheet" href="assets/css/mobile.css?v=48" />
@@ -226,27 +226,13 @@
       <i data-lucide="menu" class="w-5 h-5"></i>
     </button>
 
-    <!-- Idiomas -->
-    <div id="topbar-group-lang" class="flex items-center gap-3" aria-label="Idioma" data-i18n="ui.labels.language" data-i18n-attr="aria-label">
-      <button data-lang="pt-br" class="hover:scale-110 transition" title="Português (BR)" type="button" aria-label="Português (BR)">
-        <img src="assets/images/br.svg" class="w-8 h-5" alt="Português">
-      </button>
-      <button data-lang="es" class="hover:scale-110 transition" title="Español" type="button" aria-label="Español">
-        <img src="assets/images/es.svg" class="w-8 h-5" alt="Español">
-      </button>
-      <button data-lang="de" class="hover:scale-110 transition" title="Deutsch" type="button" aria-label="Deutsch">
-        <img src="assets/images/de.svg" class="w-8 h-5" alt="Deutsch">
-      </button>
-      <button data-lang="en" class="hover:scale-110 transition" title="English" type="button" aria-label="English">
-        <img src="assets/images/uk.svg" class="w-8 h-5" alt="English">
-      </button>
-      <button data-lang="ru" class="hover:scale-110 transition" title="Русский" type="button" aria-label="Русский">
-        <img src="assets/images/ru.svg" class="w-8 h-5" alt="Russian">
-      </button>
+    <!-- Marca - somente desktop, ver style.css -->
+    <div id="topbar-brand">
+      <img src="assets/images/IRRICONTROL_ONE_SECONDARY_4C_POSITIVE_cropped_white.png" alt="Irricontrol One" width="246" height="34">
     </div>
 
     <!-- Ferramentas -->
-    <div id="topbar-group-tools" class="flex items-center gap-2 ml-24">
+    <div id="topbar-group-tools" class="topbar-pill flex items-center gap-2 ml-24">
       <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.tools"></span>
 
       <button id="btn-los-pivot-a-pivot" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.los_pivots" type="button" aria-label="Linha de visada entre pivôs">
@@ -259,7 +245,7 @@
     </div>
 
     <!-- Legendas -->
-    <div id="topbar-group-legends" class="flex items-center gap-2 ml-[20px]">
+    <div id="topbar-group-legends" class="topbar-pill flex items-center gap-2 ml-[20px]">
       <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.legends_group"></span>
 
       <button id="btn-visada" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.line_of_sight" type="button" aria-label="Linha de visada">
@@ -296,7 +282,7 @@
            não muda nada aqui. -->
       <div id="mobile-tools-flyout">
         <!-- Desenho/Edição -->
-        <div id="topbar-group-draw" class="flex items-center gap-2 ml-[20px]">
+        <div id="topbar-group-draw" class="topbar-pill flex items-center gap-2 ml-[20px]">
           <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.draw_group"></span>
 
           <button id="btn-draw-pivot" class="glass-button p-2" data-i18n-attr="title,aria-label" data-i18n="ui.titles.draw_pivot" type="button" aria-label="Desenhar pivô circular">
@@ -317,7 +303,7 @@
         </div>
 
         <!-- Editor -->
-        <div id="topbar-group-editor" class="flex items-center gap-2 ml-[20px]">
+        <div id="topbar-group-editor" class="topbar-pill flex items-center gap-2 ml-[20px]">
           <span class="text-white/70 text-sm font-medium" data-i18n="ui.labels.editor_group"></span>
 
           <button id="btn-mover-pivo-sem-circulo" class="glass-button p-2 hidden" data-i18n-attr="title,aria-label" data-i18n="ui.titles.move_pivot_center" type="button" aria-label="Mover pivô sem círculo">
@@ -341,7 +327,36 @@
         </div>
       </div>
     </div>
-    
+
+    <!-- Idiomas: botão com a bandeira/nome atual que abre um menu.
+         A troca em si continua nos botões [data-lang] (i18n.js/ui.js);
+         abrir/fechar e o rótulo atual ficam em ui.js (setupLangDropdown).
+         No mobile o grupo todo some (mobile.css). -->
+    <div id="topbar-group-lang" aria-label="Idioma" data-i18n="ui.labels.language" data-i18n-attr="aria-label">
+      <button id="topbar-lang-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="topbar-lang-menu">
+        <img id="topbar-lang-flag" src="assets/images/br.svg" alt="">
+        <span id="topbar-lang-name">Português</span>
+        <i data-lucide="chevron-down" class="topbar-lang-caret"></i>
+      </button>
+      <div id="topbar-lang-menu" role="menu" hidden>
+        <button data-lang="pt-br" role="menuitem" type="button" title="Português (BR)" aria-label="Português (BR)">
+          <img src="assets/images/br.svg" alt=""><span>Português</span>
+        </button>
+        <button data-lang="es" role="menuitem" type="button" title="Español" aria-label="Español">
+          <img src="assets/images/es.svg" alt=""><span>Español</span>
+        </button>
+        <button data-lang="de" role="menuitem" type="button" title="Deutsch" aria-label="Deutsch">
+          <img src="assets/images/de.svg" alt=""><span>Deutsch</span>
+        </button>
+        <button data-lang="en" role="menuitem" type="button" title="English" aria-label="English">
+          <img src="assets/images/uk.svg" alt=""><span>English</span>
+        </button>
+        <button data-lang="ru" role="menuitem" type="button" title="Русский" aria-label="Русский">
+          <img src="assets/images/ru.svg" alt=""><span>Русский</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Logout -->
     <div id="topbar-group-logout" class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
       <button id="btn-logout" class="glass-button p-2" type="button" title="Sair" aria-label="Sair" data-i18n="ui.buttons.logout" data-i18n-attr="title,aria-label">
@@ -363,26 +378,30 @@
     <!-- Fecha o drawer - somente mobile -->
     <button id="sidebar-mobile-close" type="button" aria-label="Fechar menu">✖</button>
 
+    <div class="sidebar-section-title sidebar-section-title--first" data-i18n="ui.labels.project_section">Projeto</div>
+
     <!-- Template/modelo -->
-    <div class="mb-4 backdrop-blur bg-white/5 border border-white/15 px-3 py-[6px] rounded-lg shadow-sm flex items-center gap-2">
+    <div id="sidebar-template" class="mb-4 backdrop-blur bg-white/5 border border-white/15 px-3 py-[6px] rounded-lg shadow-sm flex items-center gap-2">
       <label for="template-modelo" class="text-sm text-white/70 whitespace-nowrap" data-i18n="ui.labels.template"></label>
       <select id="template-modelo" class="px-2 py-[3px] rounded-md bg-[#060B10]/70 border border-white/15 text-white/80 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition w-full" aria-label="Template"></select>
     </div>
 
     <!-- Busca por coordenadas -->
-    <div class="flex flex-col gap-3">
-      <div class="flex items-center gap-2 backdrop-blur bg-white/5 border border-white/15 px-2 rounded-lg shadow-sm focus-within:ring-1 focus-within:ring-green-500 transition h-10">
+    <div id="sidebar-main" class="flex flex-col gap-3">
+      <div id="sidebar-coord-field" class="flex items-center gap-2 backdrop-blur bg-white/5 border border-white/15 px-2 rounded-lg shadow-sm focus-within:ring-1 focus-within:ring-green-500 transition h-10">
         <button id="coord-search-btn" class="flex items-center justify-center p-1 text-white/70 hover:text-green-500 transition ml-1" data-i18n-attr="title,aria-label" data-i18n="ui.titles.search_coordinates" type="button" aria-label="Ir para coordenadas">
           <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/map-pin.svg); mask-image: url(assets/images/map-pin.svg);"></span>
         </button>
         <input type="text" id="lat-long-input-field" data-i18n-attr="placeholder" data-i18n="ui.placeholders.lat_lon_search" class="flex-grow h-full pl-0 pr-2 rounded-md bg-transparent border-none text-sm text-white/80 placeholder:text-white/50 focus:outline-none focus:ring-0" autocomplete="off" aria-label="Pesquisar por latitude e longitude" />
       </div>
 
-      <!-- Upload KMZ -->
+      <!-- Upload KMZ: "trocar" só aparece com arquivo carregado (classe
+           has-file, posta/tirada em bootstrap.js) -->
       <div class="flex flex-col gap-3">
         <label for="arquivo" class="sidebar-button w-full h-10 cursor-pointer flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2" aria-label="Selecionar arquivo KMZ" title="Importar arquivo KMZ do estudo" data-i18n-attr="title,aria-label" data-i18n="tooltips.load_kmz">
           <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/file-up.svg); mask-image: url(assets/images/file-up.svg);"></span>
           <span id="nome-arquivo-label" class="text-sm font-medium truncate" data-i18n="ui.labels.choose_kmz"></span>
+          <span class="kmz-change-hint" data-i18n="ui.labels.change_file">trocar</span>
         </label>
         <input type="file" id="arquivo" accept=".kmz" required class="hidden" />
       </div>
@@ -394,36 +413,36 @@
         <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/radio.svg); mask-image: url(assets/images/radio.svg);"></span>
         <span class="text-sm font-medium" data-i18n="ui.buttons.run_study"></span>
       </button>
-
-      <button id="exportar-btn"
-              class="sidebar-button w-full h-10 flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              type="button"
-              disabled
-              aria-label="Baixar Arquivo KMZ"
-              data-i18n-attr="title,aria-label"
-              data-i18n="tooltips.export_kmz_disabled">
-          <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/download.svg); mask-image: url(assets/images/download.svg);"></span>
-          <span class="text-sm font-medium" data-i18n="ui.buttons.export_kmz"></span>
-      </button>
-
-      <button id="resetar-btn" class="sidebar-button w-full h-10 flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2" type="button" aria-label="Resetar" title="Reiniciar a sessão e limpar o mapa" data-i18n="ui.buttons.reset" data-i18n-attr="aria-label">
-        <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/undo-2.svg); mask-image: url(assets/images/undo-2.svg);"></span>
-        <span class="text-sm font-medium" data-i18n="ui.buttons.reset"></span>
-      </button>
     </div>
 
-    <!-- Painel (setup) de repetidora -->
+    <!-- Painel (setup) de repetidora. O JS do app continua mostrando/
+         escondendo com a classe "hidden"; no desktop (style.css) ele
+         fica sempre visível e "hidden" vira só "travado" (rep-locked,
+         ver ui.js:syncRepPanelLock) até clicar no mapa. No mobile segue
+         sumindo/flutuando como antes (mobile.js/mobile.css). -->
     <div id="painel-repetidora" class="mt-4 bg-white/5 border border-white/15 backdrop-blur-md rounded-xl shadow-lg w-60 p-2 hidden">
       <div class="flex justify-between items-center mb-3">
         <h2 class="font-semibold text-sm text-white/80"><span class="titulo-icone">📡</span><span data-i18n="ui.titles.repeater_panel_setup"></span></h2>
         <button id="fechar-painel-rep" class="close-btn" type="button" aria-label="Fechar" data-i18n="ui.titles.close" data-i18n-attr="aria-label">✖</button>
       </div>
 
-      <label for="altura-antena-rep" class="text-xs text-white/60 mb-1 block" data-i18n="ui.labels.antenna_height"></label>
-      <input id="altura-antena-rep" type="number" value="5" class="w-full h-8 px-2 rounded-lg border border-white/20 bg-[#060B10]/40 text-white text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition mb-3" />
+      <div class="rep-heights">
+        <div class="rep-field">
+          <label for="altura-antena-rep" class="text-xs text-white/60 mb-1 block" data-i18n="ui.labels.tx_height_short">Altura Tx</label>
+          <div class="rep-input-wrap">
+            <input id="altura-antena-rep" type="number" value="5" class="w-full h-8 px-2 rounded-lg border border-white/20 bg-[#060B10]/40 text-white text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition mb-3" />
+            <span class="rep-unit" aria-hidden="true">m</span>
+          </div>
+        </div>
 
-      <label for="altura-receiver-rep" class="text-xs text-white/60 mb-1 block" data-i18n="ui.labels.receiver_height"></label>
-      <input id="altura-receiver-rep" type="number" value="3" class="w-full h-8 px-2 rounded-lg border border-white/20 bg-[#060B10]/40 text-white text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition mb-3" />
+        <div class="rep-field">
+          <label for="altura-receiver-rep" class="text-xs text-white/60 mb-1 block" data-i18n="ui.labels.rx_height_short">Altura Rx</label>
+          <div class="rep-input-wrap">
+            <input id="altura-receiver-rep" type="number" value="3" class="w-full h-8 px-2 rounded-lg border border-white/20 bg-[#060B10]/40 text-white text-sm focus:outline-none focus:ring-1 focus:ring-green-500 transition mb-3" />
+            <span class="rep-unit" aria-hidden="true">m</span>
+          </div>
+        </div>
+      </div>
 
       <button id="confirmar-repetidora"
         class="sidebar-button w-full h-9 flex items-center justify-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm mb-3"
@@ -434,18 +453,41 @@
         <span class="sidebar-icon w-5 h-5" style="-webkit-mask-image: url(assets/images/radio.svg); mask-image: url(assets/images/radio.svg);"></span>
         <span class="text-sm font-medium" data-i18n="ui.buttons.simulate"></span>
       </button>
-
-      <button id="btn-download-active-pngs"
-        class="sidebar-button w-full h-9 flex items-center justify-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm text-xs mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-        type="button"
-        data-i18n-attr="title,aria-label"
-        data-i18n="tooltips.download_active_repeaters"
-        aria-label="Baixar Repetidoras ativas no mapa"
-        disabled>
-        <span class="sidebar-icon w-4 h-4" style="-webkit-mask-image: url(assets/images/download.svg); mask-image: url(assets/images/download.svg);"></span>
-        <span class="text-xs font-medium" data-i18n="ui.buttons.download_active_pngs"></span>
-      </button>
     </div>
+
+    <!-- Exportar -->
+    <div id="sidebar-export">
+      <div class="sidebar-section-title" data-i18n="ui.labels.export_section">Exportar</div>
+      <div class="sidebar-export-row">
+        <button id="exportar-btn"
+                class="sidebar-button w-full h-10 flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                type="button"
+                disabled
+                aria-label="Baixar Arquivo KMZ"
+                data-i18n-attr="title,aria-label"
+                data-i18n="tooltips.export_kmz_disabled">
+            <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/download.svg); mask-image: url(assets/images/download.svg);"></span>
+            <span class="text-sm font-medium" data-i18n="ui.buttons.export_kmz_short">KMZ</span>
+        </button>
+
+        <button id="btn-download-active-pngs"
+          class="sidebar-button w-full h-10 flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          type="button"
+          data-i18n-attr="title,aria-label"
+          data-i18n="tooltips.download_active_repeaters"
+          aria-label="Baixar Repetidoras ativas no mapa"
+          disabled>
+          <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/download.svg); mask-image: url(assets/images/download.svg);"></span>
+          <span class="text-sm font-medium" data-i18n="ui.buttons.download_repeaters_short">Repetidoras</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Resetar: no desktop fica preso no rodapé da sidebar (style.css) -->
+    <button id="resetar-btn" class="sidebar-button w-full h-10 flex items-center gap-2 border border-white/15 rounded-lg backdrop-blur bg-white/5 text-white/70 shadow-sm px-2 mt-3" type="button" aria-label="Resetar" title="Reiniciar a sessão e limpar o mapa" data-i18n="ui.buttons.reset" data-i18n-attr="aria-label">
+      <span class="sidebar-icon w-5 h-5 ml-2" style="-webkit-mask-image: url(assets/images/undo-2.svg); mask-image: url(assets/images/undo-2.svg);"></span>
+      <span class="text-sm font-medium" data-i18n="ui.buttons.reset"></span>
+    </button>
   </div>
 
   <!-- =========================================
@@ -484,17 +526,24 @@
       </div>
 
       <div class="panel-content">
-        <div class="flex justify-between items-center mb-3">
-          <span id="template-info" class="font-medium text-sm text-green-500"></span>
-        </div>
+        <p id="template-info" class="data-template"></p>
 
-        <p id="total-pivos" class="text-sm text-white/70 mb-1" data-i18n="ui.labels.total_pivots"></p>
-        <p id="fora-cobertura" class="text-sm text-white/70 mb-1" data-i18n="ui.labels.out_of_coverage"></p>
-        <p id="total-repetidoras" class="text-sm text-white/70 mb-1" data-i18n="ui.labels.total_repeaters"></p>
-        <p id="total-centrais" class="text-sm text-white/70 mb-1">
-          <span data-i18n="ui.labels.central_count">Centrais:</span> <span id="central-count-value">0</span>
-        </p>
-        <p id="total-bombas" class="text-sm text-white/70 mb-1 hidden" data-i18n="ui.labels.pump_houses"></p>
+        <!-- Números do estudo (preenchidos em ui.js:atualizarPainelDados).
+             Os três ficam sempre à mostra, começando em 0. -->
+        <div class="data-stats">
+          <div class="data-stat">
+            <span id="total-pivos" class="data-stat-value">0</span>
+            <span class="data-stat-label" data-i18n="ui.labels.stat_pivots">Pivôs</span>
+          </div>
+          <div id="fora-cobertura-stat" class="data-stat data-stat--danger is-zero">
+            <span id="fora-cobertura" class="data-stat-value">0</span>
+            <span class="data-stat-label" data-i18n="ui.labels.stat_no_signal">Sem sinal</span>
+          </div>
+          <div id="total-bombas" class="data-stat">
+            <span id="total-bombas-value" class="data-stat-value">0</span>
+            <span class="data-stat-label" data-i18n="ui.labels.stat_pumps">Irripumps</span>
+          </div>
+        </div>
 
         <div class="mt-2 pt-2 border-t border-white/10 flex justify-center">
           <button id="exportar-pdf-btn"
@@ -651,7 +700,7 @@
   <!-- Módulos da aplicação (bundle único, gerado por npm run build:js -->
   <!-- a partir dos arquivos individuais em assets/js/ - ordem definida  -->
   <!-- em scripts/build-js.mjs) -->
-  <script src="dist/app.bundle.js?v=8" defer></script>
+  <script src="dist/app.bundle.js?v=19" defer></script>
 
   <!-- Drawer da sidebar no layout mobile (independente do bundle) -->
   <script src="assets/js/mobile.js?v=21" defer></script>

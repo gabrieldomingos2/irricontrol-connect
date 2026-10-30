@@ -1153,6 +1153,7 @@ async function finalizePacmanPivot(center, radiusPoint, endPoint) {
     // pra explicação completa).
     (typeof isMobileDrawMode == "function" && isMobileDrawMode()) || drawPivos(AppState.lastPivosDataDrawn, false);
     drawCirculos(AppState.ciclosGlobais);
+    atualizarPainelDados();
     await reavaliarPivosViaAPI();
     mostrarMensagem(t("messages.success.pacman_pivot_created", { name: pivot.nome }), "sucesso");
     return pivot;

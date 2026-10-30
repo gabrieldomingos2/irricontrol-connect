@@ -442,6 +442,9 @@ async function handleConfirmRepetidoraClick() {
   } finally {
     mostrarLoader(false);
     AppState.coordenadaClicada = null;
+    // Sem ponto clicado o painel não tem o que simular: volta a travar
+    // (desktop) / fechar (mobile) até o próximo clique no mapa.
+    document.getElementById("painel-repetidora")?.classList.add("hidden");
     atualizarPainelDados();
     reposicionarPaineisLaterais();
   }

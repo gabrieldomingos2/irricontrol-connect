@@ -1,7 +1,7 @@
 // Bundle único (gerado por npm run build:js) com core.state.js, core.modes.js,
 // feature.los.js, feature.pivots.js e feature.repeaters.js, nessa ordem -
 // so carregado apos o login para nao pesar a tela inicial de quem nao logou.
-const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=23"];
+const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=26"];
 
 function loadMainScript(src) {
   return new Promise((resolve, reject) => {
@@ -173,6 +173,14 @@ async function handleKmzFileSelect(event) {
 
     AppState.setJobId(result.job_id);
     AppState.currentProcessedKmzData = JSON.parse(JSON.stringify(result));
+
+    // O handleResetClick acima volta o rótulo pro texto padrão; aqui, já
+    // com o KMZ processado, mostra o nome do arquivo + "trocar".
+    if (fileNameLabel) {
+      fileNameLabel.textContent = file.name || t("ui.labels.choose_kmz");
+      fileNameLabel.dataset.fileName = file.name || "";
+      fileNameLabel.closest("label")?.classList.add("has-file");
+    }
 
     result.pivos && result.ciclos && result.pivos.forEach((pivo) => {
       if (pivo.tipo === "custom" && Array.isArray(pivo.coordenadas) && pivo.coordenadas.length > 0) return;
@@ -411,6 +419,8 @@ async function handleResetClick(notify = true) {
   if (fileNameLabel) {
     fileNameLabel.textContent = t("ui.labels.choose_kmz");
     fileNameLabel.hasAttribute("title") && fileNameLabel.removeAttribute("title");
+    fileNameLabel.closest("label")?.classList.remove("has-file");
+    delete fileNameLabel.dataset.fileName;
   }
 
   const fileInput = document.getElementById("arquivo");
@@ -503,6 +513,12 @@ async function handleExportClick() {
 
 function updateActionButtonsI18n() {
   try {
+    // Trocar o idioma reaplica o data-i18n do rótulo do KMZ ("Importar
+    // Arquivo KMZ"); com arquivo carregado, volta a mostrar o nome dele.
+    const fileNameLabel = document.getElementById("nome-arquivo-label");
+    fileNameLabel?.dataset.fileName && (fileNameLabel.textContent = fileNameLabel.dataset.fileName);
+    typeof atualizarPainelDados == "function" && atualizarPainelDados();
+
     const labelEl = document.querySelector('label[for="arquivo"]');
     if (labelEl) {
       const fileInput = document.getElementById("arquivo");

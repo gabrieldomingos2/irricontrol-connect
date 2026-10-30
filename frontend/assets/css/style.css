@@ -1752,3 +1752,1007 @@ body.screenshot-mode #btn-screenshot-mode {
   background: rgba(0, 0, 0, 0.55);
 }
 
+
+/* =====================================================
+    🧭 TOPBAR v2 (desktop): marca à esquerda, grupos em
+    "pílulas" com borda, idioma em dropdown + Sair à direita.
+    Tudo dentro de min-width:769px — o layout mobile
+    (mobile.css, max-width:768px) não é tocado.
+   ===================================================== */
+
+#topbar-brand {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  #app-topbar {
+    gap: 10px;
+    padding-left: 20px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Marca */
+  #topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* logo 34px de altura = ~246px de largura; margem esquerda + direita
+       somam o mesmo espaço de antes (logo 30px + 48px), então os grupos
+       da topbar não saem do lugar */
+    margin-left: 3px;
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+
+  #topbar-brand img {
+    height: 34px;
+    width: auto;
+    display: block;
+  }
+
+  /* Grupos em pílula */
+  #app-topbar .topbar-pill {
+    margin-left: 0 !important;
+    height: 42px;
+    padding: 0 6px 0 14px;
+    gap: 6px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    flex-shrink: 0;
+  }
+
+  #app-topbar .topbar-pill > span {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem !important;
+    margin-right: 6px !important;
+    white-space: nowrap;
+  }
+
+  /* Botões dentro das pílulas: sem caixa, só ícone; ativo fica verde */
+  #app-topbar .topbar-pill .glass-button {
+    padding: 6px !important;
+    border-color: transparent;
+    background: transparent;
+    border-radius: 8px !important;
+    backdrop-filter: none;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  #app-topbar .topbar-pill .glass-button:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--success, #22c55e);
+  }
+
+  #app-topbar .topbar-pill .glass-button.glass-button-active {
+    background: rgba(34, 197, 94, 0.18);
+    border-color: rgba(34, 197, 94, 0.45);
+    color: var(--success, #22c55e);
+    box-shadow: none;
+  }
+
+  #app-topbar .topbar-pill .glass-button .sidebar-icon,
+  #app-topbar .topbar-pill .glass-button i[data-lucide] {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  /* Idioma (dropdown) — empurra ele e o Sair pra direita */
+  #topbar-group-lang {
+    position: relative;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  #topbar-lang-toggle,
+  #app-topbar #btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.875rem;
+    white-space: nowrap;
+    box-shadow: none;
+    backdrop-filter: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  #topbar-lang-toggle:hover,
+  #topbar-group-lang.open #topbar-lang-toggle,
+  #app-topbar #btn-logout:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.22);
+    color: #fff;
+    box-shadow: none;
+  }
+
+  #topbar-lang-toggle img,
+  #topbar-lang-menu img {
+    width: 20px;
+    height: 14px;
+    border-radius: 2px;
+    object-fit: cover;
+  }
+
+  #topbar-lang-toggle .topbar-lang-caret {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+  }
+
+  #topbar-group-lang.open .topbar-lang-caret {
+    transform: rotate(180deg);
+  }
+
+  /* Botão e menu com a mesma largura: o botão cresce pra esquerda (o
+     grupo é empurrado pra direita) e o menu ocupa exatamente a largura
+     do botão. */
+  #topbar-lang-toggle {
+    min-width: 170px;
+  }
+
+  #topbar-lang-toggle .topbar-lang-caret {
+    margin-left: auto;
+  }
+
+  #topbar-lang-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #0b1219;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 60;
+  }
+
+  #topbar-lang-menu[hidden] {
+    display: none;
+  }
+
+  #topbar-lang-menu button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    text-align: left;
+  }
+
+  #topbar-lang-menu button:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+  }
+
+  #topbar-lang-menu button.active {
+    color: var(--success, #22c55e);
+  }
+
+  /* Sair: sai do absolute e entra no fluxo, com texto visível */
+  #app-topbar #topbar-group-logout {
+    position: static;
+    transform: none;
+    translate: none; /* Tailwind v4: -translate-y-1/2 usa `translate`, não `transform` */
+    flex-shrink: 0;
+  }
+
+  #app-topbar .btn-logout-label {
+    display: inline;
+  }
+
+  #app-topbar #btn-logout .sidebar-icon {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+
+/* Telas desktop mais estreitas: esconde textos secundários pra caber */
+@media (min-width: 769px) and (max-width: 1366px) {
+  #app-topbar .topbar-pill {
+    height: 38px;
+    padding-left: 10px;
+  }
+
+  #topbar-lang-toggle,
+  #app-topbar #btn-logout {
+    height: 36px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1280px) {
+  #topbar-brand img {
+    height: 22px;
+  }
+
+  #topbar-brand {
+    margin-right: 16px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  #app-topbar .topbar-pill > span,
+  #topbar-lang-name {
+    display: none;
+  }
+
+  #app-topbar .topbar-pill {
+    padding-left: 6px;
+  }
+}
+
+/* =====================================================
+    🧱 SIDEBAR v2: template com rótulo em cima, campos
+    maiores, painel de repetidora fixo (travado até clicar
+    no mapa — ver ui.js:syncRepPanelLock) e seção Exportar.
+   ===================================================== */
+
+/* Partes que valem em qualquer tela */
+.kmz-change-hint {
+  display: none;
+}
+
+label.has-file .kmz-change-hint {
+  display: inline;
+  margin-left: auto;
+  padding-right: 6px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.rep-heights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rep-input-wrap {
+  position: relative;
+}
+
+.rep-input-wrap input {
+  padding-right: 26px !important;
+}
+
+.rep-unit {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+}
+
+.sidebar-export-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sidebar-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.sidebar-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 769px) {
+  /* Template: rótulo em cima, select largo */
+  #sidebar-template {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 6px !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  #sidebar-template label {
+    font-size: 0.8rem !important;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  #sidebar-template select {
+    height: 44px;
+    padding: 0 12px !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #fff !important;
+    font-size: 0.95rem !important;
+    font-weight: 500;
+  }
+
+  /* Campos/botões da sidebar com a mesma "cara" */
+  #sidebar-left #sidebar-coord-field,
+  #sidebar-left .sidebar-button {
+    height: 44px !important;
+    border-radius: 10px !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+
+  #sidebar-left .sidebar-button span.text-sm,
+  #sidebar-left #lat-long-input-field {
+    font-size: 0.9rem !important;
+  }
+
+  #sidebar-left .sidebar-button:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--green);
+  }
+
+  /* KMZ carregado: borda verde + nome do arquivo + "trocar" */
+  #sidebar-left label.has-file {
+    border-color: rgba(34, 197, 94, 0.5) !important;
+    background: rgba(34, 197, 94, 0.08) !important;
+    color: #fff;
+  }
+
+  /* Painel de repetidora como seção fixa da sidebar */
+  #sidebar-left #painel-repetidora,
+  #sidebar-left #painel-repetidora.hidden {
+    display: block !important;
+    position: static !important;
+    width: auto !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  #sidebar-left #painel-repetidora > .flex.justify-between.items-center {
+    gap: 8px;
+    margin: 18px 0 10px !important;
+    cursor: default;
+  }
+
+  #sidebar-left #painel-repetidora > .flex.justify-between.items-center::after {
+    content: "";
+    order: 1;
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  #sidebar-left #painel-repetidora h2 {
+    order: 0;
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0 !important;
+  }
+
+  #sidebar-left #painel-repetidora h2 .titulo-icone {
+    display: none !important;
+  }
+
+  /* Painel fixo no desktop: sem botão de fechar (Esc continua
+     cancelando o posicionamento). No mobile o ✖ continua. */
+  #sidebar-left #fechar-painel-rep {
+    display: none;
+  }
+
+
+  #sidebar-left #painel-repetidora label {
+    font-size: 0.8rem !important;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px !important;
+  }
+
+  #sidebar-left #painel-repetidora input[type="number"] {
+    height: 44px !important;
+    margin-bottom: 0 !important;
+    padding-left: 12px !important;
+    border-radius: 10px !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    font-size: 0.95rem !important;
+    -moz-appearance: textfield;
+  }
+
+  #sidebar-left #painel-repetidora input[type="number"]::-webkit-inner-spin-button,
+  #sidebar-left #painel-repetidora input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Executar simulação: botão verde cheio */
+  #sidebar-left #painel-repetidora #confirmar-repetidora {
+    height: 48px !important;
+    margin: 12px 0 0 !important;
+    border-radius: 10px !important;
+    border: none !important;
+    background: #1fa957 !important;
+    color: #fff !important;
+    font-size: 0.95rem !important;
+    box-shadow: none;
+  }
+
+  #sidebar-left #painel-repetidora #confirmar-repetidora span.text-sm {
+    font-size: 0.95rem !important;
+  }
+
+  #sidebar-left #painel-repetidora #confirmar-repetidora:not(:disabled):hover {
+    background: #22c55e !important;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+  }
+
+  /* Travado (antes de clicar no mapa) */
+  #sidebar-left #painel-repetidora.rep-locked .rep-heights {
+    opacity: 0.45;
+  }
+
+  #sidebar-left #painel-repetidora.rep-locked input {
+    cursor: not-allowed;
+  }
+
+  #sidebar-left #painel-repetidora.rep-locked #confirmar-repetidora {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: rgba(255, 255, 255, 0.35) !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Exportar: dois botões lado a lado */
+  #sidebar-export .sidebar-button {
+    justify-content: center;
+    min-width: 0;
+    gap: 6px;
+    padding: 0 8px !important;
+  }
+
+  #sidebar-export .sidebar-button span.text-sm {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem !important;
+  }
+
+  #sidebar-export .sidebar-button .sidebar-icon {
+    width: 16px !important;
+    height: 16px !important;
+    margin-left: 0 !important;
+    flex-shrink: 0;
+  }
+
+  #sidebar-left #resetar-btn {
+    margin-top: 10px;
+  }
+}
+
+/* Mobile: o botão KMZ sai daqui pra barra inferior (mobile.js), então
+   "Repetidoras" ocupa a linha toda. */
+@media (max-width: 768px) {
+  .sidebar-export-row {
+    grid-template-columns: 1fr;
+  }
+
+  #sidebar-left #resetar-btn {
+    margin-top: 10px;
+  }
+}
+
+/* Sidebar v2 — título "Projeto" no topo e Resetar preso no rodapé,
+   separado por uma linha (desktop). */
+.sidebar-section-title--first {
+  margin-top: 0;
+}
+
+@media (min-width: 769px) {
+  #sidebar-left {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #sidebar-left > * {
+    flex-shrink: 0;
+  }
+
+  #sidebar-left #resetar-btn {
+    margin-top: auto !important;
+    margin-bottom: -10px; /* desce um pouco pra dentro do padding da sidebar */
+    justify-content: center;
+    height: auto !important;
+    padding: 14px 0 2px !important;
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0 !important;
+    background: none !important;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  #sidebar-left #resetar-btn .sidebar-icon {
+    margin-left: 0 !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  #sidebar-left #resetar-btn:hover {
+    background: none !important;
+    color: #f87171 !important;
+  }
+
+  /* Espaço entre o fim do conteúdo e a linha do rodapé */
+  #sidebar-export {
+    margin-bottom: 20px;
+  }
+}
+
+/* Sidebar v2 — um pouco mais larga e com fonte um grau maior (desktop).
+   O #map-wrapper acompanha a largura pra não ficar por baixo dela. */
+@media (min-width: 769px) {
+  #sidebar-left {
+    width: 300px !important;
+    padding: 18px !important;
+  }
+
+  #map-wrapper {
+    left: 300px !important;
+  }
+
+  #sidebar-left .sidebar-section-title,
+  #sidebar-left #painel-repetidora h2 {
+    font-size: 0.75rem !important;
+  }
+
+  #sidebar-template label,
+  #sidebar-left #painel-repetidora label {
+    font-size: 0.85rem !important;
+  }
+
+  #sidebar-template select,
+  #sidebar-left #painel-repetidora input[type="number"] {
+    font-size: 1rem !important;
+  }
+
+  #sidebar-left #sidebar-coord-field,
+  #sidebar-left .sidebar-button {
+    height: 46px !important;
+  }
+
+  #sidebar-left .sidebar-button span.text-sm,
+  #sidebar-left #lat-long-input-field,
+  #sidebar-export .sidebar-button span.text-sm {
+    font-size: 0.95rem !important;
+  }
+
+  #sidebar-left #painel-repetidora #confirmar-repetidora,
+  #sidebar-left #painel-repetidora #confirmar-repetidora span.text-sm {
+    font-size: 1rem !important;
+  }
+
+  #sidebar-left #resetar-btn {
+    height: auto !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1366px) {
+  #sidebar-left {
+    width: 245px !important;
+    padding: 14px !important;
+  }
+
+  #map-wrapper {
+    left: 245px !important;
+  }
+
+  #sidebar-export .sidebar-button span.text-sm {
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Select de template: a lista que abre é nativa do navegador e vinha
+   branca com destaque azul. color-scheme:dark + cor das options já
+   escurece em qualquer navegador; no Chrome/Edge recentes
+   (appearance: base-select) dá pra estilizar a lista inteira, com o
+   item escolhido em verde. Navegador sem suporte ignora o bloco. */
+#template-modelo {
+  color-scheme: dark;
+}
+
+#template-modelo option {
+  background-color: #0b1219;
+  color: #e5e7eb;
+}
+
+@media (min-width: 769px) {
+  @supports (appearance: base-select) {
+    #template-modelo,
+    #template-modelo::picker(select) {
+      appearance: base-select;
+    }
+
+    #template-modelo {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    #template-modelo::picker-icon {
+      color: rgba(255, 255, 255, 0.6);
+      transition: rotate 0.2s ease;
+    }
+
+    #template-modelo:open::picker-icon {
+      rotate: 180deg;
+    }
+
+    #template-modelo::picker(select) {
+      margin-top: 6px;
+      padding: 6px;
+      background: #0b1219;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    #template-modelo option {
+      padding: 9px 10px;
+      border-radius: 6px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+    }
+
+    #template-modelo option::checkmark {
+      display: none;
+    }
+
+    #template-modelo option:hover,
+    #template-modelo option:focus-visible {
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+      outline: none;
+    }
+
+    #template-modelo option:checked {
+      background: rgba(34, 197, 94, 0.18);
+      color: #22c55e;
+    }
+  }
+}
+
+/* Telas estreitas: o botão de idioma vira só bandeira, então o menu
+   volta a ter largura própria, alinhado pela direita. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  #topbar-lang-toggle {
+    min-width: 0;
+  }
+
+  #topbar-lang-menu {
+    left: auto;
+    min-width: 170px;
+  }
+}
+
+/* =====================================================
+    📊 PAINEL DE DADOS + LISTA DE REPETIDORAS (v2)
+    Números em "cards" (Pivôs / Sem sinal / Irripumps) e
+    itens da lista com status, altura e ações em ícones.
+   ===================================================== */
+
+.data-template {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(34, 197, 94, 0.9);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-stats {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.data-stat {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.data-stat.hidden {
+  display: none;
+}
+
+.data-stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.data-stat-label {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-stat--danger {
+  border-color: rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.07);
+}
+
+.data-stat--danger .data-stat-value {
+  color: #f87171;
+}
+
+.data-stat--danger.is-zero {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.data-stat--danger.is-zero .data-stat-value {
+  color: #fff;
+}
+
+/* Lista de repetidoras */
+#lista-repetidoras {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#lista-repetidoras > .rep-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 !important;
+  padding: 9px 8px 9px 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.rep-item-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+
+/* Cobertura oculta (olho riscado): bolinha apagada */
+.rep-item:has([data-visible="false"]) .rep-item-dot {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+}
+
+#lista-repetidoras .rep-item-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.rep-item-height {
+  flex-shrink: 0;
+  font-style: normal;
+  font-size: 0.75rem;
+  padding: 2px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+
+#lista-repetidoras .rep-item .rep-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px !important;
+  flex-shrink: 0;
+}
+
+#lista-repetidoras .rep-item-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0 !important;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.65);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+#lista-repetidoras .rep-item-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+#lista-repetidoras .rep-item-btn--danger {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+#lista-repetidoras .rep-item-btn--danger:hover {
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.2);
+}
+
+#lista-repetidoras .rep-item-mask-icon {
+  display: block;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+#lista-repetidoras .rep-item-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Desktop: painéis da direita um pouco mais largos */
+@media (min-width: 769px) {
+  #overlay-panels-container > .panel {
+    width: 330px !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1366px) {
+  #overlay-panels-container > .panel {
+    width: 300px !important;
+  }
+}
+
+/* Mobile: painel estreito, números menores */
+@media (max-width: 768px) {
+  .data-stats {
+    gap: 5px;
+  }
+
+  .data-stat {
+    padding: 6px 7px;
+  }
+
+  .data-stat-value {
+    font-size: 1.05rem;
+  }
+
+  .data-stat-label {
+    font-size: 0.62rem !important;
+  }
+
+  #lista-repetidoras > .rep-item {
+    gap: 6px;
+    padding: 6px 6px 6px 8px !important;
+  }
+
+  .rep-item-height {
+    display: none;
+  }
+}
+
+/* Painéis da direita: títulos e números um grau maiores (desktop) */
+@media (min-width: 769px) {
+  #overlay-panels-container > .panel h2 {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+  }
+
+  #overlay-panels-container .data-template {
+    font-size: 0.875rem !important;
+  }
+
+  #overlay-panels-container .data-stat {
+    padding: 10px 12px;
+  }
+
+  #overlay-panels-container .data-stat-value {
+    font-size: 1.6rem;
+  }
+
+  #overlay-panels-container .data-stat-label {
+    font-size: 0.8rem;
+  }
+
+  #lista-repetidoras .rep-item-name {
+    font-size: 0.95rem;
+  }
+
+  #lista-repetidoras .rep-item-height {
+    font-size: 0.8rem;
+  }
+
+  #lista-repetidoras .rep-item-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  #lista-repetidoras .rep-item-btn svg,
+  #lista-repetidoras .rep-item-mask-icon {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}
+
+/* "Exportar Relatório Completo" no mesmo padrão do "Executar Simulação"
+   (botão verde cheio). Desabilitado fica apagado, sem verde. */
+@media (min-width: 769px) {
+  #overlay-panels-container #exportar-pdf-btn {
+    width: 100%;
+    height: 44px;
+    gap: 8px;
+    border-radius: 10px;
+    background: #1fa957;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  #overlay-panels-container #exportar-pdf-btn:not(:disabled):hover {
+    background: #22c55e;
+    color: #fff;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+  }
+
+  #overlay-panels-container #exportar-pdf-btn:disabled {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.35);
+  }
+
+  #overlay-panels-container #exportar-pdf-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Mobile: no drawer o ✖ de fechar fica no canto de cima à direita;
+   a linha do título "Projeto" para antes dele. */
+@media (max-width: 768px) {
+  #sidebar-left .sidebar-section-title--first {
+    margin-right: 44px;
+  }
+}
