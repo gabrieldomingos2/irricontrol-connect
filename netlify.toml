@@ -45,7 +45,7 @@
   force = true
 
 [[redirects]]
-  from = "/vite.config.js"
+  from = "/vite.config.mjs"
   to = "/index.html"
   status = 404
   force = true

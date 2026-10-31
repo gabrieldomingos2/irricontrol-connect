@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
-from fpdf import FPDF
+from fpdf import FPDF, XPos, YPos
 from PIL import Image
 
 from backend.config import settings
@@ -78,10 +78,10 @@ class PDFReportGenerator:
             raise PDFGenerationError(f"Could not create fonts directory at '{fonts_path}': {e}")
 
         try:
-            self.pdf.add_font("FreeSans", "", str(fonts_path / "FreeSans.ttf"), uni=True)
-            self.pdf.add_font("FreeSans", "B", str(fonts_path / "FreeSansBold.ttf"), uni=True)
-            self.pdf.add_font("FreeSans", "I", str(fonts_path / "FreeSansOblique.ttf"), uni=True)
-            self.pdf.add_font("FreeSans", "BI", str(fonts_path / "FreeSansBoldOblique.ttf"), uni=True)
+            self.pdf.add_font("FreeSans", "", str(fonts_path / "FreeSans.ttf"))
+            self.pdf.add_font("FreeSans", "B", str(fonts_path / "FreeSansBold.ttf"))
+            self.pdf.add_font("FreeSans", "I", str(fonts_path / "FreeSansOblique.ttf"))
+            self.pdf.add_font("FreeSans", "BI", str(fonts_path / "FreeSansBoldOblique.ttf"))
             self.font_family = "FreeSans"
             self.has_unicode = True
         except Exception as e:
@@ -150,15 +150,15 @@ class PDFReportGenerator:
         self._font(style="B", size=12)
         self.pdf.set_text_color(*COLOR_PRIMARY)
         self.pdf.ln(4)
-        self.pdf.cell(0, 8, title, ln=1)
+        self.pdf.cell(0, 8, title, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         self.pdf.set_text_color(*COLOR_TEXT_DARK)
         self.pdf.ln(1)
 
     def add_text_line(self, label: str, value: Any) -> None:
         self._font(style="B", size=10)
-        self.pdf.cell(40, 6, str(label), 0, 0, "L")
+        self.pdf.cell(40, 6, str(label), align="L")
         self._font(size=10)
-        self.pdf.cell(0, 6, str(value), 0, 1, "L")
+        self.pdf.cell(0, 6, str(value), align="L", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
     def _table_header(self, col_widths: List[float]) -> None:
         self._font(style="B", size=9)
@@ -171,7 +171,7 @@ class PDFReportGenerator:
             self.t("ui.labels.height_short"),
         ]
         for width, text in zip(col_widths, headers):
-            self.pdf.cell(width, 7, text, 1, 0, "C", 1)
+            self.pdf.cell(width, 7, text, border=1, align="C", fill=True)
         self.pdf.ln(7)
 
     def _format_row(
@@ -242,12 +242,12 @@ class PDFReportGenerator:
                 title_label=title,
             )
             self.pdf.set_text_color(*COLOR_TEXT_DARK)
-            self.pdf.cell(col_widths[0], 7, name, 1, 0, "L", fill)
-            self.pdf.cell(col_widths[1], 7, coords, 1, 0, "L", fill)
+            self.pdf.cell(col_widths[0], 7, name, border=1, align="L", fill=fill)
+            self.pdf.cell(col_widths[1], 7, coords, border=1, align="L", fill=fill)
             self.pdf.set_text_color(*status_color)
-            self.pdf.cell(col_widths[2], 7, status_text, 1, 0, "C", fill)
+            self.pdf.cell(col_widths[2], 7, status_text, border=1, align="C", fill=fill)
             self.pdf.set_text_color(*COLOR_TEXT_DARK)
-            self.pdf.cell(col_widths[3], 7, altura_str, 1, 1, "C", fill)
+            self.pdf.cell(col_widths[3], 7, altura_str, border=1, align="C", fill=fill, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             fill = not fill
         self.pdf.ln(3)
 

@@ -19,6 +19,7 @@
   <meta name="theme-color" content="#060B10" />
   <!-- iOS não lê manifest.json pra ícone/tela cheia — precisa dessas tags à parte. -->
   <link rel="apple-touch-icon" href="assets/images/pwa/apple-touch-icon.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Irricontrol" />
@@ -39,23 +40,23 @@
   <!-- Tailwind CSS (build local) -->
   <link rel="stylesheet" href="dist/output.css?v=4">
   <!-- Ícones Lucide (SVG) -->
-  <script src="https://unpkg.com/lucide@1.28.0/dist/umd/lucide.min.js"
-          integrity="sha384-VrnzGPiSyQxm3mI2VhlssyR85zugSHtxMkgO42qV3wUAbNk1oRdZkCWjXKOhuVu6"
+  <script src="https://unpkg.com/lucide@1.66.0/dist/umd/lucide.min.js"
+          integrity="sha384-Z6lHbMYcsXeWgvgnOFekAhjBtVQuTfjyNBGb7d7mrYjt5DNJspJJ9GBp9Kar/z7w"
           crossorigin="anonymous" defer></script>
   <!-- Leaflet CSS (mapa) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
         crossorigin="anonymous" />
   <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
-          integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"
+          integrity="sha384-Emf5ZVIUiarAdhkgtqK+5/Z5qIvM6QoVrS+qAVtfyZVuD5lIHrac0me485+Antp0"
           crossorigin="anonymous" defer></script>
   <!-- Mapbox (3D) -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.27.0/mapbox-gl.css" rel="stylesheet"
-        integrity="sha384-XUbQaovfoSbaMso2Q1a1bLMGwU+1h7twi9V0vkuM6eOCZd0i52f6iAuxtHaP1nDO"
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.34.1/mapbox-gl.css" rel="stylesheet"
+        integrity="sha384-QWCpuitI3tz8lJHSbcFQpEAx5BkQcYir4RLGZBb8zOIH0es6XDO8Kv6Gat+wOJRN"
         crossorigin="anonymous" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.27.0/mapbox-gl.js"
-          integrity="sha384-7ERH+4wJLuDpmJphMVoMUoS1/V7e+D5tR6ZywiuMjqkvGnCFBRPNuN4iywy90jEz"
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.34.1/mapbox-gl.js"
+          integrity="sha384-bRGpP2/mvLNdh4nRXgIf97xnGmUJRpB58iFa5NaGLEFu8v+0T/Bc0c+iX+AvMgVP"
           crossorigin="anonymous" defer></script>
 
   <!-- ===========================

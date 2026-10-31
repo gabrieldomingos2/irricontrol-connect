@@ -5,7 +5,7 @@ Esc        -> Cancela modos de desenho (pivô, setorial, pacman, irripump), desa
 -------------------------------------------------------------------------------
 
 cd C:\projetos\irricontrol-connect
-.\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --port 8000
+.\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --reload-dir backend --port 8000
 
 -------------------------------------------------------------------------------
 
