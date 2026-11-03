@@ -1771,21 +1771,20 @@ body.screenshot-mode #btn-screenshot-mode {
     padding-right: 12px !important;
   }
 
-  /* Marca */
+  /* Marca: mesma largura da sidebar (menos o padding-left de 20px da
+     topbar), então os grupos de botões começam logo depois da linha da
+     sidebar e acompanham se ela mudar de largura (--sidebar-w). */
   #topbar-brand {
     display: flex;
     align-items: center;
     gap: 10px;
-    /* logo 34px de altura = ~246px de largura; margem esquerda + direita
-       somam o mesmo espaço de antes (logo 30px + 48px), então os grupos
-       da topbar não saem do lugar */
-    margin-left: 3px;
-    margin-right: 16px;
+    width: calc(var(--sidebar-w) - 20px);
+    margin-right: 12px;
     flex-shrink: 0;
   }
 
   #topbar-brand img {
-    height: 34px;
+    height: 40px;
     width: auto;
     display: block;
   }
@@ -1971,15 +1970,15 @@ body.screenshot-mode #btn-screenshot-mode {
   #app-topbar #btn-logout {
     height: 36px;
   }
+
+  #topbar-brand img {
+    height: 37px;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1280px) {
   #topbar-brand img {
-    height: 22px;
-  }
-
-  #topbar-brand {
-    margin-right: 16px;
+    height: 30px;
   }
 }
 
@@ -2317,13 +2316,17 @@ label.has-file .kmz-change-hint {
 /* Sidebar v2 — um pouco mais larga e com fonte um grau maior (desktop).
    O #map-wrapper acompanha a largura pra não ficar por baixo dela. */
 @media (min-width: 769px) {
+  :root {
+    --sidebar-w: 350px;
+  }
+
   #sidebar-left {
-    width: 300px !important;
+    width: var(--sidebar-w) !important;
     padding: 18px !important;
   }
 
   #map-wrapper {
-    left: 300px !important;
+    left: var(--sidebar-w) !important;
   }
 
   #sidebar-left .sidebar-section-title,
@@ -2363,13 +2366,12 @@ label.has-file .kmz-change-hint {
 }
 
 @media (min-width: 769px) and (max-width: 1366px) {
-  #sidebar-left {
-    width: 245px !important;
-    padding: 14px !important;
+  :root {
+    --sidebar-w: 330px;
   }
 
-  #map-wrapper {
-    left: 245px !important;
+  #sidebar-left {
+    padding: 14px !important;
   }
 
   #sidebar-export .sidebar-button span.text-sm {
@@ -2427,7 +2429,8 @@ label.has-file .kmz-change-hint {
       border-radius: 6px;
       background: transparent;
       color: rgba(255, 255, 255, 0.85);
-      font-size: 0.95rem;
+      font-size: 0.875rem;
+      white-space: nowrap;
     }
 
     #template-modelo option::checkmark {
