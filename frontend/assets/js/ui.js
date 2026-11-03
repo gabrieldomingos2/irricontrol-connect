@@ -168,13 +168,15 @@ function updateLegendImage(templateId) {
   if (!legendContainer || !legendImage || !templateId) return;
 
   const normalized = String(templateId).toLowerCase();
+  // Uma legenda por perfil: assets/images/<col>.key.png (col definido no templates.py)
   const match = [
-    { test: /brazil[_-\s]?v6[_-\s]?100dbm/i, path: "assets/images/IRRICONTRO.dBm.key.png" },
-    { test: /brazil[_-\s]?v6[_-\s]?90dbm/i, path: "assets/images/CONTROL90.dBm.key.png" },
-    { test: /brazil[_-\s]?v7.*95dbm/i, path: "assets/images/IRRI95DBM.dBm.key.png" },
-    { test: /brazil[_-\s]?v7/i, path: "assets/images/CONTROL90.dBm.key.png" },
-    // Europe_V7_XR (antes Europe_V6_XR): qualquer template Europe usa a mesma escala
-    { test: /europe/i, path: "assets/images/IRRIEUROPE.dBm.key.png" }
+    { test: /brazil[_-\s]?v6[_-\s]?100dbm/i, path: "assets/images/HP900_100.dBm.key.png" },
+    { test: /^xbee_pro_900hp_90dbm$/i, path: "assets/images/HP900_90.dBm.key.png" },
+    { test: /^xbee_pro_900hp_95dbm$/i, path: "assets/images/HP900_95.dBm.key.png" },
+    { test: /^xbee_sx_868_95dbm$/i, path: "assets/images/SX868_95.dBm.key.png" },
+    { test: /^xbee_sx_868_100dbm$/i, path: "assets/images/SX868_100.dBm.key.png" },
+    { test: /^xbee_xr_868_96dbm$/i, path: "assets/images/XR868_96.dBm.key.png" },
+    { test: /^xbee_xr_868_101dbm$/i, path: "assets/images/XR868_101.dBm.key.png" }
   ].find((entry) => entry.test.test(normalized));
 
   if (!match) {
@@ -284,8 +286,16 @@ function reposicionarPaineisLaterais() {
 
 // Templates bloqueados (TEMPLATES_DESABILITADOS no backend, ex.: Brazil_V6_100dBm)
 // ficam invisíveis no select. Shift+A libera: eles aparecem e já ficam selecionáveis.
-const HIDDEN_TEMPLATES = ["Brazil_V6_90dBm"];
-const TEMPLATE_ORDER = ["Brazil_V7_95dBm", "Brazil_V7_90dBm", "Europe_V7_XR"];
+const HIDDEN_TEMPLATES = [];
+const TEMPLATE_ORDER = [
+  "XBEE_PRO_900HP_90dBm",
+  "XBEE_PRO_900HP_95dBm",
+  "XBEE_SX_868_95dBm",
+  "XBEE_SX_868_100dBm",
+  "XBEE_XR_868_96dBm",
+  "XBEE_XR_868_101dBm",
+  "Brazil_V6_100dBm",
+];
 window.__templateAllList = window.__templateAllList || [];
 
 function renderTemplateOptions(preferredValue) {
@@ -302,8 +312,12 @@ function renderTemplateOptions(preferredValue) {
     .sort((a, b) => orderIndex(a) - orderIndex(b));
 
   templateSelect.innerHTML = visibleTemplates.map((templateName) => {
-    const flag = /brazil/i.test(templateName) ? "🇧🇷 " : /europe/i.test(templateName) ? "🇪🇺 " : "🌐 ";
-    return `<option value="${templateName}">${flag}${templateName}</option>`;
+    const flag = /brazil|900hp/i.test(templateName) ? "🇧🇷 " : /868/i.test(templateName) ? "🇪🇺 " : "🌐 ";
+    // "XBEE_PRO_900HP_90dBm" -> "XBEE PRO 900HP -90dBm" (Brazil_V6_100dBm fica como está)
+    const label = /^xbee_/i.test(templateName)
+      ? templateName.replace(/_(\d+dBm)$/i, " -$1").replace(/_/g, " ")
+      : templateName;
+    return `<option value="${templateName}">${flag}${label}</option>`;
   }).join("");
 
   const valid = preferredValue && visibleTemplates.includes(preferredValue);

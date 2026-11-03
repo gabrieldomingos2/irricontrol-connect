@@ -8,11 +8,15 @@ from typing import Any
 class TemplateID(str, Enum):
     """Unique identifiers for each simulation template."""
 
+    # Teste interno (bloqueado; liberar com Shift+A)
     BRAZIL_V6_100DBM = "Brazil_V6_100dBm"
-    EUROPE_V6_XR = "Europe_V7_XR"
-    BRAZIL_V6_90DBM = "Brazil_V6_90dBm"
-    BRAZIL_V7_90DBM = "Brazil_V7_90dBm"
-    BRAZIL_V7_95DBM = "Brazil_V7_95dBm"
+    # Perfis oficiais de estudo de sinal (email 03/11/2026)
+    XBEE_PRO_900HP_90DBM = "XBEE_PRO_900HP_90dBm"
+    XBEE_PRO_900HP_95DBM = "XBEE_PRO_900HP_95dBm"
+    XBEE_SX_868_95DBM = "XBEE_SX_868_95dBm"
+    XBEE_SX_868_100DBM = "XBEE_SX_868_100dBm"
+    XBEE_XR_868_96DBM = "XBEE_XR_868_96dBm"
+    XBEE_XR_868_101DBM = "XBEE_XR_868_101dBm"
 
 
 # ---------------------------------------------------------------------------
@@ -50,67 +54,91 @@ I18N_KEYWORDS: dict[str, dict[str, list[str]]] = {
 def default_templates() -> list[dict[str, Any]]:
     """Returns the list of default simulation templates as raw dicts."""
     return [
+        # TESTE INTERNO — bloqueado no select (TEMPLATES_DESABILITADOS), liberar com Shift+A
         {
             "id": "Brazil_V6_100dBm",
             "nome": "Brazil V6 100dBm",
             "frq": 915,
-            "col": "IRRICONTRO.dBm",
+            "col": "HP900_100.dBm",
             "site": "Brazil_V6_100dBm",
             "rxs": -100,
             "transmitter": {"txw": 0.3, "bwi": 0.1},
             "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -100},
             "antenna": {"txg": 3, "fbr": 3},
         },
+        # -------------------------------------------------------------------
+        # Perfis oficiais (email 03/11/2026). NAO alterar os limiares (rxs).
+        # Escalas de cor (col): uma por perfil, terminando no limiar (rxs).
+        # Principal = 11 dB de margem sobre a sensibilidade do datasheet.
+        # Alternativo = 6 dB; so quando o principal exigir repetidoras demais.
+        # -------------------------------------------------------------------
+        # XBee-PRO 900HP — sensibilidade -101 dBm
         {
-            "id": "Europe_V7_XR",
-            "nome": "Europe V7 XR",
+            "id": "XBEE_PRO_900HP_90dBm",
+            "nome": "XBEE PRO 900HP -90dBm",
+            "frq": 915,
+            "col": "HP900_90.dBm",
+            "site": "XBEE_PRO_900HP_90dBm",
+            "rxs": -90,
+            "transmitter": {"txw": 0.25, "bwi": 0.1},   # 24 dBm = max do 900HP
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -90},
+            "antenna": {"txg": 3, "fbr": 3},
+        },
+        {
+            "id": "XBEE_PRO_900HP_95dBm",
+            "nome": "XBEE PRO 900HP -95dBm",
+            "frq": 915,
+            "col": "HP900_95.dBm",
+            "site": "XBEE_PRO_900HP_95dBm",
+            "rxs": -95,
+            "transmitter": {"txw": 0.25, "bwi": 0.1},
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -95},
+            "antenna": {"txg": 3, "fbr": 3},
+        },
+        # XBee SX 868 — sensibilidade -106 dBm
+        {
+            "id": "XBEE_SX_868_95dBm",
+            "nome": "XBEE SX 868 -95dBm",
             "frq": 868,
-            "col": "IRRIEUROPE.dBm",
-            "site": "Europe_V7_XR",
+            "col": "SX868_95.dBm",
+            "site": "XBEE_SX_868_95dBm",
+            "rxs": -95,
+            "transmitter": {"txw": 0.02, "bwi": 0.05},
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 2.1, "rxs": -95},
+            "antenna": {"txg": 2.1, "fbr": 2.1},
+        },
+        {
+            "id": "XBEE_SX_868_100dBm",
+            "nome": "XBEE SX 868 -100dBm",
+            "frq": 868,
+            "col": "SX868_100.dBm",
+            "site": "XBEE_SX_868_100dBm",
             "rxs": -100,
             "transmitter": {"txw": 0.02, "bwi": 0.05},
             "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 2.1, "rxs": -100},
             "antenna": {"txg": 2.1, "fbr": 2.1},
         },
+        # XBee XR 868 — sensibilidade -107 dBm
         {
-            "id": "Brazil_V6_90dBm",
-            "nome": "Brazil V6 90dBm",
-            "frq": 915,
-            "col": "CONTROL90.dBm",
-            "site": "Brazil_V6_90dBm",
-            "rxs": -90,
-            "transmitter": {"txw": 0.3, "bwi": 0.1},
-            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -90},
-            "antenna": {"txg": 3, "fbr": 3},
+            "id": "XBEE_XR_868_96dBm",
+            "nome": "XBEE XR 868 -96dBm",
+            "frq": 868,
+            "col": "XR868_96.dBm",
+            "site": "XBEE_XR_868_96dBm",
+            "rxs": -96,
+            "transmitter": {"txw": 0.02, "bwi": 0.05},
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 2.1, "rxs": -96},
+            "antenna": {"txg": 2.1, "fbr": 2.1},
         },
-        # XBee-PRO 900HP @ 200 kbps (sensibilidade -101 dBm)
-        # Limiar -90 dBm = 11 dB de margem de seguranca
         {
-            "id": "Brazil_V7_90dBm",
-            "nome": "Brazil V7 90dBm",
-            "frq": 915,                      # versao Brasil do 900HP (915-928 MHz)
-            "col": "CONTROL90.dBm",          # trocar pela escala de 3 faixas quando criar
-            "site": "Brazil_V7_90dBm",
-            "rxs": -90,
-            "transmitter": {"txw": 0.25, "bwi": 0.1},   # 24 dBm = max do 900HP
-            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -90},
-            "antenna": {"txg": 3, "fbr": 3},
-            "feeder": {"flt": 1, "fll": 5, "fcc": 2},   # AJUSTAR: cabo (m) e conectores reais
-            "model": {"ter": 3, "cli": 2},              # Farmland + Continental subtropical
-        },
-        # XBee-PRO 900HP @ 200 kbps (sensibilidade -101 dBm)
-        # Limiar -95 dBm = 6 dB de margem de seguranca (TESTE)
-        {
-            "id": "Brazil_V7_95dBm",
-            "nome": "Brazil V7 95dBm",
-            "frq": 915,
-            "col": "IRRI95DBM.dBm",          # escala de cores -95 criada no CloudRF
-            "site": "Brazil_V7_95dBm",
-            "rxs": -95,
-            "transmitter": {"txw": 0.25, "bwi": 0.1},
-            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 3, "rxs": -95},
-            "antenna": {"txg": 3, "fbr": 3},
-            "feeder": {"flt": 1, "fll": 5, "fcc": 2},
-            "model": {"ter": 3, "cli": 2},
+            "id": "XBEE_XR_868_101dBm",
+            "nome": "XBEE XR 868 -101dBm",
+            "frq": 868,
+            "col": "XR868_101.dBm",
+            "site": "XBEE_XR_868_101dBm",
+            "rxs": -101,
+            "transmitter": {"txw": 0.02, "bwi": 0.05},
+            "receiver": {"lat": 0, "lon": 0, "alt": 3, "rxg": 2.1, "rxs": -101},
+            "antenna": {"txg": 2.1, "fbr": 2.1},
         },
     ]
