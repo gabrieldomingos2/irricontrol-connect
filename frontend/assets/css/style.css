@@ -637,9 +637,8 @@ body {
     height: 14px !important;
   }
 
-  /* Sidebar esquerda mais estreita */
+  /* Sidebar esquerda (a largura vem de --sidebar-w, ver "Sidebar v2") */
   div.absolute.top-14.bottom-14.left-0.w-\[280px\] {
-    width: 220px !important;
     padding: .75rem !important;
     top: 3rem !important;
   }
@@ -677,10 +676,9 @@ body {
     font-size: .7rem !important;
   }
 
-  /* Área do mapa ajustada à sidebar mais estreita */
+  /* Área do mapa (o left vem de --sidebar-w, ver "Sidebar v2") */
   div.absolute.top-14.bottom-14.left-\[280px\].right-12 {
     top: 3rem !important;
-    left: 220px !important;
     bottom: 2.5rem !important;
   }
 
@@ -1778,7 +1776,7 @@ body.screenshot-mode #btn-screenshot-mode {
     display: flex;
     align-items: center;
     gap: 10px;
-    width: calc(var(--sidebar-w) - 20px);
+    width: calc(var(--sidebar-w, 350px) - 20px);
     margin-right: 12px;
     flex-shrink: 0;
   }
@@ -1990,6 +1988,12 @@ body.screenshot-mode #btn-screenshot-mode {
 
   #app-topbar .topbar-pill {
     padding-left: 6px;
+  }
+
+  /* Aqui não sobra largura pra alinhar a marca com a sidebar: ela volta
+     ao tamanho da logo, senão o "Sair" sai da tela (ex.: iPad em pé). */
+  #topbar-brand {
+    width: auto;
   }
 }
 

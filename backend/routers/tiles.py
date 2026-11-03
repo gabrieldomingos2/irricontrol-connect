@@ -24,6 +24,9 @@ GOOGLE_SATELLITE_SUBDOMAINS = ["mt0", "mt1", "mt2", "mt3"]
 
 TILE_CACHE_DIR = settings.ARQUIVOS_DIR_PATH / "cache" / "tiles"
 
+# Google satellite goes up to ~z22; anything beyond that isn't a real tile.
+MAX_TILE_ZOOM = 22
+
 # Reused across requests instead of opening a new HTTPS connection to Google
 # per tile — with 20-30+ tiles in a single map view, a fresh TLS handshake
 # each time was slow enough that the frontend's PDF-export snapshot would
@@ -79,6 +82,11 @@ async def get_satellite_tile(request: Request, z: int, x: int, y: int) -> Respon
     requested again seconds later (once when the user pans/zooms, again when
     the PDF export re-fits and re-screenshots the map).
     """
+    # Rota aberta (sem login): só aceita coordenadas de tile que existem,
+    # senão qualquer um enche o cache em disco com z/x/y inventados.
+    if not (0 <= z <= MAX_TILE_ZOOM and 0 <= x < 2 ** z and 0 <= y < 2 ** z):
+        raise HTTPException(status_code=400, detail="Coordenadas de tile inválidas.")
+
     cache_path = TILE_CACHE_DIR / str(z) / str(x) / f"{y}.jpg"
 
     async with _tile_semaphore:

@@ -35,6 +35,8 @@ CORNER_ANGLE_THRESHOLD: float = 30.0
 # Max allowed sharp corners: circle=0, sector=1-3, rectangle=4, polygon=many.
 CIRCLE_MAX_SHARP_CORNERS: int = 3
 HEIGHT_REGEX = re.compile(r"[\s-]*(\d+)\s*(m|metros)\s*$", re.IGNORECASE)
+# KML de fazenda real fica na casa de poucos MB; 200MB já é folga de sobra.
+MAX_KML_UNCOMPRESSED_BYTES: int = 200 * 1024 * 1024
 
 
 # ---------------------------------------------------------------------------
@@ -504,8 +506,11 @@ def _extract_kml_from_zip(caminho_kmz: Path, pasta_extracao: Path) -> Path:
             kml_file_name = next((f for f in kmz_file.namelist() if f.lower().endswith(".kml")), None)
             if not kml_file_name:
                 raise FileParseError("Nenhum arquivo .kml encontrado dentro do KMZ.")
-            kmz_file.extract(kml_file_name, path=pasta_extracao)
-            caminho_kml_extraido = pasta_extracao / kml_file_name
+            # O upload é limitado a 50MB compactado, mas um KMZ malicioso
+            # ("zip bomb") pode descompactar para vários GB e lotar o disco.
+            if kmz_file.getinfo(kml_file_name).file_size > MAX_KML_UNCOMPRESSED_BYTES:
+                raise FileParseError("O KML dentro do KMZ é grande demais para ser processado.")
+            caminho_kml_extraido = Path(kmz_file.extract(kml_file_name, path=pasta_extracao))
             logger.info("  -> Arquivo KML '%s' extraído para '%s'", kml_file_name, caminho_kml_extraido)
             return caminho_kml_extraido
     except zipfile.BadZipFile:
