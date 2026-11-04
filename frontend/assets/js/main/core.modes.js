@@ -12,6 +12,7 @@ function deactivateAllModes() {
   (!(typeof isMobileDrawMode == "function" && isMobileDrawMode()) && AppState.modoEdicaoPivos) && togglePivoEditing();
   AppState.modoLoSPivotAPivot && toggleLoSPivotAPivotMode();
   AppState.modoBuscaLocalRepetidora && handleBuscarLocaisRepetidoraActivation();
+  AppState.modoPerfilElevacao && typeof toggleModoPerfilElevacao == "function" && toggleModoPerfilElevacao();
 }
 
 function escapeRegExp(str) {

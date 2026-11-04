@@ -35,6 +35,8 @@ const BUNDLES = [
       "assets/js/main/core.state.js",
       "assets/js/main/core.modes.js",
       "assets/js/main/feature.los.js",
+      "assets/js/elevation-profile.js",
+      "assets/js/main/feature.elevation-profile.js",
       "assets/js/main/feature.pivots.js",
       "assets/js/main/feature.repeaters.js",
     ],

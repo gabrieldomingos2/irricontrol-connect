@@ -2763,3 +2763,45 @@ label.has-file .kmz-change-hint {
     margin-right: 44px;
   }
 }
+
+/* =====================================================================
+   PERFIL DE ELEVAÇÃO (régua estilo Google Earth) — feature.elevation-profile.js
+   ===================================================================== */
+#map-wrapper.ep-open #map { height: calc(100% - var(--ep-h, 270px)) !important; }
+
+#ep-panel.hidden { display: none; }
+#ep-panel { position: absolute; left: 0; right: 0; bottom: 0; height: var(--ep-h, 270px); z-index: 1000; background: #2b2b2b; display: flex; flex-direction: column; border-top: 1px solid #000; }
+#ep-panel .ep-header { display: flex; align-items: center; justify-content: space-between; background: #1e1e1e; border-bottom: 1px solid #000; }
+#ep-panel .ep-header .ep-actions { display: flex; align-items: center; gap: 6px; padding: 4px 8px; flex-shrink: 0; }
+#ep-panel .ep-header .ep-actions button { background: rgba(255, 255, 255, .1); color: #fff; border: 1px solid rgba(255, 255, 255, .2); border-radius: 6px; padding: 3px 10px; font-size: 12px; cursor: pointer; }
+#ep-panel .ep-header .ep-actions button:hover { background: rgba(34, 197, 94, .35); }
+
+/* alça de redimensionar o gráfico (fica bem na borda entre mapa e gráfico) */
+#ep-resize { position: absolute; top: -9px; left: 0; right: 0; height: 18px; z-index: 2; cursor: ns-resize;
+  display: flex; align-items: center; justify-content: center; touch-action: none; }
+#ep-resize::before { content: ""; position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: transparent; transition: background .15s; }
+#ep-resize:hover::before, body.ep-resizing #ep-resize::before { background: #22c55e; }
+#ep-resize .ep-grip { position: relative; width: 46px; height: 14px; border-radius: 7px; background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, .35); box-shadow: 0 1px 4px rgba(0, 0, 0, .5); }
+#ep-resize .ep-grip::before, #ep-resize .ep-grip::after { content: ""; position: absolute; left: 13px; right: 13px; height: 2px; border-radius: 1px; background: #d1d5db; }
+#ep-resize .ep-grip::before { top: 4px; } #ep-resize .ep-grip::after { bottom: 4px; }
+#ep-resize:hover .ep-grip, body.ep-resizing #ep-resize .ep-grip { background: #15803d; border-color: #22c55e; }
+body.ep-resizing, body.ep-resizing * { cursor: ns-resize !important; user-select: none !important; }
+
+#ep-stats { color: #ddd; font-size: 11.5px; padding: 3px 6px; background: #1e1e1e; }
+#ep-stats .ep-row { display: flex; flex-wrap: wrap; }
+#ep-stats .ep-cell { border: 1px solid #3a3a3a; padding: 1px 8px; white-space: nowrap; }
+#ep-stats .ep-hl { background: #8b0000; color: #fff; }
+#ep-stats .ep-ok { color: #4ade80; } #ep-stats .ep-warn { color: #fbbf24; } #ep-stats .ep-bad { color: #f87171; }
+#ep-stats .ep-muted { color: #888; }
+#ep-chart-wrap { flex: 1; min-height: 0; position: relative; }
+#ep-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
+
+.ep-v { width: 12px; height: 12px; background: #fff; border: 2px solid #333; border-radius: 2px; cursor: move; }
+.ep-v-start { background: #e11d48; border-color: #fff; border-radius: 50%; }
+.ep-v-end { background: #2563eb; border-color: #fff; border-radius: 50%; }
+.ep-ghost { width: 10px; height: 10px; background: rgba(255, 255, 0, .55); border: 1px solid #333; border-radius: 50%; cursor: copy; }
+.ep-hover { position: absolute; transform: translate(-50%, -100%); pointer-events: none; text-align: center; }
+.ep-hover-label { color: #fff; font: 600 12px system-ui, sans-serif; text-shadow: 0 0 3px #000, 0 0 3px #000; white-space: nowrap; margin-bottom: 2px; }
+.ep-hover-label span { font-weight: 500; }
+.ep-hover-arrow { margin: 0 auto; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 16px solid #e00; filter: drop-shadow(0 0 1px #000); }

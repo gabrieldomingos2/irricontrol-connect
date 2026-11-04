@@ -1,7 +1,7 @@
 // Bundle único (gerado por npm run build:js) com core.state.js, core.modes.js,
 // feature.los.js, feature.pivots.js e feature.repeaters.js, nessa ordem -
 // so carregado apos o login para nao pesar a tela inicial de quem nao logou.
-const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=26"];
+const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=27"];
 
 function loadMainScript(src) {
   return new Promise((resolve, reject) => {
@@ -122,6 +122,7 @@ function setupMainActionListeners() {
   document.getElementById("btn-download-active-pngs")?.addEventListener("click", handleDownloadActivePngsClick);
   document.getElementById("btn-los-pivot-a-pivot")?.addEventListener("click", toggleLoSPivotAPivotMode);
   document.getElementById("btn-buscar-locais-repetidora")?.addEventListener("click", handleBuscarLocaisRepetidoraActivation);
+  document.getElementById("btn-perfil-elevacao")?.addEventListener("click", toggleModoPerfilElevacao);
   document.getElementById("coord-search-btn")?.addEventListener("click", handleCoordinateSearch);
   document.getElementById("lat-long-input-field")?.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
@@ -359,6 +360,7 @@ async function handleExportPdfReportClick() {
 }
 
 async function handleResetClick(notify = true) {
+  typeof closeElevationProfile == "function" && closeElevationProfile();
   clearMapLayers();
   AppState.reset();
   await startNewSession();

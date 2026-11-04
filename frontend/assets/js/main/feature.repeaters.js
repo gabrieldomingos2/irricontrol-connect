@@ -267,7 +267,7 @@ async function handleMapClick(event) {
     return;
   }
 
-  if (AppState.modoEdicaoPivos || AppState.modoLoSPivotAPivot) return;
+  if (AppState.modoEdicaoPivos || AppState.modoLoSPivotAPivot || AppState.modoPerfilElevacao) return;
 
   AppState.clickedCandidateData = null;
   AppState.ultimoCliqueFoiSobrePivo = false;

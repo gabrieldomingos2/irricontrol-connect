@@ -8,6 +8,7 @@ const AppState = {
   repetidoras: [],
   modoEdicaoPivos: false,
   modoLoSPivotAPivot: false,
+  modoPerfilElevacao: false,
   modoBuscaLocalRepetidora: false,
   modoDesenhoPivo: false,
   modoDesenhoPivoSetorial: false,
