@@ -272,7 +272,28 @@ function atualizarPainelDados() {
   // Vermelho só quando tem pivô sem sinal; com 0 fica neutro.
   foraCoberturaStatEl && foraCoberturaStatEl.classList.toggle("is-zero", foraCobertura === 0);
   totalBombasValueEl && (totalBombasValueEl.textContent = bombas.length);
+
+  // Rede de rádio, contada a partir da lista do painel "Repetidoras" (visíveis ou não):
+  // Central = antena principal (#antena-item); Repetidoras = os demais itens.
+  const totalCentralEl = document.getElementById("total-central");
+  const totalRepetidorasEl = document.getElementById("total-repetidoras");
+  const totalCentral = document.querySelectorAll("#lista-repetidoras > #antena-item").length;
+  const totalRepetidoras = document.querySelectorAll("#lista-repetidoras > .rep-item:not(#antena-item)").length;
+  totalCentralEl && (totalCentralEl.textContent = totalCentral);
+  totalRepetidorasEl && (totalRepetidorasEl.textContent = totalRepetidoras);
 }
+
+// Atualiza o contador sempre que um item entra ou sai da lista de repetidoras
+// (simulação, nova repetidora, remoção, reset), sem precisar mexer em cada função.
+(function observarListaRepetidoras() {
+  const iniciar = () => {
+    const lista = document.getElementById("lista-repetidoras");
+    if (!lista || lista.dataset.countObserver) return;
+    lista.dataset.countObserver = "1";
+    new MutationObserver(() => atualizarPainelDados()).observe(lista, { childList: true });
+  };
+  document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", iniciar) : iniciar();
+})();
 
 function reposicionarPaineisLaterais() {
   const panels = [painelDadosDiv, painelRepetidorasDiv].filter(Boolean);

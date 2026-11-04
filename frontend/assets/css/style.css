@@ -2188,6 +2188,7 @@ label.has-file .kmz-change-hint {
     background: rgba(255, 255, 255, 0.03) !important;
     font-size: 0.95rem !important;
     -moz-appearance: textfield;
+    appearance: textfield;
   }
 
   #sidebar-left #painel-repetidora input[type="number"]::-webkit-inner-spin-button,
@@ -2488,6 +2489,11 @@ label.has-file .kmz-change-hint {
   display: flex;
   gap: 8px;
   margin-bottom: 4px;
+}
+
+/* Segunda linha: Central | Repetidoras */
+.data-stats--network {
+  margin-top: 4px;
 }
 
 .data-stat {

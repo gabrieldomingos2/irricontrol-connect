@@ -54,6 +54,8 @@
       "stat_pivots": "Pivots",
       "stat_no_signal": "Kein Signal",
       "stat_pumps": "Irripumps",
+      "stat_repeaters": "Repeater",
+      "stat_central": "Zentrale",
       "processing": "Verarbeite...",
       "antenna_height": "Senderhöhe (Tx) (m)",
       "receiver_height": "Empfängerhöhe (Rx) (m)",

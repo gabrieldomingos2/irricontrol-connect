@@ -534,7 +534,7 @@
         <p id="template-info" class="data-template"></p>
 
         <!-- Números do estudo (preenchidos em ui.js:atualizarPainelDados).
-             Os três ficam sempre à mostra, começando em 0. -->
+             Todos ficam sempre à mostra, começando em 0. -->
         <div class="data-stats">
           <div class="data-stat">
             <span id="total-pivos" class="data-stat-value">0</span>
@@ -547,6 +547,18 @@
           <div id="total-bombas" class="data-stat">
             <span id="total-bombas-value" class="data-stat-value">0</span>
             <span class="data-stat-label" data-i18n="ui.labels.stat_pumps">Irripumps</span>
+          </div>
+        </div>
+
+        <!-- Rede de rádio: Central (antena principal) + repetidoras da lista do painel Repetidoras -->
+        <div class="data-stats data-stats--network">
+          <div id="total-central-stat" class="data-stat">
+            <span id="total-central" class="data-stat-value">0</span>
+            <span class="data-stat-label" data-i18n="ui.labels.stat_central">Central</span>
+          </div>
+          <div id="total-repetidoras-stat" class="data-stat">
+            <span id="total-repetidoras" class="data-stat-value">0</span>
+            <span class="data-stat-label" data-i18n="ui.labels.stat_repeaters">Repetidoras</span>
           </div>
         </div>
 
