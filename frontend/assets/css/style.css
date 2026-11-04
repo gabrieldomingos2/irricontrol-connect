@@ -14,7 +14,7 @@
   /* Cores principais da UI */
   --green: #22c55e;
   --bg: #060B10;
-  --panel: rgba(6, 11, 16, 0.7);
+  --panel: rgba(6, 11, 16, 0.92);
   --border: rgba(255, 255, 255, 0.15);
 
   /* Design tokens (base) */
@@ -141,7 +141,7 @@ body {
 }
 
 .panel {
-  background: var(--panel);
+  background: rgb(6 6 6 / 92%);
   border: 1px solid var(--border-300);
   border-radius: calc(var(--radius-lg) - 2px);
   box-shadow: var(--shadow-lg);
