@@ -351,5 +351,32 @@
         "try_manual_repeater": "Tente pôr repetidoras em pivôs próximos antes de buscar repetidoras por IA.",
         "consider_nearby_locations": "Sempre considere os locais indicados mais próximos do pivô e em áreas que possam ser posicionados postes.",
         "blocked_los_compensation": "Locais com visada bloqueada podem ser compensados com a instalação de postes!"
+    },
+    "elevation_profile": {
+        "resize_hint": "Arraste para aumentar/diminuir o gráfico (duplo clique volta ao padrão)",
+        "new_path": "Novo caminho",
+        "clear": "Limpar",
+        "no_path": "Sem caminho",
+        "chart_min_avg_max": "Gráfico: Mín, Méd, Máx",
+        "elevation": "Elevação: {min}, {avg}, {max} m",
+        "selected_segment": "Trecho selecionado",
+        "path_totals": "Totais do período",
+        "distance": "Distância: {value}",
+        "gain_loss": "Ganho/perda de elevação: {gain} m, -{loss} m",
+        "max_slope": "Inclinação máxima: {up}%, {down}%",
+        "avg_slope": "Inclinação média: {up}%, {down}%",
+        "los_blocked": "VISADA OBSTRUÍDA",
+        "los_blocked_detail": "pior ponto a {where} ({value} m acima da linha)",
+        "fresnel_hit": "FRESNEL INVADIDA",
+        "fresnel_hit_detail": "folga {clear} m a {where} ({pct}% da 1ª zona; ideal ≥ 60%)",
+        "los_clear": "VISADA LIVRE",
+        "los_clear_detail": "menor folga {clear} m a {where} ({pct}% da 1ª zona)",
+        "link_params": "Rádio {freq} MHz · torre {tx} m · receptor {rx} m · vegetação {clutter} m · k=4/3:",
+        "empty_chart": "Desenhe um caminho no mapa para ver o perfil de elevação",
+        "loading_terrain": "carregando terreno ({tiles} tiles)…",
+        "tile_error": "Não foi possível baixar parte do terreno (veja o console).",
+        "unavailable": "Perfil de elevação indisponível (mapa não carregado).",
+        "start_hint": "Perfil de elevação: clique no mapa para traçar o caminho.",
+        "button_title": "Perfil de elevação (régua)"
     }
 }

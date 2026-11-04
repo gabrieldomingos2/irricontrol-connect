@@ -350,5 +350,32 @@
     "try_manual_repeater": "Versuchen Sie, Repeater auf nahegelegenen Pivots zu platzieren, bevor Sie mit KI suchen.",
     "consider_nearby_locations": "Berücksichtigen Sie immer die angegebenen Standorte, die dem Pivot am nächsten liegen und in Bereichen, in denen Pfosten positioniert werden können.",
     "blocked_los_compensation": "Standorte mit blockierter Sichtlinie können durch die Installation von Pfosten kompensiert werden!"
+  },
+  "elevation_profile": {
+    "resize_hint": "Ziehen, um das Diagramm zu vergrößern/verkleinern (Doppelklick setzt zurück)",
+    "new_path": "Neuer Pfad",
+    "clear": "Löschen",
+    "no_path": "Kein Pfad",
+    "chart_min_avg_max": "Diagramm: Min, Mittel, Max",
+    "elevation": "Höhe: {min}, {avg}, {max} m",
+    "selected_segment": "Ausgewählter Abschnitt",
+    "path_totals": "Gesamtwerte des Pfads",
+    "distance": "Entfernung: {value}",
+    "gain_loss": "Höhengewinn/-verlust: {gain} m, -{loss} m",
+    "max_slope": "Max. Steigung: {up}%, {down}%",
+    "avg_slope": "Mittlere Steigung: {up}%, {down}%",
+    "los_blocked": "SICHTLINIE BLOCKIERT",
+    "los_blocked_detail": "schlechtester Punkt bei {where} ({value} m über der Linie)",
+    "fresnel_hit": "FRESNELZONE VERLETZT",
+    "fresnel_hit_detail": "Abstand {clear} m bei {where} ({pct}% der 1. Zone; ideal ≥ 60%)",
+    "los_clear": "SICHTLINIE FREI",
+    "los_clear_detail": "geringster Abstand {clear} m bei {where} ({pct}% der 1. Zone)",
+    "link_params": "Funk {freq} MHz · Turm {tx} m · Empfänger {rx} m · Vegetation {clutter} m · k=4/3:",
+    "empty_chart": "Zeichnen Sie einen Pfad auf der Karte, um das Höhenprofil zu sehen",
+    "loading_terrain": "Gelände wird geladen ({tiles} Kacheln)…",
+    "tile_error": "Ein Teil des Geländes konnte nicht geladen werden (siehe Konsole).",
+    "unavailable": "Höhenprofil nicht verfügbar (Karte nicht geladen).",
+    "start_hint": "Höhenprofil: Klicken Sie auf die Karte, um den Pfad zu zeichnen.",
+    "button_title": "Höhenprofil (Lineal)"
   }
 }

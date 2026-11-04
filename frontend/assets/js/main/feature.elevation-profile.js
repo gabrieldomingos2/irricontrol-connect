@@ -20,14 +20,14 @@ function buildElevationProfileUI() {
   panel.id = "ep-panel";
   panel.className = "hidden";
   panel.innerHTML = `
-    <div id="ep-resize" title="Arraste para aumentar/diminuir o gráfico (duplo clique volta ao padrão)">
+    <div id="ep-resize" data-i18n="elevation_profile.resize_hint" data-i18n-attr="title" title="${t("elevation_profile.resize_hint")}">
       <span class="ep-grip"></span>
     </div>
     <div class="ep-header">
       <div id="ep-stats"></div>
       <div class="ep-actions">
-        <button type="button" id="ep-new">Novo caminho</button>
-        <button type="button" id="ep-clear">Limpar</button>
+        <button type="button" id="ep-new" data-i18n="elevation_profile.new_path">${t("elevation_profile.new_path")}</button>
+        <button type="button" id="ep-clear" data-i18n="elevation_profile.clear">${t("elevation_profile.clear")}</button>
       </div>
     </div>
     <div id="ep-chart-wrap"><canvas id="ep-canvas"></canvas></div>`;
@@ -113,14 +113,14 @@ function ensureElevationProfileTool() {
     onState: (s) => {
       if ("loading" in s) {
         const el = document.getElementById("ep-loading");
-        el && (el.textContent = s.loading ? `carregando terreno (${s.tiles} tiles)…` : "");
+        el && (el.textContent = s.loading ? t("elevation_profile.loading_terrain", { tiles: s.tiles }) : "");
       }
     },
   }, {
     terrainOptions: {
       onError: (key, err) => {
         console.warn("Perfil de elevação: tile de terreno falhou", key, err);
-        typeof mostrarMensagem == "function" && mostrarMensagem("Não foi possível baixar parte do terreno (veja o console).", "erro");
+        typeof mostrarMensagem == "function" && mostrarMensagem(t("elevation_profile.tile_error"), "erro");
       },
     },
   });
@@ -139,7 +139,7 @@ function toggleModoPerfilElevacao() {
   activating && deactivateAllModes();
 
   if (activating && !ensureElevationProfileTool()) {
-    typeof mostrarMensagem == "function" && mostrarMensagem("Perfil de elevação indisponível (mapa não carregado).", "erro");
+    typeof mostrarMensagem == "function" && mostrarMensagem(t("elevation_profile.unavailable"), "erro");
     return;
   }
 
@@ -149,7 +149,7 @@ function toggleModoPerfilElevacao() {
 
   if (activating) {
     elevationProfileTool.start();
-    typeof mostrarMensagem == "function" && mostrarMensagem("Perfil de elevação: clique no mapa para traçar o caminho.", "info");
+    typeof mostrarMensagem == "function" && mostrarMensagem(t("elevation_profile.start_hint"), "info");
   } else {
     elevationProfileTool.drawing && elevationProfileTool.finish();
     elevationProfileTool.clear();
@@ -159,6 +159,13 @@ function toggleModoPerfilElevacao() {
 function closeElevationProfile() {
   AppState.modoPerfilElevacao && toggleModoPerfilElevacao();
 }
+
+// Ao trocar o idioma, redesenha a barra de estatísticas e o gráfico no novo idioma.
+document.addEventListener("i18n:applied", () => {
+  if (!elevationProfileTool) return;
+  elevationProfileTool._renderStats?.();
+  elevationProfileTool.chart?.render();
+});
 
 window.toggleModoPerfilElevacao = toggleModoPerfilElevacao;
 window.closeElevationProfile = closeElevationProfile;

@@ -350,5 +350,32 @@
     "try_manual_repeater": "Intente colocar repetidores en pivotes cercanos antes de buscar con IA.",
     "consider_nearby_locations": "Siempre considere las ubicaciones indicadas más cercanas al pivote y en áreas donde se puedan posicionar postes.",
     "blocked_los_compensation": "¡Las ubicaciones con línea de visión bloqueada se pueden compensar instalando postes!"
+  },
+  "elevation_profile": {
+    "resize_hint": "Arrastre para agrandar/reducir el gráfico (doble clic vuelve al tamaño predeterminado)",
+    "new_path": "Nuevo camino",
+    "clear": "Limpiar",
+    "no_path": "Sin camino",
+    "chart_min_avg_max": "Gráfico: Mín, Prom, Máx",
+    "elevation": "Elevación: {min}, {avg}, {max} m",
+    "selected_segment": "Tramo seleccionado",
+    "path_totals": "Totales del recorrido",
+    "distance": "Distancia: {value}",
+    "gain_loss": "Ganancia/pérdida de elevación: {gain} m, -{loss} m",
+    "max_slope": "Pendiente máxima: {up}%, {down}%",
+    "avg_slope": "Pendiente media: {up}%, {down}%",
+    "los_blocked": "LÍNEA DE VISIÓN OBSTRUIDA",
+    "los_blocked_detail": "peor punto a {where} ({value} m sobre la línea)",
+    "fresnel_hit": "ZONA DE FRESNEL INVADIDA",
+    "fresnel_hit_detail": "holgura {clear} m a {where} ({pct}% de la 1.ª zona; ideal ≥ 60%)",
+    "los_clear": "LÍNEA DE VISIÓN DESPEJADA",
+    "los_clear_detail": "menor holgura {clear} m a {where} ({pct}% de la 1.ª zona)",
+    "link_params": "Radio {freq} MHz · torre {tx} m · receptor {rx} m · vegetación {clutter} m · k=4/3:",
+    "empty_chart": "Dibuje un camino en el mapa para ver el perfil de elevación",
+    "loading_terrain": "cargando terreno ({tiles} tiles)…",
+    "tile_error": "No se pudo descargar parte del terreno (vea la consola).",
+    "unavailable": "Perfil de elevación no disponible (mapa no cargado).",
+    "start_hint": "Perfil de elevación: haga clic en el mapa para trazar el camino.",
+    "button_title": "Perfil de elevación (regla)"
   }
 }

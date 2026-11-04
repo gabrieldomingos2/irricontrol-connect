@@ -18,6 +18,12 @@
 (function (global) {
   "use strict";
 
+  // Tradução: usa o t() global do i18n.js (chaves em locales/*.json -> "elevation_profile").
+  const tr = (key, params = {}) => (typeof global.t === "function" ? global.t(`elevation_profile.${key}`, params) : key);
+
+  // Passo das linhas de grade do eixo Y (metros). Mude aqui se quiser outro intervalo.
+  const Y_GRID_STEP_M = 3;
+
   const R_EARTH = 6371008.8;
   const toRad = (d) => (d * Math.PI) / 180;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -361,7 +367,7 @@
       const p = this.p;
       if (!p) {
         c.fillStyle = "#777"; c.font = "13px system-ui, sans-serif"; c.textAlign = "center";
-        c.fillText("Desenhe um caminho no mapa para ver o perfil de elevação", pl.W / 2, pl.H / 2);
+        c.fillText(tr("empty_chart"), pl.W / 2, pl.H / 2);
         return;
       }
       const [y0, y1] = this._yRange();
@@ -372,7 +378,11 @@
       // grade
       c.font = "11px system-ui, sans-serif";
       c.strokeStyle = "#d6d6d6"; c.lineWidth = 1; c.fillStyle = "#8b1a1a";
-      const ys = Math.max(1, niceStep(y1 - y0, Math.max(3, pl.h / 28)));
+      // Grade em múltiplos de Y_GRID_STEP_M (3 m). Se o relevo for muito alto e as linhas
+      // ficarem coladas (menos de ~18 px entre elas), pula para 6, 9, 12 m... sempre múltiplo de 3.
+      const minGapPx = 18;
+      const pxPerMeter = pl.h / Math.max(1e-6, y1 - y0);
+      const ys = Y_GRID_STEP_M * Math.max(1, Math.ceil(minGapPx / (Y_GRID_STEP_M * pxPerMeter)));
       c.textAlign = "right"; c.textBaseline = "middle";
       for (let v = Math.ceil(y0 / ys) * ys; v <= y1; v += ys) {
         const yy = Math.round(Y(v)) + 0.5;
@@ -748,28 +758,28 @@
       const el = this.ui.statsEl;
       if (!el) return;
       const p = this.profile;
-      if (!p) { el.innerHTML = '<span class="ep-muted">Sem caminho</span>'; return; }
+      if (!p) { el.innerHTML = `<span class="ep-muted">${tr("no_path")}</span>`; return; }
       const all = computeStats(p);
       const s = this.selection ? computeStats(p, this.selection[0], this.selection[1]) : all;
       const f1 = (v) => v.toFixed(1);
       const r = Math.round;
       let html =
-        `<div class="ep-row"><span class="ep-cell">Gráfico: Mín, Méd, Máx</span>` +
-        `<span class="ep-cell ep-hl">Elevação: ${r(all.min)}, ${r(all.avg)}, ${r(all.max)} m</span></div>` +
-        `<div class="ep-row"><span class="ep-cell">${this.selection ? "Trecho selecionado" : "Totais do período"}:</span>` +
-        `<span class="ep-cell">Distância: ${fmtKm(s.distance)}</span>` +
-        `<span class="ep-cell">Ganho/perda de elevação: ${f1(s.gain)} m, -${f1(s.loss)} m</span>` +
-        `<span class="ep-cell">Inclinação máxima: ${f1(s.maxUp)}%, ${f1(s.maxDown)}%</span>` +
-        `<span class="ep-cell">Inclinação média: ${f1(s.avgUp)}%, ${f1(s.avgDown)}%</span></div>`;
+        `<div class="ep-row"><span class="ep-cell">${tr("chart_min_avg_max")}</span>` +
+        `<span class="ep-cell ep-hl">${tr("elevation", { min: r(all.min), avg: r(all.avg), max: r(all.max) })}</span></div>` +
+        `<div class="ep-row"><span class="ep-cell">${this.selection ? tr("selected_segment") : tr("path_totals")}:</span>` +
+        `<span class="ep-cell">${tr("distance", { value: fmtKm(s.distance) })}</span>` +
+        `<span class="ep-cell">${tr("gain_loss", { gain: f1(s.gain), loss: f1(s.loss) })}</span>` +
+        `<span class="ep-cell">${tr("max_slope", { up: f1(s.maxUp), down: f1(s.maxDown) })}</span>` +
+        `<span class="ep-cell">${tr("avg_slope", { up: f1(s.avgUp), down: f1(s.avgDown) })}</span></div>`;
       if (this.link) {
         const L2 = this.link, o = this.linkOpts;
         const where = L2.worstIdx > 0 ? fmtKm(p.dist[L2.worstIdx]) : "-";
         const status = L2.blocked
-          ? `<b class="ep-bad">VISADA OBSTRUÍDA</b> — pior ponto a ${where} (${f1(-L2.worstClear)} m acima da linha)`
+          ? `<b class="ep-bad">${tr("los_blocked")}</b> — ${tr("los_blocked_detail", { where, value: f1(-L2.worstClear) })}`
           : L2.fresnelHit
-          ? `<b class="ep-warn">FRESNEL INVADIDA</b> — folga ${f1(L2.worstClear)} m a ${where} (${Math.round(L2.worstRatio * 100)}% da 1ª zona; ideal ≥ 60%)`
-          : `<b class="ep-ok">VISADA LIVRE</b> — menor folga ${f1(L2.worstClear)} m a ${where} (${Math.round(L2.worstRatio * 100)}% da 1ª zona)`;
-        html += `<div class="ep-row"><span class="ep-cell">Rádio ${o.freqMHz} MHz · torre ${o.txHeight} m · receptor ${o.rxHeight} m · vegetação ${o.clutter} m · k=4/3:</span><span class="ep-cell">${status}</span></div>`;
+          ? `<b class="ep-warn">${tr("fresnel_hit")}</b> — ${tr("fresnel_hit_detail", { clear: f1(L2.worstClear), where, pct: Math.round(L2.worstRatio * 100) })}`
+          : `<b class="ep-ok">${tr("los_clear")}</b> — ${tr("los_clear_detail", { clear: f1(L2.worstClear), where, pct: Math.round(L2.worstRatio * 100) })}`;
+        html += `<div class="ep-row"><span class="ep-cell">${tr("link_params", { freq: o.freqMHz, tx: o.txHeight, rx: o.rxHeight, clutter: o.clutter })}</span><span class="ep-cell">${status}</span></div>`;
       }
       el.innerHTML = html;
     }

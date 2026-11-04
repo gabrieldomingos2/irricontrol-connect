@@ -352,5 +352,32 @@
     "try_manual_repeater": "Try placing repeaters on nearby pivots before searching with AI.",
     "consider_nearby_locations": "Always consider the locations indicated closest to the pivot and in areas where poles can be positioned.",
     "blocked_los_compensation": "Locations with blocked line of sight can be compensated by installing poles!"
+  },
+  "elevation_profile": {
+    "resize_hint": "Drag to resize the chart (double-click resets to default)",
+    "new_path": "New path",
+    "clear": "Clear",
+    "no_path": "No path",
+    "chart_min_avg_max": "Chart: Min, Avg, Max",
+    "elevation": "Elevation: {min}, {avg}, {max} m",
+    "selected_segment": "Selected segment",
+    "path_totals": "Path totals",
+    "distance": "Distance: {value}",
+    "gain_loss": "Elevation gain/loss: {gain} m, -{loss} m",
+    "max_slope": "Max slope: {up}%, {down}%",
+    "avg_slope": "Avg slope: {up}%, {down}%",
+    "los_blocked": "LINE OF SIGHT BLOCKED",
+    "los_blocked_detail": "worst point at {where} ({value} m above the line)",
+    "fresnel_hit": "FRESNEL ZONE OBSTRUCTED",
+    "fresnel_hit_detail": "clearance {clear} m at {where} ({pct}% of 1st zone; ideal ≥ 60%)",
+    "los_clear": "LINE OF SIGHT CLEAR",
+    "los_clear_detail": "minimum clearance {clear} m at {where} ({pct}% of 1st zone)",
+    "link_params": "Radio {freq} MHz · tower {tx} m · receiver {rx} m · vegetation {clutter} m · k=4/3:",
+    "empty_chart": "Draw a path on the map to see the elevation profile",
+    "loading_terrain": "loading terrain ({tiles} tiles)…",
+    "tile_error": "Could not download part of the terrain (see the console).",
+    "unavailable": "Elevation profile unavailable (map not loaded).",
+    "start_hint": "Elevation profile: click on the map to draw the path.",
+    "button_title": "Elevation profile (ruler)"
   }
 }
