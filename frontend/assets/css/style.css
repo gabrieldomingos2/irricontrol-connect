@@ -432,6 +432,11 @@ body {
   width: 260px;
 }
 
+/* Slider de opacidade (desktop) */
+#opacity-control {
+  left: 340px !important;
+}
+
 /* Painel "Repetidoras" sem nenhum item: sem isso, o `flex-grow` da
    classe no HTML estica o card pra preencher o espaço livre da coluna
    mesmo vazio, deixando um card "gordinho" só com o título. Some com o
@@ -771,7 +776,7 @@ body {
 
   /* Slider de opacidade */
   div.absolute.bottom-6.left-72 {
-    left: 228px !important;
+    left: 280px !important;
     bottom: 1.2rem !important;
   }
 
