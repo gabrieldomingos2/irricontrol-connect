@@ -46,7 +46,7 @@
       "username": "Username",
       "password": "Password",
       "template": "Template",
-      "choose_kmz": "Import KMZ File",
+      "choose_kmz": "Import KMZ/KML File",
       "change_file": "change",
       "tx_height_short": "Tx height",
       "rx_height_short": "Rx height",
@@ -104,7 +104,7 @@
       "lat_lon_search": "Latitude, Longitude"
     },
     "buttons": {
-      "load_kmz": "Import KMZ",
+      "load_kmz": "Import KMZ/KML",
       "run_study": "Simulate Coverage",
       "run_los_diagnostic": "LoS Diagnostic",
       "export_kmz": "Download KMZ File",
@@ -148,7 +148,7 @@
     "export_pdf_disabled": "Load a KMZ to generate the report.",
     "download_active_repeaters": "Downloads only the active repeaters currently visible on the map",
     "run_signal_simulation": "Runs the signal simulation",
-    "load_kmz": "Imports and loads a KMZ file",
+    "load_kmz": "Imports and loads a KMZ or KML file",
     "export_kmz": "Downloads the complete project as a KMZ file",
     "export_kmz_disabled": "Run a signal study to download the KMZ.",
     "reset": "Clears everything and starts a new project",

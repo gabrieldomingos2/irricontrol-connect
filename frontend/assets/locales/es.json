@@ -45,7 +45,7 @@
       "username": "Usuario",
       "password": "Contraseña",
       "template": "Plantilla",
-      "choose_kmz": "Importar Archivo KMZ",
+      "choose_kmz": "Importar Archivo KMZ/KML",
       "change_file": "cambiar",
       "tx_height_short": "Altura Tx",
       "rx_height_short": "Altura Rx",
@@ -103,7 +103,7 @@
       "lat_lon_search": "Latitud, Longitud"
     },
     "buttons": {
-      "load_kmz": "Importar KMZ",
+      "load_kmz": "Importar KMZ/KML",
       "run_study": "Simular Cobertura",
       "run_los_diagnostic": "Diagnóstico de Visión",
       "export_kmz": "Descargar Archivo KMZ",
@@ -147,7 +147,7 @@
     "export_pdf_disabled": "Cargue un KMZ para generar el informe.",
     "download_active_repeaters": "Descarga solo las repetidoras activas que están apareciendo en el mapa",
     "run_signal_simulation": "Ejecuta la simulación de señal",
-    "load_kmz": "Importa y carga un archivo KMZ",
+    "load_kmz": "Importa y carga un archivo KMZ o KML",
     "export_kmz": "Descarga el proyecto completo en KMZ",
     "export_kmz_disabled": "Ejecute un estudio de señal para descargar el KMZ.",
     "reset": "Reinicia todo para empezar un nuevo proyecto",

@@ -45,6 +45,7 @@ CHUNK_SIZE: int = 1024 * 1024  # 1MB por chunk
 ALLOWED_EXTS: set[str] = {".kmz", ".kml"}
 ALLOWED_CTYPES: set[str] = {
     "application/vnd.google-earth.kmz",
+    "application/vnd.google-earth.kml+xml",
     "application/octet-stream",
     "application/xml",
     "text/xml",

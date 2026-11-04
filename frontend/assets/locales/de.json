@@ -45,7 +45,7 @@
       "username": "Benutzername",
       "password": "Passwort",
       "template": "Vorlage",
-      "choose_kmz": "KMZ-Datei importieren",
+      "choose_kmz": "KMZ/KML-Datei importieren",
       "change_file": "ändern",
       "tx_height_short": "Höhe Tx",
       "rx_height_short": "Höhe Rx",
@@ -103,7 +103,7 @@
       "lat_lon_search": "Breitengrad, Längengrad"
     },
     "buttons": {
-      "load_kmz": "KMZ importieren",
+      "load_kmz": "KMZ/KML importieren",
       "run_study": "Abdeckung simulieren",
       "run_los_diagnostic": "Sichtlinien-Diagnose",
       "export_kmz": "KMZ-Datei herunterladen",
@@ -147,7 +147,7 @@
     "export_pdf_disabled": "Laden Sie eine KMZ, um den Bericht zu erstellen.",
     "download_active_repeaters": "Lädt nur die aktiven Repeater herunter, die auf der Karte sichtbar sind",
     "run_signal_simulation": "Führt die Signalsimulation aus",
-    "load_kmz": "Importiert und lädt eine KMZ-Datei",
+    "load_kmz": "Importiert und lädt eine KMZ- oder KML-Datei",
     "export_kmz": "Lädt das gesamte Projekt als KMZ-Datei herunter",
     "export_kmz_disabled": "Führen Sie eine Signalstudie durch, um die KMZ herunterzuladen.",
     "reset": "Setzt alles zurück und startet ein neues Projekt",

@@ -45,7 +45,7 @@
       "username": "Пользователь",
       "password": "Пароль",
       "template": "Шаблон",
-      "choose_kmz": "Импорт KMZ Файла",
+      "choose_kmz": "Импорт KMZ/KML Файла",
       "change_file": "заменить",
       "tx_height_short": "Высота Tx",
       "rx_height_short": "Высота Rx",
@@ -103,7 +103,7 @@
       "lat_lon_search": "Широта, Долгота"
     },
     "buttons": {
-      "load_kmz": "Импорт KMZ",
+      "load_kmz": "Импорт KMZ/KML",
       "run_study": "Симулировать Покрытие",
       "run_los_diagnostic": "Диагностика Видимости",
       "export_kmz": "Скачать KMZ Файл",
@@ -147,7 +147,7 @@
     "export_pdf_disabled": "Загрузите KMZ, чтобы создать отчет.",
     "download_active_repeaters": "Скачивает только активные ретрансляторы, которые видны на карте",
     "run_signal_simulation": "Выполняет симуляцию сигнала",
-    "load_kmz": "Импортирует и загружает файл KMZ",
+    "load_kmz": "Импортирует и загружает файл KMZ или KML",
     "export_kmz": "Скачивает весь проект в формате KMZ",
     "export_kmz_disabled": "Запустите анализ сигнала, чтобы скачать KMZ.",
     "reset": "Сбрасывает всё и начинает новый проект",
