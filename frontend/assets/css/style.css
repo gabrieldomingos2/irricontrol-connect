@@ -2819,3 +2819,50 @@ body.ep-resizing, body.ep-resizing * { cursor: ns-resize !important; user-select
 .ep-hover-label { color: #fff; font: 600 12px system-ui, sans-serif; text-shadow: 0 0 3px #000, 0 0 3px #000; white-space: nowrap; margin-bottom: 2px; }
 .ep-hover-label span { font-weight: 500; }
 .ep-hover-arrow { margin: 0 auto; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 16px solid #e00; filter: drop-shadow(0 0 1px #000); }
+
+/* Sidebar v2 — Resetar alinhado com a faixa do rodapé (desktop).
+   A sidebar desce até o fim da tela e o Resetar ocupa os 56px (h-14)
+   da faixa de baixo, então a linha em cima dele fica na mesma altura
+   da borda de baixo do mapa. */
+@media (min-width: 769px) {
+  #sidebar-left {
+    bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Botão só do tamanho do texto (evita clicar sem querer); a linha
+     continua na largura toda, desenhada pelo ::before. */
+  #sidebar-left #resetar-btn {
+    position: relative;
+    align-self: center;
+    width: auto !important;
+    height: 3.5rem !important;     /* = h-14, altura da faixa do rodapé */
+    min-height: 3.5rem;
+    margin-bottom: 0 !important;
+    padding: 0 12px !important;
+    align-items: center;
+    border-top: none !important;
+  }
+
+  #sidebar-left #resetar-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(var(--sidebar-w, 350px) - 36px); /* largura - padding (18px x 2) */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+  }
+
+  /* Slider de opacidade começa logo depois da sidebar */
+  #opacity-control {
+    left: calc(var(--sidebar-w, 350px) + 16px) !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1366px) {
+  #sidebar-left #resetar-btn::before {
+    width: calc(var(--sidebar-w, 330px) - 28px); /* padding 14px x 2 */
+  }
+}
