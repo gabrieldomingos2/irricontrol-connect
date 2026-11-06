@@ -31,15 +31,15 @@ const antenaIcon = L.divIcon({
 });
 const bombaIconAzul = L.divIcon({
   className: "leaflet-div-icon-transparent",
-  html: `<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_AZUL_PATH}" style="width:28px;height:28px;"></div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 28]
+  html: `<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_AZUL_PATH}" style="width:36px;height:36px;"></div>`,
+  iconSize: [36, 36],
+  iconAnchor: [18, 36]
 });
 const bombaIconVermelho = L.divIcon({
   className: "leaflet-div-icon-transparent",
-  html: `<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_VERMELHO_PATH}" style="width:28px;height:28px;"></div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 28]
+  html: `<div class="selection-effect-wrapper"><img src="${BOMBA_ICON_VERMELHO_PATH}" style="width:36px;height:36px;"></div>`,
+  iconSize: [36, 36],
+  iconAnchor: [18, 36]
 });
 const posicionamentoIcon = L.icon({
   iconUrl: TORRE_ICON_PATH,
