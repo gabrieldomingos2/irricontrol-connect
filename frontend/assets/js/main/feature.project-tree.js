@@ -182,9 +182,9 @@ function ptItemHtml(item, group, simulated) {
     ? `<input type="text" class="pt-rename-input" maxlength="60" value="${escapeHtml(item.name)}" aria-label="${escapeHtml(ptT("rename_label", { name: item.name }))}" ${attrs}>`
     : `<span class="pt-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>`;
 
-  let statusText = (item.kind === "pivot" || item.kind === "bomba") && simulated
-    ? `<span class="pt-meta ${item.fora ? "pt-meta--out" : ""}">${escapeHtml(item.fora ? ptT("out_short") : ptT("in_short"))}</span>`
-    : "";
+  // Pivôs/irripumps: só a bolinha colorida (verde = com sinal, vermelha =
+  // sem sinal). O texto continua pra leitor de tela dentro da bolinha.
+  let statusText = "";
   if ((item.kind === "central" || item.kind === "repeater") && item.hidden) {
     statusText = `<span class="pt-meta">${escapeHtml(ptT("coverage_off_short"))}</span>`;
   }

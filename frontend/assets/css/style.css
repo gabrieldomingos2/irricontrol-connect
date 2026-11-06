@@ -3117,7 +3117,7 @@ body.ep-resizing, body.ep-resizing * { cursor: ns-resize !important; user-select
   .pt-group-name { flex: 1; font-weight: 700; color: #fff; }
 
   .pt-count {
-    font-size: 13px;
+    font-size: 16px;
     color: #fff;
   }
 
