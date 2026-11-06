@@ -2865,6 +2865,8 @@ body.ep-resizing, body.ep-resizing * { cursor: ns-resize !important; user-select
   #sidebar-left #resetar-btn::before {
     width: calc(var(--sidebar-w, 330px) - 28px); /* padding 14px x 2 */
   }
+}
+
 /* =====================================================================
    🌳 ESTRUTURA DO PROJETO (desktop) — feature.project-tree.js
    Faixa fina ao lado da sidebar; abre um painel com a árvore do KMZ.
