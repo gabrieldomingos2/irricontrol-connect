@@ -69,8 +69,15 @@ function updatePivotIcons() {
     if (!marker) return;
 
     const color = pivot.fora ? "red" : "green";
+    const selected = AppState.selectedPivoNome === pivot.nome;
+    // Só recria o ícone se algo mudou (tamanho/cor/seleção). Antes cada
+    // zoom/redraw recriava o DOM de todos os pivôs, mesmo sem mudança.
+    const key = `${iconSize}|${color}|${selected}`;
+    if (marker._ptIconKey === key) return;
+    marker._ptIconKey = key;
+
     let className = "pivo-marker-container";
-    AppState.selectedPivoNome === pivot.nome && (className += " pivo-marker-container-selected");
+    selected && (className += " pivo-marker-container-selected");
 
     const icon = L.divIcon({
       className,
@@ -162,7 +169,7 @@ function drawImageOverlay(imagePath, bounds, opacity = 1) {
   return overlay;
 }
 
-function fitMapToAllElements() {
+function fitMapToAllElements(fitOptions = {}) {
   if (!map) return;
 
   const points = [];
@@ -190,7 +197,7 @@ function fitMapToAllElements() {
   AppState.antenaGlobal && points.push([AppState.antenaGlobal.lat, AppState.antenaGlobal.lon]);
   (AppState.repetidoras || []).forEach((rep) => points.push([rep.lat, rep.lon]));
 
-  points.length > 0 && map.fitBounds(points, { padding: [80, 80] });
+  points.length > 0 && map.fitBounds(points, { padding: [80, 80], ...fitOptions });
 }
 
 function waitForMapReady(timeoutMs = 8000, pollIntervalMs = 150) {

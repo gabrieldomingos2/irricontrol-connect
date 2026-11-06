@@ -11,7 +11,9 @@ from pathlib import Path
 from statistics import mean
 from typing import List, Tuple, Dict, Optional, TypedDict, Union
 
+import numpy as np
 from shapely.geometry import Polygon, Point
+from shapely.strtree import STRtree
 from shapely.ops import unary_union
 
 from backend.config import settings
@@ -96,14 +98,29 @@ def ponto_central_da_reta_maior(
     """
     if not coords_list or len(coords_list) < 2:
         raise FileParseError("Dados de geometria inválidos: são necessários pelo menos dois pontos para calcular a reta maior.")
-    max_dist_sq = 0.0
-    ponta1_final, ponta2_final = coords_list[0], coords_list[1]
-    for i in range(len(coords_list)):
-        for j in range(i + 1, len(coords_list)):
-            p1, p2 = coords_list[i], coords_list[j]
-            dist_sq = (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
-            if dist_sq > max_dist_sq:
-                max_dist_sq, ponta1_final, ponta2_final = dist_sq, p1, p2
+
+    # Antes: dois "for" em Python comparando todos os pontos (O(n²)). Um
+    # círculo de 700+ vértices dava ~250 mil comparações POR PIVÔ e era o
+    # maior gargalo do upload. Agora a mesma conta é feita em blocos com
+    # numpy (mesmo resultado, inclusive em empates: pega o 1º par na mesma
+    # ordem i<j do loop antigo).
+    pts = np.asarray([[c[0], c[1]] for c in coords_list], dtype=float)
+    n = len(pts)
+    best = -1.0
+    best_i, best_j = 0, 1
+    bloco = 512
+    for ini in range(0, n - 1, bloco):
+        fim = min(ini + bloco, n - 1)
+        diff = pts[ini:fim, None, :] - pts[None, :, :]
+        d2 = (diff ** 2).sum(axis=2)
+        # só j > i (triângulo superior), igual ao loop original
+        linhas = np.arange(ini, fim)[:, None]
+        d2[np.arange(n)[None, :] <= linhas] = -1.0
+        k = int(np.argmax(d2))
+        r, c = divmod(k, n)
+        if d2[r, c] > best:
+            best, best_i, best_j = float(d2[r, c]), ini + r, c
+    ponta1_final, ponta2_final = coords_list[best_i], coords_list[best_j]
     return (
         (ponta1_final[0] + ponta2_final[0]) / 2,
         (ponta1_final[1] + ponta2_final[1]) / 2,
@@ -198,6 +215,15 @@ def _consolidate_pivos(
     final_pivos_list: List[PivoData] = []
     ciclos_ja_associados = set()
 
+    # Monta cada polígono UMA vez (antes era recriado pra cada pivô: P×C).
+    poligonos_ciclos: List[Optional[Polygon]] = []
+    for ciclo in ciclos_parsed:
+        try:
+            poly = Polygon([(lon, lat) for lat, lon in ciclo["coordenadas"]])
+            poligonos_ciclos.append(poly if poly.is_valid else None)
+        except Exception:
+            poligonos_ciclos.append(None)
+
     for pivo in pivos_de_pontos:
         pivo_geom = Point(pivo["lon"], pivo["lat"])
         ciclo_associado = None
@@ -206,11 +232,8 @@ def _consolidate_pivos(
         for i, ciclo in enumerate(ciclos_parsed):
             if i in ciclos_ja_associados:
                 continue
-            try:
-                poligono_ciclo = Polygon([(lon, lat) for lat, lon in ciclo["coordenadas"]])
-                if not poligono_ciclo.is_valid:
-                    continue
-            except Exception:
+            poligono_ciclo = poligonos_ciclos[i]
+            if poligono_ciclo is None:
                 continue
 
             # Uses covers() to include points on the polygon boundary (avoids duplicate pivot).
@@ -454,17 +477,24 @@ def _reconstruct_wedge_pivots(
         if ra != rb:
             parent[ra] = rb
 
-    for i in range(n):
-        if polys[i] is None:
-            continue
-        for j in range(i + 1, n):
-            if polys[j] is None:
-                continue
-            try:
-                if polys[i].intersects(polys[j]):
-                    union(i, j)
-            except Exception:
-                continue
+    # Índice espacial: só testa pares que se tocam de verdade. Antes era
+    # O(n²) — KMZ com centenas de talhões dava milhões de intersects().
+    validos = [i for i in range(n) if polys[i] is not None]
+    if validos:
+        tree = STRtree([polys[i] for i in validos])
+        try:
+            pares = tree.query([polys[i] for i in validos], predicate="intersects")
+            for a, b in zip(pares[0], pares[1]):
+                if a < b:
+                    union(validos[a], validos[b])
+        except Exception:
+            for a in range(len(validos)):
+                for b in range(a + 1, len(validos)):
+                    try:
+                        if polys[validos[a]].intersects(polys[validos[b]]):
+                            union(validos[a], validos[b])
+                    except Exception:
+                        continue
 
     groups: Dict[int, List[int]] = {}
     for i in range(n):

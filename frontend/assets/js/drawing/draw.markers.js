@@ -263,11 +263,13 @@ function drawPivos(pivots, useEditedPositions = false) {
       typeof mostrarMensagem == "function" && mostrarMensagem(t("messages.success.pivot_removed", { name: pivot.nome }), "sucesso");
     });
 
+    marker._ptIconKey = `${iconSize}|${color}|${AppState.selectedPivoNome === pivot.nome}`;
     AppState.marcadoresPivos.push(marker);
     AppState.pivotsMap[pivot.nome] = marker;
   });
 
-  updatePivotIcons();
+  // Os ícones acabaram de ser criados no tamanho do zoom atual: chamar
+  // updatePivotIcons() aqui recriava o DOM de TODOS os pivôs à toa.
   updateLegendsVisibility();
 }
 
@@ -420,6 +422,55 @@ function buildRepeaterItemHtml(entity, idAttr) {
     </div>`;
 }
 
+// ---------------------------------------------------------------------
+// Liga/desliga o estudo de sinal (overlay de cobertura) da central ou de
+// uma repetidora. Fonte da verdade continua sendo o `data-visible` do
+// botão de olho no painel de repetidoras (reavaliarPivosViaAPI,
+// findClosestSignalSource e updateOverlaysOpacity leem dele). Usado pelo
+// próprio botão de olho e pela "Estrutura do projeto".
+// ---------------------------------------------------------------------
+function getCoverageVisibilityButton(entity) {
+  if (!entity) return null;
+  const isMain = entity === AppState.antenaGlobal || entity.isMainAntenna || entity.id === "main_antenna";
+  if (isMain) return document.querySelector("#antena-item button[data-visible]");
+  return entity.id != null ? document.querySelector(`#rep-item-${entity.id} button[data-visible]`) : null;
+}
+
+function isCoverageVisible(entity) {
+  const btn = getCoverageVisibilityButton(entity);
+  return !btn || btn.getAttribute("data-visible") === "true";
+}
+
+let _coverageReevalTimer = null;
+
+// Junta vários liga/desliga seguidos (ex.: "todas as repetidoras") numa
+// ÚNICA chamada de reavaliação no backend.
+function scheduleCoverageReevaluation(delay = 150) {
+  clearTimeout(_coverageReevalTimer);
+  _coverageReevalTimer = setTimeout(() => {
+    _coverageReevalTimer = null;
+    typeof reavaliarPivosViaAPI == "function" && reavaliarPivosViaAPI();
+    typeof updateDownloadActivePngsButtonState == "function" && updateDownloadActivePngsButtonState();
+  }, delay);
+}
+
+function setCoverageVisibility(entity, visible, { reevaluate = true } = {}) {
+  const btn = getCoverageVisibilityButton(entity);
+  if (!btn) return false;
+  visible = !!visible;
+  if (isCoverageVisible(entity) === visible) return false;
+
+  btn.setAttribute("data-visible", String(visible));
+  const opacity = parseFloat(document.getElementById("range-opacidade")?.value);
+  entity.overlay && entity.overlay.setOpacity(visible ? (Number.isFinite(opacity) ? opacity : 1) : 0);
+  btn.innerHTML = visible
+    ? '<i data-lucide="eye" class="w-4 h-4 text-green-500"></i>'
+    : '<i data-lucide="eye-off" class="w-4 h-4 text-gray-500"></i>';
+  lucide?.createIcons?.();
+  reevaluate && scheduleCoverageReevaluation();
+  return true;
+}
+
 function addRepetidoraNoPainel(repeater) {
   const list = document.getElementById("lista-repetidoras");
   if (!list) return;
@@ -462,18 +513,8 @@ function addRepetidoraNoPainel(repeater) {
     }, 100);
   });
 
-  const visibilityBtn = item.querySelector('[data-action="toggle-visibility"]');
-  visibilityBtn?.addEventListener("click", () => {
-    const willBeVisible = !(visibilityBtn.getAttribute("data-visible") === "true");
-    visibilityBtn.setAttribute("data-visible", String(willBeVisible));
-    const opacity = parseFloat(document.getElementById("range-opacidade").value);
-    repeater.overlay && repeater.overlay.setOpacity(willBeVisible ? opacity : 0);
-    visibilityBtn.innerHTML = willBeVisible ? '<i data-lucide="eye" class="w-4 h-4 text-green-500"></i>' : '<i data-lucide="eye-off" class="w-4 h-4 text-gray-500"></i>';
-    lucide?.createIcons?.();
-    setTimeout(() => {
-      reavaliarPivosViaAPI?.();
-      updateDownloadActivePngsButtonState?.();
-    }, 100);
+  item.querySelector('[data-action="toggle-visibility"]')?.addEventListener("click", () => {
+    setCoverageVisibility(repeater, !isCoverageVisible(repeater));
   });
 }
 
@@ -499,15 +540,9 @@ function addAntenaAoPainel(antenna) {
     handleDeleteMainStudy();
   });
 
-  const visibilityBtn = item.querySelector('[data-action="toggle-visibility"]');
-  visibilityBtn?.addEventListener("click", () => {
-    const willBeVisible = !(visibilityBtn.getAttribute("data-visible") === "true");
-    visibilityBtn.setAttribute("data-visible", String(willBeVisible));
-    const opacity = parseFloat(document.getElementById("range-opacidade").value);
-    antenna?.overlay && antenna.overlay.setOpacity(willBeVisible ? opacity : 0);
-    visibilityBtn.innerHTML = willBeVisible ? '<i data-lucide="eye" class="w-4 h-4 text-green-500"></i>' : '<i data-lucide="eye-off" class="w-4 h-4 text-gray-500"></i>';
-    lucide?.createIcons?.();
-    setTimeout(() => reavaliarPivosViaAPI?.(), 100);
+  item.querySelector('[data-action="toggle-visibility"]')?.addEventListener("click", () => {
+    const target = AppState.antenaGlobal || antenna;
+    setCoverageVisibility(target, !isCoverageVisible(target));
   });
 }
 
@@ -586,3 +621,6 @@ function togglePivoDistances(show) {
   const messageKey = show ? "messages.success.pivot_distances_shown" : "messages.success.pivot_distances_hidden";
   typeof mostrarMensagem == "function" && mostrarMensagem(t(messageKey), "sucesso");
 }
+
+window.setCoverageVisibility = setCoverageVisibility;
+window.isCoverageVisible = isCoverageVisible;

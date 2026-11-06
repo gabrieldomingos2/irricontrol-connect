@@ -189,7 +189,7 @@ async def processar_kmz_endpoint(
         parsed_data_path = job_input_dir / "parsed_data.json"
         parsed_content = {"antenas": antenas, "pivos": pivos, "ciclos": ciclos, "bombas": bombas}
         with open(parsed_data_path, "w", encoding="utf-8") as f:
-            json.dump(parsed_content, f, ensure_ascii=False, indent=4)
+            json.dump(parsed_content, f, ensure_ascii=False, separators=(",", ":"))
 
         logger.info("  -> Dados parseados salvos para o job em: %s", parsed_data_path)
         return {"job_id": job_id, **parsed_content}
