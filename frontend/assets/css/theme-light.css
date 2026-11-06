@@ -4,7 +4,7 @@
    O mapa, a cobertura verde, os círculos dos pivôs e os rótulos brancos
    com sombra NÃO mudam (ficam sobre a imagem de satélite).
    Paleta (texto passa 4.5:1 sobre branco):
-     fundo #F4F6F5 · painéis #FFFFFF · cartões #F7F9F8
+     fundo e painéis #FFFFFF · cartões #F7F9F8
      bordas #E2E8E4 / campos #D5DDD8
      texto #0F1A14 / secundário #3F4D45 / apagado #5B6B62
      verde de texto/ícone #15803D (fundo claro #E8F5EC) · vermelho #B91C1C (fundo #FEF2F2)
@@ -58,8 +58,10 @@ html.theme-light #btn-theme-toggle .theme-icon-moon { display: block; }
 }
 
 /* ---------- Base ---------- */
+/* Fundo da página = faixas em volta do mapa (embaixo, com a logo e a
+   opacidade, e à direita). Branco igual à topbar e às barras laterais. */
 html.theme-light body {
-  background-color: #F4F6F5 !important;
+  background-color: #FFFFFF !important;
   color: #0F1A14;
 }
 
