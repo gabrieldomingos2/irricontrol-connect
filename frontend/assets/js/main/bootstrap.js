@@ -1,7 +1,7 @@
 // Bundle único (gerado por npm run build:js) com core.state.js, core.modes.js,
-// feature.los.js, feature.pivots.js e feature.repeaters.js, nessa ordem -
+// feature.los.js, feature.pivots.js, feature.repeaters.js e feature.project-tree.js, nessa ordem -
 // so carregado apos o login para nao pesar a tela inicial de quem nao logou.
-const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=27"];
+const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=29"];
 
 function loadMainScript(src) {
   return new Promise((resolve, reject) => {
@@ -165,11 +165,18 @@ async function handleKmzFileSelect(event) {
   const lang = localStorage.getItem("preferredLanguage") || "pt-br";
   formData.append("language", lang);
 
+  // O upload começa JÁ, em paralelo com a limpeza da tela. Antes o fluxo era:
+  // reset -> espera criar uma sessão vazia no backend (que era jogada fora,
+  // porque o /kmz/processar cria outro job) -> volta o mapa pro Brasil
+  // inteiro (baixando tiles à toa) -> só então enviava o arquivo.
+  const processing = processKmz(formData);
+  processing.catch(() => {}); // o erro é tratado no await abaixo
+
   try {
-    await handleResetClick(false);
+    await handleResetClick(false, { forUpload: true });
     mostrarLoader(true);
 
-    const result = await processKmz(formData);
+    const result = await processing;
     if (!result.job_id) throw new Error(t("messages.errors.missing_job_id"));
 
     AppState.setJobId(result.job_id);
@@ -226,15 +233,17 @@ async function handleKmzFileSelect(event) {
     document.getElementById("simular-btn")?.classList.add("hidden");
 
     if (pivos.length > 0 || antenas.length > 0) {
+      // Pula direto pra fazenda (sem animação): a animação longa disparava
+      // carga de tiles nos níveis intermediários antes de chegar no destino.
       if (typeof fitMapToAllElements == "function") {
-        fitMapToAllElements();
+        fitMapToAllElements({ animate: false });
       } else {
         const points = [];
         pivos.forEach((p) => points.push([p.lat, p.lon]));
         antenas.forEach((a) => points.push([a.lat, a.lon]));
-        points.length > 0 && map.fitBounds(points, { padding: [50, 50] });
+        points.length > 0 && map.fitBounds(points, { padding: [50, 50], animate: false });
       }
-      updatePivotIcons();
+      updatePivotIcons(); // barato agora: só recria ícone se o tamanho mudou
     }
 
     atualizarPainelDados();
@@ -359,11 +368,12 @@ async function handleExportPdfReportClick() {
   }
 }
 
-async function handleResetClick(notify = true) {
+async function handleResetClick(notify = true, { forUpload = false } = {}) {
   typeof closeElevationProfile == "function" && closeElevationProfile();
   clearMapLayers();
   AppState.reset();
-  await startNewSession();
+  // Carregando KMZ: o /kmz/processar já cria o job; não precisa de sessão vazia.
+  forUpload || await startNewSession();
 
   ["btn-los-pivot-a-pivot", "btn-buscar-locais-repetidora", "btn-visada", "toggle-legenda", "toggle-antenas-legendas", "toggle-distancias-pivos", "btn-draw-pivot", "btn-draw-pivot-setorial", "btn-draw-pivot-pacman", "btn-draw-irripump", "editar-pivos", "btn-mover-pivo-sem-circulo", "btn-toggle-delete-pivo", "desfazer-edicao"].forEach((id) => {
     const el = document.getElementById(id);
@@ -402,7 +412,9 @@ async function handleResetClick(notify = true) {
     map.off("mousemove", handlePivotDrawMouseMove);
     map.off("click", handleSectorialPivotDrawClick);
     map.off("mousemove", handleSectorialDrawMouseMove);
-    map.setView([-15, -55], 5);
+    // No upload o mapa vai direto pra fazenda depois; voltar pro Brasil
+    // inteiro aqui só baixava tiles que nunca seriam vistos.
+    forUpload || map.setView([-15, -55], 5);
   }
 
   document.getElementById("simular-btn")?.classList.add("hidden");
