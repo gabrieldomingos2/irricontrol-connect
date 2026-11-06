@@ -1,7 +1,7 @@
 // Bundle único (gerado por npm run build:js) com core.state.js, core.modes.js,
 // feature.los.js, feature.pivots.js, feature.repeaters.js e feature.project-tree.js, nessa ordem -
 // so carregado apos o login para nao pesar a tela inicial de quem nao logou.
-const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=29"];
+const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=30"];
 
 function loadMainScript(src) {
   return new Promise((resolve, reject) => {
@@ -96,20 +96,29 @@ function updateKmzButtonState(enabled) {
   }
 }
 
+// Cada sessão/upload "pega uma senha". Se o servidor demorar (ex.: Render
+// acordando) e a sessão vazia da abertura do app chegar DEPOIS do KMZ, ela
+// trocava o job e apagava os dados do KMZ já carregado. Agora resposta
+// atrasada é ignorada.
+let sessionRequestSeq = 0;
+
 async function startNewSession() {
+  const mySeq = ++sessionRequestSeq;
   mostrarLoader(true);
   try {
     const result = await startEmptyJob();
+    if (mySeq !== sessionRequestSeq) return; // chegou atrasada: já tem outro job valendo
     if (!result.job_id) throw new Error(t("messages.errors.missing_job_id"));
     AppState.setJobId(result.job_id);
     AppState.jobId && mostrarMensagem(t("messages.success.new_session_started"), "sucesso");
     AppState.currentProcessedKmzData = { antenas: [], pivos: [], ciclos: [], bombas: [] };
   } catch (err) {
+    if (mySeq !== sessionRequestSeq) return;
     console.error("Falha crítica ao iniciar nova sessão:", err);
     mostrarMensagem(t("messages.errors.session_start_fail"), "erro");
     AppState.setJobId(null);
   } finally {
-    mostrarLoader(false);
+    mySeq === sessionRequestSeq && mostrarLoader(false);
   }
 }
 
@@ -169,6 +178,7 @@ async function handleKmzFileSelect(event) {
   // reset -> espera criar uma sessão vazia no backend (que era jogada fora,
   // porque o /kmz/processar cria outro job) -> volta o mapa pro Brasil
   // inteiro (baixando tiles à toa) -> só então enviava o arquivo.
+  sessionRequestSeq++; // invalida qualquer sessão vazia ainda pendente
   const processing = processKmz(formData);
   processing.catch(() => {}); // o erro é tratado no await abaixo
 
@@ -297,6 +307,7 @@ async function handleExportPdfReportClick() {
       altura_receiver: rep.altura_receiver,
       is_from_kmz: rep.is_from_kmz || false,
       sobre_pivo: rep.sobre_pivo || false,
+      nome_manual: !!rep.nome_manual,
       type: rep.type || "default"
     }));
 
@@ -304,7 +315,8 @@ async function handleExportPdfReportClick() {
       imagem: rep.imagem_filename,
       altura: rep.altura,
       sobre_pivo: rep.sobre_pivo,
-      nome: rep.is_from_kmz ? rep.nome : null,
+      nome: rep.is_from_kmz || rep.nome_manual ? rep.nome : null,
+      nome_manual: !!rep.nome_manual,
       type: rep.type || "default"
     }));
 
@@ -319,6 +331,7 @@ async function handleExportPdfReportClick() {
         lon: AppState.antenaGlobal.lon,
         altura: AppState.antenaGlobal.altura,
         altura_receiver: AppState.antenaGlobal.altura_receiver,
+        nome_manual: !!AppState.antenaGlobal.nome_manual,
         type: AppState.antenaGlobal.type || "default"
       };
       imagemFilename = AppState.antenaGlobal.imagem_filename;
@@ -478,7 +491,8 @@ async function handleExportClick() {
         imagem: rep.imagem_filename,
         altura: rep.altura,
         sobre_pivo: rep.sobre_pivo,
-        nome: rep.is_from_kmz ? rep.nome : null,
+        nome: rep.is_from_kmz || rep.nome_manual ? rep.nome : null,
+        nome_manual: !!rep.nome_manual,
         type: rep.type || "default"
       });
     });
@@ -494,6 +508,7 @@ async function handleExportClick() {
         lon: AppState.antenaGlobal.lon,
         altura: AppState.antenaGlobal.altura,
         altura_receiver: AppState.antenaGlobal.altura_receiver,
+        nome_manual: !!AppState.antenaGlobal.nome_manual,
         type: AppState.antenaGlobal.type || "default"
       };
       imagemFilename = AppState.antenaGlobal.imagem_filename;

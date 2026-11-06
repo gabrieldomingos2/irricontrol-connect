@@ -117,6 +117,7 @@ def _check_coverage_sync(
                 continue
 
             # 2) Teste de cobertura por pixel alpha
+            motivos: List[str] = []
             for overlay_data in overlays_info:
                 bounds = list(overlay_data["bounds"])
                 if len(bounds) != 4:
@@ -131,6 +132,7 @@ def _check_coverage_sync(
 
                 if not imagem_path.is_file():
                     logger.warning("  -> Image not found: %s. Skipping overlay.", imagem_path)
+                    motivos.append(f"{imagem_path.name}: imagem nao encontrada")
                     continue
 
                 try:
@@ -153,11 +155,20 @@ def _check_coverage_sync(
                         if alpha > settings.SIM_ALPHA_THRESHOLD:
                             coberto = True
                             break
+                        motivos.append(f"{imagem_path.name}: pixel ({pixel_x},{pixel_y}) alpha={alpha}")
+                    else:
+                        motivos.append(f"{imagem_path.name}: fora da imagem ({pixel_x},{pixel_y})")
                 except Exception as ex:
                     logger.error("  -> Error analysing overlay for '%s': %s",
                                 entity_data.get("nome", "<sem nome>"), ex, exc_info=True)
 
             entity_data_atualizado["fora"] = not coberto
+            if not coberto:
+                # Mostra no log do uvicorn POR QUE ficou sem sinal (imagem que
+                # não achou, pixel transparente etc.) - facilita achar bug.
+                logger.info("  -> '%s' sem sinal (%.6f, %.6f): %s",
+                            entity_data.get("nome", "<sem nome>"), lat, lon,
+                            "; ".join(motivos) or "nenhum overlay enviado")
             entities_atualizadas.append(entity_data_atualizado)
     finally:
         for img_obj in imagens_abertas_cache.values():

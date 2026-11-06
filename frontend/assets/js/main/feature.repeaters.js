@@ -212,6 +212,8 @@ function handleRenameRepeater(repeaterId, newType) {
   const repeater = AppState.repetidoras.find((r) => r.id === repeaterId);
   if (!repeater) return;
 
+  // Escolher um tipo no menu = quer o nome automático ("Repetidora Solar Torre - 5m").
+  repeater.nome_manual = false;
   repeater.type = newType;
   if (newType !== "default") {
     const baseName = t(`entity_names.${newType}`);
@@ -229,12 +231,13 @@ function handleRenameRepeater(repeaterId, newType) {
   const labelSpan = document.querySelector(`#rep-item-${repeater.id} span`);
   labelSpan && (labelSpan.textContent = getFormattedAntennaOrRepeaterName(repeater, false));
   atualizarPainelDados();
-  mostrarMensagem(t("messages.success.repeater_renamed", { name: repeater.nome }), "sucesso");
+  mostrarMensagem(t("messages.success.repeater_renamed", { name: getFormattedAntennaOrRepeaterName(repeater) }), "sucesso");
 }
 
 function handleRenameMainAntenna(newType) {
   if (!AppState.antenaGlobal) return;
 
+  AppState.antenaGlobal.nome_manual = false;
   AppState.antenaGlobal.type = newType;
   if (newType !== "default") {
     const baseName = t(`entity_names.${newType}`);
@@ -252,7 +255,7 @@ function handleRenameMainAntenna(newType) {
   const labelSpan = document.querySelector("#antena-item span");
   labelSpan && (labelSpan.textContent = getFormattedAntennaOrRepeaterName(AppState.antenaGlobal, false));
   atualizarPainelDados();
-  mostrarMensagem(t("messages.success.main_antenna_renamed", { name: AppState.antenaGlobal.nome }), "sucesso");
+  mostrarMensagem(t("messages.success.main_antenna_renamed", { name: getFormattedAntennaOrRepeaterName(AppState.antenaGlobal) }), "sucesso");
   setTimeout(removeRenameMenu, 50);
 }
 
@@ -287,6 +290,16 @@ async function handleMapClick(event) {
   const alturaReceiverInput = document.getElementById("altura-receiver-rep");
   alturaAntenaInput && (alturaAntenaInput.value = 5);
   alturaReceiverInput && (alturaReceiverInput.value = 3);
+}
+
+// Repetidora "em cima do pivô": clique no ponto do pivô ou a até 60 m do
+// centro de algum pivô (o clique raramente cai exatamente no centro).
+const PIVOT_CENTER_SNAP_METERS = 60;
+
+function isNearPivotCenter(latlng) {
+  if (!latlng) return false;
+  const point = L.latLng(latlng);
+  return (AppState.lastPivosDataDrawn || []).some((p) => point.distanceTo(L.latLng(p.lat, p.lon)) <= PIVOT_CENTER_SNAP_METERS);
 }
 
 async function handleConfirmRepetidoraClick() {
@@ -365,7 +378,7 @@ async function handleConfirmRepetidoraClick() {
       lat: AppState.coordenadaClicada.lat,
       lon: AppState.coordenadaClicada.lng,
       imagem_filename: null,
-      sobre_pivo: AppState.ultimoCliqueFoiSobrePivo || false,
+      sobre_pivo: AppState.ultimoCliqueFoiSobrePivo || isNearPivotCenter(AppState.coordenadaClicada),
       nome: name,
       original_name: name,
       is_from_kmz: false,

@@ -301,10 +301,23 @@ async def reevaluate_pivots_endpoint(payload: ReavaliarPayload):
         logger.info("Reevaluating coverage for session %s with %d overlays.", payload.job_id, len(payload.overlays))
 
         overlays_para_analise = []
+        overlays_faltando: List[str] = []
         for o_data in payload.overlays or []:
             imagem_path_servidor = _get_image_filepath_for_analysis(o_data.imagem, payload.job_id)
             if not imagem_path_servidor.is_file():
+                # A pasta do job pode ter sumido (servidor reiniciou / limpeza)
+                # mas o cache canônico da CloudRF guarda a mesma imagem.
+                cache_path = settings.SIMULATIONS_CACHE_PATH / imagem_path_servidor.name
+                if cache_path.is_file():
+                    try:
+                        _copy_cached_with_json(cache_path, imagem_path_servidor)
+                        logger.info("Image '%s' restored from simulation cache.", imagem_path_servidor.name)
+                    except OSError as copy_err:
+                        logger.warning("Could not restore '%s' from cache: %s", cache_path, copy_err)
+                        imagem_path_servidor = cache_path
+            if not imagem_path_servidor.is_file():
                 logger.warning("Image file '%s' not found (session %s). Skipping.", o_data.imagem, payload.job_id)
+                overlays_faltando.append(o_data.id or o_data.imagem)
                 continue
             overlays_para_analise.append({
                 "id": o_data.id or f"overlay_{Path(o_data.imagem.split('?', 1)[0]).stem}",
@@ -320,7 +333,7 @@ async def reevaluate_pivots_endpoint(payload: ReavaliarPayload):
                 pivo["fora"] = True
             for bomba in bombas_atualizadas:
                 bomba["fora"] = True
-            return {"pivos": pivos_atualizados, "bombas": bombas_atualizadas}
+            return {"pivos": pivos_atualizados, "bombas": bombas_atualizadas, "missing_overlays": overlays_faltando}
 
         tasks, signal_sources = [], payload.signal_sources or []
         if pivos_atualizados:
@@ -336,7 +349,10 @@ async def reevaluate_pivots_endpoint(payload: ReavaliarPayload):
                 bombas_atualizadas = results[1]
 
         logger.info("Coverage reevaluation completed for session %s.", payload.job_id)
-        return {"pivos": pivos_atualizados, "bombas": bombas_atualizadas}
+        # missing_overlays: estudos que estão no mapa mas cuja imagem não existe
+        # mais no servidor. O front NÃO aplica o resultado nesse caso (senão
+        # todos os pivôs ficavam vermelhos mesmo debaixo do sinal verde).
+        return {"pivos": pivos_atualizados, "bombas": bombas_atualizadas, "missing_overlays": overlays_faltando}
     except HTTPException:
         raise
     except Exception as e:

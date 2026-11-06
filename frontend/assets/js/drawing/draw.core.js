@@ -132,8 +132,43 @@ function findClosestSignalSource(fromLatLng) {
   return closest;
 }
 
+function _isMainAntennaEntity(entity) {
+  return !!entity && (entity.isMainAntenna || entity.id === "main_antenna" || entity === AppState?.antenaGlobal);
+}
+
+function _formatHeightLabel(altura) {
+  const value = Number(altura);
+  return Number.isFinite(value) && value > 0 ? `${Math.round(value * 10) / 10}m` : "";
+}
+
+// Nome automático da repetidora — o MESMO que o KMZ/PDF usam
+// (kmz_exporter._get_formatted_entity_name_for_backend):
+//   em cima de pivô  -> "Repetidora Solar Pivô - 5m"
+//   torre/poste/...  -> "Repetidora Solar Torre - 5m"
+//   central          -> "Central - 5m"
+//   resto            -> "Repetidora Solar - 5m"
+function getAutoRepeaterName(entity) {
+  const height = _formatHeightLabel(entity.altura);
+  const type = entity.type || "default";
+  if (type === "central") return `${t("entity_names.central")} - ${height}`;
+  if (type === "central_repeater_combined") return `${t("entity_names.central_repeater_combined")} - ${height}`;
+  if (["tower", "pole", "water_tank", "irrimesh"].includes(type)) {
+    return t("kml.repeaters.solar_type_repeater", { type_name: t(`entity_names.${type}`), height });
+  }
+  return entity.sobre_pivo
+    ? t("kml.repeaters.solar_pivot_repeater", { height })
+    : t("kml.repeaters.solar_repeater", { height });
+}
+
 function getFormattedAntennaOrRepeaterName(entity) {
   if (!entity) return "";
+
+  // Nome digitado à mão (Estrutura do projeto) sempre vence.
+  if (entity.nome_manual && String(entity.nome || "").trim()) return String(entity.nome).trim();
+
+  // Repetidora criada no app (id numérico, não veio do KMZ): nome automático.
+  // Pivô usado como origem na visada não tem id, então não entra aqui.
+  if (!_isMainAntennaEntity(entity) && !entity.is_from_kmz && Number.isFinite(entity.id)) return getAutoRepeaterName(entity);
 
   const rawName = entity.nome || "";
   const showHeightSuffix = entity.is_from_kmz && entity.had_height_in_kmz;

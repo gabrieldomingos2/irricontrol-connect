@@ -27,6 +27,7 @@ const ProjectTree = {
 };
 
 const PT_STORAGE_KEY = "projectTreeOpen";
+const PT_RENAMABLE_KINDS = ["pivot", "bomba", "central", "repeater"];
 
 function ptT(key, params) {
   return t(`project_tree.${key}`, params);
@@ -167,7 +168,7 @@ function ptStatusHtml(item, simulated) {
 
 function ptItemHtml(item, group, simulated) {
   const isEditing = ProjectTree.editing && ProjectTree.editing.kind === item.kind && ProjectTree.editing.key === item.key;
-  const canRename = item.kind === "pivot" || item.kind === "bomba";
+  const canRename = PT_RENAMABLE_KINDS.includes(item.kind);
   const attrs = `data-kind="${item.kind}" data-key="${escapeHtml(item.key)}"`;
 
   const checkLabel = group.visibility === "coverage"
@@ -335,7 +336,7 @@ function ptGoTo(item) {
 }
 
 function ptStartRename(kind, key) {
-  if (kind !== "pivot" && kind !== "bomba") return;
+  if (!PT_RENAMABLE_KINDS.includes(kind)) return;
   if (kind === "pivot" && ptBlockedInEditMode()) return;
   ProjectTree.editing = { kind, key };
   renderProjectTree();
@@ -417,11 +418,65 @@ function renameBomba(index, rawNewName) {
   return true;
 }
 
+// ---------------------------------------------------------------------
+// Central / repetidoras: nome manual. Marca `nome_manual` pra o nome
+// automático ("Repetidora Solar Pivô - 5m") não sobrescrever, e o
+// KMZ/PDF usarem o mesmo nome (kmz_exporter respeita nome_manual).
+// ---------------------------------------------------------------------
+function ptSignalSourceNames(exclude) {
+  return [AppState.antenaGlobal ? { ...AppState.antenaGlobal, isMainAntenna: true, __ref: AppState.antenaGlobal } : null,
+    ...(AppState.repetidoras || []).map((r) => ({ ...r, __ref: r }))]
+    .filter((e) => e && e.__ref !== exclude)
+    .map((e) => getFormattedAntennaOrRepeaterName(e));
+}
+
+function ptRefreshSignalSourceName(entity) {
+  typeof updateAntenaOrRepeaterLabel == "function" && updateAntenaOrRepeaterLabel(entity);
+  const isMain = entity === AppState.antenaGlobal;
+  const span = document.querySelector(isMain ? "#antena-item .rep-item-name" : `#rep-item-${entity.id} .rep-item-name`);
+  span && (span.textContent = getFormattedAntennaOrRepeaterName(isMain ? { ...entity, isMainAntenna: true } : entity));
+  typeof atualizarPainelDados == "function" && atualizarPainelDados();
+}
+
+function renameSignalSource(entity, rawNewName) {
+  if (!entity) return false;
+  const isMain = entity === AppState.antenaGlobal;
+  const oldName = getFormattedAntennaOrRepeaterName(isMain ? { ...entity, isMainAntenna: true } : entity);
+  const newName = String(rawNewName || "").trim();
+  if (newName === oldName) return true;
+
+  const error = ptValidateName(newName, ptSignalSourceNames(entity));
+  if (error) {
+    mostrarMensagem(error, "erro");
+    return false;
+  }
+
+  entity.nome = newName;
+  entity.nome_manual = true;
+  ptRefreshSignalSourceName(entity);
+  mostrarMensagem(ptT("renamed", { old: oldName, name: newName }), "sucesso");
+  return true;
+}
+
+// Volta pro nome automático (tira o nome digitado).
+function ptUseAutoName(entity) {
+  if (!entity) return;
+  entity.nome_manual = false;
+  // Central vem do KMZ: o "automático" dela é o nome original da torre.
+  entity === AppState.antenaGlobal && entity.original_name && (entity.nome = entity.original_name);
+  ptRefreshSignalSourceName(entity);
+  renderProjectTree();
+}
+
 function ptCommitRename(input) {
   if (!ProjectTree.editing) return;
   const { kind, key } = ProjectTree.editing;
   const value = input.value;
-  const ok = kind === "pivot" ? renamePivot(key, value) : renameBomba(Number(key), value);
+  const ok = kind === "pivot"
+    ? renamePivot(key, value)
+    : kind === "bomba"
+      ? renameBomba(Number(key), value)
+      : renameSignalSource(ptGetEntity(kind, key), value);
   if (!ok) {
     // Mantém o campo aberto pra corrigir.
     input.focus();
@@ -603,7 +658,9 @@ function ptOpenMenu(row, x, y) {
   if (!item) return;
 
   const actions = [];
-  (kind === "pivot" || kind === "bomba") && actions.push({ id: "rename", label: ptT("rename"), shortcut: "F2" });
+  PT_RENAMABLE_KINDS.includes(kind) && actions.push({ id: "rename", label: ptT("rename"), shortcut: "F2" });
+  const entity = ptGetEntity(kind, key);
+  entity?.nome_manual && actions.push({ id: "auto_name", label: ptT("auto_name") });
   actions.push({ id: "goto", label: ptT("go_to") });
   (kind === "pivot" || kind === "bomba" || kind === "tower") && actions.push({ id: "visibility", label: item.hidden ? ptT("show") : ptT("hide") });
   (kind === "central" || kind === "repeater") && actions.push({ id: "visibility", label: item.hidden ? ptT("enable_coverage") : ptT("disable_coverage") });
@@ -641,6 +698,7 @@ function ptOpenMenu(row, x, y) {
     ptCloseMenu();
     const action = btn.dataset.menuAction;
     if (action === "rename") ptStartRename(kind, key);
+    else if (action === "auto_name") ptUseAutoName(ptGetEntity(kind, key));
     else if (action === "goto") ptGoTo(item);
     else if (action === "visibility") ptToggleItem(kind, item.key, item.hidden);
     else if (action === "copy") ptCopyCoords(item);

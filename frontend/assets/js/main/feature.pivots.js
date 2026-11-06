@@ -373,6 +373,15 @@ async function reavaliarPivosViaAPI() {
     };
     const result = await reevaluatePivots(requestPayload);
 
+    // Alguma imagem de estudo não existe mais no servidor (reiniciou,
+    // limpeza...): o resultado viria com tudo "sem sinal" mesmo debaixo do
+    // verde. Mantém o status atual e avisa pra rodar a simulação de novo.
+    if (Array.isArray(result.missing_overlays) && result.missing_overlays.length > 0) {
+      console.warn("Reavaliação ignorada: imagens ausentes no servidor:", result.missing_overlays);
+      mostrarMensagem(t("messages.errors.coverage_images_missing"), "erro");
+      return;
+    }
+
     if (result.pivos) {
       AppState.lastPivosDataDrawn = AppState.lastPivosDataDrawn.map((p) => {
         const updated = result.pivos.find((r) => r.nome.trim() === p.nome.trim());

@@ -129,6 +129,15 @@ function drawAntenaCandidates(candidates) {
   updateLegendsVisibility();
 }
 
+// Nome da fonte de sinal mais próxima (rótulo de distância dos pivôs/bombas).
+function getSignalSourceName(closestSource) {
+  if (closestSource.isMainAntenna) {
+    return AppState.antenaGlobal ? getFormattedAntennaOrRepeaterName({ ...AppState.antenaGlobal, isMainAntenna: true }) : "";
+  }
+  const repeater = AppState.repetidoras.find((r) => r.id === closestSource.id);
+  return repeater ? getFormattedAntennaOrRepeaterName(repeater) : "";
+}
+
 function drawPivos(pivots, useEditedPositions = false) {
   if (!map || !Array.isArray(pivots)) return;
 
@@ -165,25 +174,7 @@ function drawPivos(pivots, useEditedPositions = false) {
       const closestSource = findClosestSignalSource(position);
       if (closestSource) {
         const distanceLabel = closestSource.distance > 999 ? (closestSource.distance / 1000).toFixed(1) + " km" : Math.round(closestSource.distance) + " m";
-        let sourceName = "";
-        if (closestSource.isMainAntenna) {
-          sourceName = getFormattedAntennaOrRepeaterName({
-            isMainAntenna: true,
-            type: AppState.antenaGlobal?.type,
-            nome: AppState.antenaGlobal?.nome,
-            altura: AppState.antenaGlobal?.altura
-          });
-        } else {
-          const repeater = AppState.repetidoras.find((r) => r.id === closestSource.id);
-          if (repeater) {
-            sourceName = getFormattedAntennaOrRepeaterName({
-              isMainAntenna: false,
-              type: repeater.type,
-              nome: repeater.nome,
-              altura: repeater.altura
-            });
-          }
-        }
+        const sourceName = getSignalSourceName(closestSource);
         labelHtml = `${escapeHtml(pivot.nome)}<br><span class="source-name-pivo">${escapeHtml(sourceName)}</span><br><span class="distancia-pivo">${escapeHtml(distanceLabel)}</span>`;
         hasSourceInfo = true;
         labelWidth = Math.max(labelWidth, sourceName.length * 6.5 + 15, distanceLabel.length * 6.5 + 15);
@@ -344,25 +335,7 @@ function drawBombas(bombas) {
       const closestSource = findClosestSignalSource(L.latLng(bomba.lat, bomba.lon));
       if (closestSource) {
         const distanceLabel = closestSource.distance > 999 ? (closestSource.distance / 1000).toFixed(1) + " km" : Math.round(closestSource.distance) + " m";
-        let sourceName = "";
-        if (closestSource.isMainAntenna) {
-          sourceName = getFormattedAntennaOrRepeaterName({
-            isMainAntenna: true,
-            type: AppState.antenaGlobal?.type,
-            nome: AppState.antenaGlobal?.nome,
-            altura: AppState.antenaGlobal?.altura
-          });
-        } else {
-          const repeater = AppState.repetidoras.find((r) => r.id === closestSource.id);
-          if (repeater) {
-            sourceName = getFormattedAntennaOrRepeaterName({
-              isMainAntenna: false,
-              type: repeater.type,
-              nome: repeater.nome,
-              altura: repeater.altura
-            });
-          }
-        }
+        const sourceName = getSignalSourceName(closestSource);
         labelHtml = `${escapeHtml(bombaName)}<br><span class="source-name-pivo">${escapeHtml(sourceName)}</span><br><span class="distancia-pivo">${escapeHtml(distanceLabel)}</span>`;
         hasSourceInfo = true;
         labelWidth = Math.max(labelWidth, sourceName.length * 6.5 + 15, distanceLabel.length * 6.5 + 15);

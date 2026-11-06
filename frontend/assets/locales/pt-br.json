@@ -221,6 +221,7 @@
         "session_not_started": "Sessão não iniciada. Carregue um KMZ ou reinicie a aplicação.",
         "nothing_to_export": "Nenhum dado elegível para exportação. Execute uma simulação antes.",
         "reevaluate_fail": "Falha ao reavaliar cobertura: {error}",
+        "coverage_images_missing": "A imagem de um estudo de sinal não está mais no servidor (ele pode ter reiniciado). Rode a simulação de novo para atualizar os pivôs.",
         "los_diagnostic_fail": "Falha no diagnóstico de visada para o alvo {name}.",
         "los_source_must_have_signal": "ORIGEM: selecione um alvo (pivô ou irripump) COM sinal.",
         "coordinate_input_empty": "Insira uma coordenada para buscar.",
@@ -423,6 +424,7 @@
         "toggle_coverage": "Ativar estudo de sinal de {name}",
         "enable_coverage": "Ativar estudo de sinal",
         "disable_coverage": "Desativar estudo de sinal",
-        "coverage_off_short": "desativado"
+        "coverage_off_short": "desativado",
+        "auto_name": "Usar nome automático"
     }
 }

@@ -115,6 +115,11 @@ def _get_formatted_entity_name_for_backend(
     Uses translator `t` to resolve entity names.
     `for_pdf=True` simplifies the name for the PDF report.
     """
+    # Nome digitado pelo usuário na "Estrutura do projeto" vale pra tudo.
+    nome_manual = str(entity_data.get("nome") or "").strip()
+    if entity_data.get("nome_manual") and nome_manual:
+        return nome_manual
+
     # Effective height: default to 5 m when mounted on a pivot and no height is provided.
     altura_valor = entity_data.get("altura")
     if entity_data.get("sobre_pivo") and (altura_valor is None or altura_valor == ""):

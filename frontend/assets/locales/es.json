@@ -221,6 +221,7 @@
       "session_not_started": "Sesión no iniciada. Cargue un KMZ o reinicie la aplicación.",
       "nothing_to_export": "No hay datos elegibles para exportar. Ejecute una simulación primero.",
       "reevaluate_fail": "Error al reevaluar la cobertura: {error}",
+      "coverage_images_missing": "La imagen de un estudio de señal ya no está en el servidor (puede haberse reiniciado). Vuelva a ejecutar la simulación para actualizar los pivotes.",
       "los_diagnostic_fail": "Diagnóstico de línea de visión fallido para el objetivo {name}.",
       "los_source_must_have_signal": "ORIGEN: seleccione un objetivo (pivote o irripump) CON señal.",
       "coordinate_input_empty": "Ingrese una coordenada para buscar.",
@@ -422,6 +423,7 @@
     "toggle_coverage": "Activar estudio de señal de {name}",
     "enable_coverage": "Activar estudio de señal",
     "disable_coverage": "Desactivar estudio de señal",
-    "coverage_off_short": "desactivado"
+    "coverage_off_short": "desactivado",
+    "auto_name": "Usar nombre automático"
   }
 }

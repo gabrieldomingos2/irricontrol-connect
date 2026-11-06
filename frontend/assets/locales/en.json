@@ -222,6 +222,7 @@
       "session_not_started": "Session not started. Load a KMZ or reset the application.",
       "nothing_to_export": "No data eligible for export. Run a simulation first.",
       "reevaluate_fail": "Failed to re-evaluate coverage: {error}",
+      "coverage_images_missing": "A signal study image is no longer on the server (it may have restarted). Run the simulation again to update the pivots.",
       "los_diagnostic_fail": "Line of sight diagnostic failed for target {name}.",
       "los_source_must_have_signal": "SOURCE: select a target (pivot or irripump) WITH signal.",
       "coordinate_input_empty": "Enter a coordinate to search.",
@@ -424,6 +425,7 @@
     "toggle_coverage": "Turn on signal study for {name}",
     "enable_coverage": "Turn on signal study",
     "disable_coverage": "Turn off signal study",
-    "coverage_off_short": "off"
+    "coverage_off_short": "off",
+    "auto_name": "Use automatic name"
   }
 }

@@ -221,6 +221,7 @@
       "session_not_started": "Sitzung nicht gestartet. Laden Sie eine KMZ oder setzen Sie die Anwendung zurück.",
       "nothing_to_export": "Keine exportierbaren Daten. Führen Sie zuerst eine Simulation durch.",
       "reevaluate_fail": "Fehler bei der Neubewertung der Abdeckung: {error}",
+      "coverage_images_missing": "Ein Bild der Signalstudie ist nicht mehr auf dem Server (er wurde evtl. neu gestartet). Simulation erneut ausführen, um die Pivots zu aktualisieren.",
       "los_diagnostic_fail": "Sichtliniendiagnose für Ziel {name} fehlgeschlagen.",
       "los_source_must_have_signal": "QUELLE: Wählen Sie ein Ziel (Pivot oder Irripump) MIT Signal.",
       "coordinate_input_empty": "Geben Sie eine Koordinate für die Suche ein.",
@@ -422,6 +423,7 @@
     "toggle_coverage": "Signalstudie für {name} aktivieren",
     "enable_coverage": "Signalstudie aktivieren",
     "disable_coverage": "Signalstudie deaktivieren",
-    "coverage_off_short": "aus"
+    "coverage_off_short": "aus",
+    "auto_name": "Automatischen Namen verwenden"
   }
 }
