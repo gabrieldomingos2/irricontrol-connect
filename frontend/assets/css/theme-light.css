@@ -264,6 +264,9 @@ html.theme-light #sidebar-left #resetar-btn {
 
 html.theme-light #sidebar-left #resetar-btn:hover { color: #B91C1C !important; }
 
+/* A linha em cima do "Resetar" é um ::before (style.css), não a borda do botão */
+html.theme-light #sidebar-left #resetar-btn::before { border-top-color: #E2E8E4 !important; }
+
 /* ---------- Estrutura do projeto ---------- */
 html.theme-light #project-tree {
   background: #FFFFFF !important;
