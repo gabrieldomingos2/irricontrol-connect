@@ -182,12 +182,9 @@ function ptItemHtml(item, group, simulated) {
     ? `<input type="text" class="pt-rename-input" maxlength="60" value="${escapeHtml(item.name)}" aria-label="${escapeHtml(ptT("rename_label", { name: item.name }))}" ${attrs}>`
     : `<span class="pt-name" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>`;
 
-  // Pivôs/irripumps: só a bolinha colorida (verde = com sinal, vermelha =
-  // sem sinal). O texto continua pra leitor de tela dentro da bolinha.
-  let statusText = "";
-  if ((item.kind === "central" || item.kind === "repeater") && item.hidden) {
-    statusText = `<span class="pt-meta">${escapeHtml(ptT("coverage_off_short"))}</span>`;
-  }
+  // Sem texto de status: pivôs/irripumps mostram só a bolinha colorida
+  // (texto fica pra leitor de tela) e central/repetidoras desligadas já
+  // aparecem com a caixinha desmarcada e o nome apagado.
 
   return `
     <div class="pt-row pt-row--item ${item.hidden ? "is-hidden" : ""} ${isEditing ? "is-editing" : ""} ${AppState.selectedPivoNome === item.key && item.kind === "pivot" ? "is-selected" : ""}"
@@ -195,7 +192,6 @@ function ptItemHtml(item, group, simulated) {
       ${visibility}
       ${ptStatusHtml(item, simulated)}
       ${nameHtml}
-      ${statusText}
     </div>
     ${isEditing ? `<div class="pt-edit-hint">${escapeHtml(ptT("rename_hint"))}</div>` : ""}`;
 }
