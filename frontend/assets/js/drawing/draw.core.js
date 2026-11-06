@@ -15,8 +15,8 @@ function escapeHtml(value) {
 }
 
 const TORRE_ICON_PATH = "assets/images/cloudrf.png";
-const BOMBA_ICON_AZUL_PATH = "assets/images/homegardenbusiness.png";
-const BOMBA_ICON_VERMELHO_PATH = "assets/images/homegardenbusiness-red.png";
+const BOMBA_ICON_AZUL_PATH = "assets/images/irripump.svg";
+const BOMBA_ICON_VERMELHO_PATH = "assets/images/irripump-red.svg";
 const ATTENTION_ICON_PATH = "assets/images/attention-icon-original.svg";
 const CHECK_ICON_PATH = "assets/images/circle-check-big.svg";
 const MOUNTAIN_ICON_PATH = "assets/images/attention-icon-original.svg";
