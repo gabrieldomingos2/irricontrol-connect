@@ -1,7 +1,7 @@
 // Bundle único (gerado por npm run build:js) com core.state.js, core.modes.js,
 // feature.los.js, feature.pivots.js, feature.repeaters.js e feature.project-tree.js, nessa ordem -
 // so carregado apos o login para nao pesar a tela inicial de quem nao logou.
-const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=30"];
+const MAIN_MODULE_SCRIPTS = ["dist/main-modules.bundle.js?v=31"];
 
 function loadMainScript(src) {
   return new Promise((resolve, reject) => {

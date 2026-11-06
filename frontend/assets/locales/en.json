@@ -426,6 +426,7 @@
     "enable_coverage": "Turn on signal study",
     "disable_coverage": "Turn off signal study",
     "coverage_off_short": "off",
-    "auto_name": "Use automatic name"
+    "auto_name": "Use automatic name",
+    "drag_hint": "Drag to reorder (or Alt + ↑/↓)"
   }
 }

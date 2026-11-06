@@ -21,6 +21,8 @@ const ProjectTree = {
   hiddenPivots: new Set(),
   hiddenTowers: new Set(), // customId dos candidatos (torres do KMZ) ocultos
   hiddenBombas: new Set(), // "lat|lon" dos irripumps ocultos (índice muda ao excluir)
+  groupOrder: null, // ordem das pastas escolhida pelo usuário (arrastar), salva no navegador
+  drag: null, // { type: "group"|"item", group, kind, key } enquanto arrasta
   editing: null, // { kind, key }
   renderQueued: false,
   menuEl: null
@@ -28,6 +30,7 @@ const ProjectTree = {
 
 const PT_STORAGE_KEY = "projectTreeOpen";
 const PT_RENAMABLE_KINDS = ["pivot", "bomba", "central", "repeater"];
+const PT_GROUP_ORDER_KEY = "projectTreeGroupOrder";
 
 function ptT(key, params) {
   return t(`project_tree.${key}`, params);
@@ -116,13 +119,27 @@ function ptGetGroups() {
 
   // visibility: "map" = mostrar/ocultar no mapa; "coverage" = ativar/
   // desativar o estudo de sinal (overlay + reavaliação dos pivôs).
-  return [
+  return ptApplyGroupOrder([
     { id: "pivots", label: ptT("group_pivots"), items: pivots, visibility: "map" },
     { id: "bombas", label: ptT("group_irripumps"), items: bombas, visibility: "map" },
     { id: "central", label: ptT("group_central"), items: central, visibility: "coverage" },
     { id: "repeaters", label: ptT("group_repeaters"), items: repeaters, visibility: "coverage" },
     { id: "towers", label: ptT("group_towers"), items: towers, visibility: "map" }
-  ];
+  ]);
+}
+
+function ptApplyGroupOrder(groups) {
+  const order = ProjectTree.groupOrder;
+  if (!Array.isArray(order) || order.length === 0) return groups;
+  const pos = (id) => {
+    const i = order.indexOf(id);
+    return i === -1 ? order.length : i;
+  };
+  return groups.map((g, i) => ({ g, i })).sort((a, b) => pos(a.g.id) - pos(b.g.id) || a.i - b.i).map((x) => x.g);
+}
+
+function ptGroupById(groups, id) {
+  return groups.find((g) => g.id === id) || { id, items: [] };
 }
 
 function ptBombaKey(bomba) {
@@ -186,9 +203,12 @@ function ptItemHtml(item, group, simulated) {
   // (texto fica pra leitor de tela) e central/repetidoras desligadas já
   // aparecem com a caixinha desmarcada e o nome apagado.
 
+  const draggable = ptCanDrag() && group.items.length > 1 && !isEditing;
+
   return `
     <div class="pt-row pt-row--item ${item.hidden ? "is-hidden" : ""} ${isEditing ? "is-editing" : ""} ${AppState.selectedPivoNome === item.key && item.kind === "pivot" ? "is-selected" : ""}"
-         role="treeitem" tabindex="0" ${attrs} data-renamable="${canRename ? "1" : "0"}">
+         role="treeitem" tabindex="0" ${attrs} data-group="${group.id}" data-renamable="${canRename ? "1" : "0"}" draggable="${draggable}"
+         ${draggable ? `title="${escapeHtml(ptT("drag_hint"))}"` : ""}>
       ${visibility}
       ${ptStatusHtml(item, simulated)}
       ${nameHtml}
@@ -211,7 +231,7 @@ function renderProjectTree() {
 
   const groups = ptGetGroups();
   const simulated = ptIsSimulated();
-  const pivots = groups[0].items;
+  const pivots = ptGroupById(groups, "pivots").items;
   const outCount = simulated ? pivots.filter((p) => p.fora).length : 0;
 
   // Faixa recolhida (contadores)
@@ -252,7 +272,7 @@ function renderProjectTree() {
 
     html += `
       <div class="pt-group" role="group">
-        <div class="pt-row pt-row--group">
+        <div class="pt-row pt-row--group" data-group="${group.id}" draggable="${ptCanDrag()}" ${ptCanDrag() ? `title="${escapeHtml(ptT("drag_hint"))}"` : ""}>
           <button type="button" class="pt-twisty" data-action="toggle-group" data-group="${group.id}" aria-expanded="${!isCollapsed}" aria-label="${escapeHtml(isCollapsed ? ptT("expand_group", { name: group.label }) : ptT("collapse_group", { name: group.label }))}">
             ${ptIcon(isCollapsed ? PT_ICONS.chevronRight : PT_ICONS.chevronDown, 14)}
           </button>
@@ -266,7 +286,18 @@ function renderProjectTree() {
       </div>`;
   });
 
+  // Redesenhar troca as linhas: guarda qual estava com foco (teclado) e
+  // devolve o foco pra mesma linha depois.
+  const active = document.activeElement;
+  const focusRow = listEl.contains(active) ? active.closest(".pt-row--item, .pt-row--group") : null;
+  const focusSel = !focusRow || active.matches(".pt-rename-input")
+    ? null
+    : focusRow.classList.contains("pt-row--group")
+      ? `.pt-row--group[data-group="${focusRow.dataset.group}"] ${active.matches(".pt-check") ? ".pt-check" : ".pt-twisty"}`
+      : `.pt-row--item[data-kind="${focusRow.dataset.kind}"][data-key="${CSS.escape(focusRow.dataset.key)}"]`;
+
   listEl.innerHTML = html || `<p class="pt-empty">${escapeHtml(ptT("no_results"))}</p>`;
+  focusSel && listEl.querySelector(focusSel)?.focus();
 
   // Checkbox do grupo "meio marcado" quando só parte dos itens está ligada.
   groups.forEach((group) => {
@@ -309,6 +340,184 @@ function setProjectTreeOpen(open) {
 // ---------------------------------------------------------------------
 // Ações
 // ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// Reordenar arrastando (igual "Lugares" do Google Earth)
+// - Pastas: arrasta o cabeçalho da pasta pra cima/baixo. Ordem salva no
+//   navegador e vale pros próximos projetos.
+// - Itens: arrasta dentro da MESMA pasta. Muda a ordem de verdade nos
+//   dados (vai assim pro KMZ/PDF). Teclado: Alt + seta pra cima/baixo.
+// Desligado durante busca, renomeação e no modo de edição de pivôs.
+// ---------------------------------------------------------------------
+function ptCanDrag() {
+  return !ProjectTree.query && !ProjectTree.editing && !AppState.modoEdicaoPivos;
+}
+
+function ptLoadGroupOrder() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PT_GROUP_ORDER_KEY) || "null");
+    ProjectTree.groupOrder = Array.isArray(saved) ? saved.filter((id) => typeof id == "string") : null;
+  } catch (e) {
+    ProjectTree.groupOrder = null;
+  }
+}
+
+function ptMoveGroup(groupId, targetId, after) {
+  if (groupId === targetId) return;
+  const ids = ptGetGroups().map((g) => g.id);
+  const from = ids.indexOf(groupId);
+  if (from === -1 || !ids.includes(targetId)) return;
+  ids.splice(from, 1);
+  ids.splice(ids.indexOf(targetId) + (after ? 1 : 0), 0, groupId);
+  ProjectTree.groupOrder = ids;
+  try { localStorage.setItem(PT_GROUP_ORDER_KEY, JSON.stringify(ids)); } catch (e) { /* storage indisponível */ }
+  renderProjectTree();
+}
+
+// Move o elemento `from` pra antes/depois de `target` no próprio array.
+function ptReorderArray(arr, from, target, after) {
+  if (!Array.isArray(arr) || from === target || from < 0 || target < 0) return false;
+  const [moved] = arr.splice(from, 1);
+  const targetNow = target > from ? target - 1 : target; // o alvo andou 1 se estava depois
+  arr.splice(targetNow + (after ? 1 : 0), 0, moved);
+  return true;
+}
+
+// Deixa `list` na mesma ordem de `reference` (casando por `same`).
+function ptSyncOrder(list, reference, same) {
+  if (!Array.isArray(list)) return;
+  const pos = (x) => {
+    const i = reference.findIndex((r) => same(r, x));
+    return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+  };
+  const sorted = list.map((x, i) => ({ x, i })).sort((a, b) => pos(a.x) - pos(b.x) || a.i - b.i).map((o) => o.x);
+  list.splice(0, list.length, ...sorted);
+}
+
+function ptMoveItem(groupId, fromKey, targetKey, after) {
+  if (fromKey === targetKey) return;
+  const kmz = AppState.currentProcessedKmzData;
+
+  if (groupId === "pivots") {
+    if (ptBlockedInEditMode()) return;
+    const arr = AppState.lastPivosDataDrawn || [];
+    const idx = (k) => arr.findIndex((p) => p.nome === k);
+    if (!ptReorderArray(arr, idx(fromKey), idx(targetKey), after)) return;
+    kmz?.pivos && ptSyncOrder(kmz.pivos, arr, (a, b) => a.nome === b.nome);
+    ptRedrawPivots();
+  } else if (groupId === "bombas") {
+    const arr = AppState.lastBombasDataDrawn || [];
+    if (!ptReorderArray(arr, Number(fromKey), Number(targetKey), after)) return;
+    kmz?.bombas && ptSyncOrder(kmz.bombas, arr, (a, b) => a.lat === b.lat && a.lon === b.lon);
+    drawBombas(arr);
+  } else if (groupId === "repeaters") {
+    const arr = AppState.repetidoras || [];
+    const idx = (k) => arr.findIndex((r) => String(r.id) === String(k));
+    if (!ptReorderArray(arr, idx(fromKey), idx(targetKey), after)) return;
+    // Lista do painel "Repetidoras" na mesma ordem (central continua em cima).
+    const list = document.getElementById("lista-repetidoras");
+    list && arr.forEach((r) => {
+      const el = document.getElementById(`rep-item-${r.id}`);
+      el && list.appendChild(el);
+    });
+  } else if (groupId === "towers") {
+    const arr = kmz?.antenas || [];
+    const idx = (k) => arr.findIndex((a) => ptTowerKey(a) === k);
+    if (!ptReorderArray(arr, idx(fromKey), idx(targetKey), after)) return;
+  } else {
+    return;
+  }
+  renderProjectTree();
+}
+
+function ptClearDropMarks() {
+  document.querySelectorAll("#pt-list .pt-drop-before, #pt-list .pt-drop-after, #pt-list .is-dragging")
+    .forEach((el) => el.classList.remove("pt-drop-before", "pt-drop-after", "is-dragging"));
+}
+
+// Linha onde o que está sendo arrastado pode cair (mesmo tipo / mesma pasta).
+function ptDropTarget(event) {
+  const drag = ProjectTree.drag;
+  if (!drag) return null;
+  const row = drag.type === "group"
+    ? event.target.closest(".pt-group")?.querySelector(".pt-row--group")
+    : event.target.closest(".pt-row--item");
+  if (!row) return null;
+  if (drag.type === "group") return row.dataset.group !== drag.group ? row : null;
+  return row.dataset.group === drag.group && row.dataset.key !== drag.key ? row : null;
+}
+
+function ptSetupDragAndDrop(list) {
+  list.addEventListener("dragstart", (event) => {
+    const row = event.target.closest?.('.pt-row[draggable="true"]');
+    if (!row || !ptCanDrag()) {
+      event.preventDefault();
+      return;
+    }
+    ptCloseMenu();
+    ProjectTree.drag = row.classList.contains("pt-row--group")
+      ? { type: "group", group: row.dataset.group }
+      : { type: "item", group: row.dataset.group, kind: row.dataset.kind, key: row.dataset.key };
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", row.dataset.key || row.dataset.group || "");
+    (ProjectTree.drag.type === "group" ? row.closest(".pt-group") : row).classList.add("is-dragging");
+  });
+
+  list.addEventListener("dragover", (event) => {
+    const target = ptDropTarget(event);
+    document.querySelectorAll("#pt-list .pt-drop-before, #pt-list .pt-drop-after")
+      .forEach((el) => el !== target && el.classList.remove("pt-drop-before", "pt-drop-after"));
+    if (!target) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    const rect = target.getBoundingClientRect();
+    const after = event.clientY > rect.top + rect.height / 2;
+    target.classList.toggle("pt-drop-after", after);
+    target.classList.toggle("pt-drop-before", !after);
+  });
+
+  list.addEventListener("drop", (event) => {
+    const target = ptDropTarget(event);
+    const drag = ProjectTree.drag;
+    if (!target || !drag) return;
+    event.preventDefault();
+    const after = target.classList.contains("pt-drop-after");
+    ProjectTree.drag = null;
+    ptClearDropMarks();
+    drag.type === "group"
+      ? ptMoveGroup(drag.group, target.dataset.group, after)
+      : ptMoveItem(drag.group, drag.key, target.dataset.key, after);
+  });
+
+  list.addEventListener("dragend", () => {
+    ProjectTree.drag = null;
+    ptClearDropMarks();
+  });
+}
+
+// Alt + seta: mesma coisa pelo teclado (acessibilidade).
+function ptMoveByKeyboard(row, direction) {
+  if (!ptCanDrag()) return false;
+  if (row.classList.contains("pt-row--group")) {
+    const ids = ptGetGroups().filter((g) => g.items.length > 0).map((g) => g.id);
+    const i = ids.indexOf(row.dataset.group);
+    const target = ids[i + direction];
+    if (!target) return false;
+    ptMoveGroup(row.dataset.group, target, direction > 0);
+    document.querySelector(`#pt-list .pt-row--group[data-group="${row.dataset.group}"] .pt-twisty`)?.focus();
+    return true;
+  }
+  const siblings = [...row.parentElement.querySelectorAll(".pt-row--item")];
+  const target = siblings[siblings.indexOf(row) + direction];
+  if (!target) return false;
+  const { kind, group } = row.dataset;
+  let key = row.dataset.key;
+  ptMoveItem(group, key, target.dataset.key, direction > 0);
+  // Irripumps são indexados pela posição: o índice muda junto.
+  group === "bombas" && (key = String(Number(key) + direction));
+  document.querySelector(`#pt-list .pt-row--item[data-kind="${kind}"][data-key="${CSS.escape(key)}"]`)?.focus();
+  return true;
+}
 
 function ptBlockedInEditMode() {
   if (AppState.modoEdicaoPivos) {
@@ -722,6 +931,8 @@ function setupProjectTree() {
   });
 
   const list = document.getElementById("pt-list");
+  ptLoadGroupOrder();
+  ptSetupDragAndDrop(list);
 
   list.addEventListener("click", (event) => {
     const twisty = event.target.closest('[data-action="toggle-group"]');
@@ -762,6 +973,13 @@ function setupProjectTree() {
       if (event.key === "Enter") { event.preventDefault(); ptCommitRename(input); }
       else if (event.key === "Escape") { event.preventDefault(); ptCancelRename(); }
       event.stopPropagation();
+      return;
+    }
+
+    // Alt + seta cima/baixo: reordena a pasta ou o item (igual arrastar).
+    if (event.altKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+      const movable = event.target.closest(".pt-row--item, .pt-row--group");
+      if (movable && ptMoveByKeyboard(movable, event.key === "ArrowUp" ? -1 : 1)) event.preventDefault();
       return;
     }
 

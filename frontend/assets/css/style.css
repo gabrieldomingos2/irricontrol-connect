@@ -1507,6 +1507,14 @@ label[for="arquivo"] {
   cursor: pointer !important;
 }
 
+/* Botão desativado (ex.: KMZ, Repetidoras, Exportar Relatório Completo
+   antes de simular): ícone de bloqueado em vez da mãozinha. Vale nos
+   dois temas. */
+button:disabled,
+.glass-button:disabled {
+  cursor: not-allowed !important;
+}
+
 /* ============================================================
     ✨ SUGESTÕES DE REPETIDORA (TOOLTIPS / MARCADORES)
    ============================================================ */
@@ -3266,3 +3274,34 @@ body.screenshot-mode .pt-menu {
 /* Estrutura do projeto: torre do KMZ oculta pela lista (marcador + rótulo).
    !important vence o style.display que updateLegendsVisibility() aplica. */
 .pt-layer-hidden { display: none !important; }
+
+/* Estrutura do projeto: arrastar pra reordenar pastas e itens
+   (feature.project-tree.js, ptSetupDragAndDrop). A linha verde mostra
+   onde o item vai cair. */
+.pt-row[draggable="true"] { cursor: grab; }
+.pt-row[draggable="true"]:active { cursor: grabbing; }
+.pt-row.is-dragging,
+.pt-group.is-dragging { opacity: 0.45; }
+.pt-row.pt-drop-before { box-shadow: inset 0 2px 0 #22c55e; }
+.pt-row.pt-drop-after { box-shadow: inset 0 -2px 0 #22c55e; }
+
+/* Aviso (mostrarMensagem, ui.js): fundo preto no tema escuro. A borda
+   colorida da esquerda (verde/vermelha/amarela) continua vindo do JS. */
+#mensagem.bg-gray-800\/90 {
+  background-color: #000;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Padrão dos botões verdes (igual ao "Executar Simulação"): #1fa957 e,
+   com o mouse por cima, #22c55e. O "Confirmar" da caixa de confirmação
+   vinha do Tailwind (bg-green-600 / hover:bg-green-500). */
+#custom-confirm-ok-btn {
+  background-color: #1fa957 !important;
+}
+
+#custom-confirm-ok-btn:hover {
+  background-color: #22c55e !important;
+}

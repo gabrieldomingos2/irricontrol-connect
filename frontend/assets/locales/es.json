@@ -424,6 +424,7 @@
     "enable_coverage": "Activar estudio de señal",
     "disable_coverage": "Desactivar estudio de señal",
     "coverage_off_short": "desactivado",
-    "auto_name": "Usar nombre automático"
+    "auto_name": "Usar nombre automático",
+    "drag_hint": "Arrastre para reordenar (o Alt + ↑/↓)"
   }
 }

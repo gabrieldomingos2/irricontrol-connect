@@ -424,6 +424,7 @@
     "enable_coverage": "Signalstudie aktivieren",
     "disable_coverage": "Signalstudie deaktivieren",
     "coverage_off_short": "aus",
-    "auto_name": "Automatischen Namen verwenden"
+    "auto_name": "Automatischen Namen verwenden",
+    "drag_hint": "Zum Sortieren ziehen (oder Alt + ↑/↓)"
   }
 }
