@@ -2865,4 +2865,402 @@ body.ep-resizing, body.ep-resizing * { cursor: ns-resize !important; user-select
   #sidebar-left #resetar-btn::before {
     width: calc(var(--sidebar-w, 330px) - 28px); /* padding 14px x 2 */
   }
+/* =====================================================================
+   🌳 ESTRUTURA DO PROJETO (desktop) — feature.project-tree.js
+   Faixa fina ao lado da sidebar; abre um painel com a árvore do KMZ.
+   Ocupa a mesma altura do mapa e empurra o #map-wrapper pro lado.
+   ===================================================================== */
+#project-tree {
+  display: none;
 }
+
+@media (min-width: 769px) {
+  :root {
+    --pt-w: 48px;
+  }
+
+  body.project-tree-open {
+    --pt-w: 340px;
+  }
+
+  #project-tree {
+    display: block;
+    position: absolute;
+    top: 3.5rem;
+    bottom: 3.5rem;
+    left: var(--sidebar-w, 350px);
+    width: var(--pt-w);
+    background: #000;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-family: Inter, system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  #map-wrapper {
+    left: calc(var(--sidebar-w, 350px) + var(--pt-w)) !important;
+  }
+
+  #opacity-control {
+    left: calc(var(--sidebar-w, 350px) + var(--pt-w) + 16px) !important;
+  }
+
+  /* Faixa recolhida */
+  .pt-strip {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+  }
+
+  body.project-tree-open .pt-strip { display: none; }
+  body:not(.project-tree-open) .pt-panel { display: none; }
+
+  .pt-strip-btn {
+    width: 36px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    color: #4ade80;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pt-strip-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #fff;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .pt-badge {
+    min-width: 26px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    display: grid;
+    place-items: center;
+  }
+
+  .pt-badge[hidden] { display: none; }
+
+  .pt-badge--out {
+    background: rgba(239, 68, 68, 0.18);
+    color: #fca5a5;
+  }
+
+  /* Painel aberto */
+  .pt-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .pt-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 12px 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .pt-header-icon { color: #4ade80; flex: none; }
+
+  .pt-title {
+    flex: 1;
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .pt-icon-btn {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .pt-icon-btn:hover {
+    color: #4ade80;
+    border-color: rgba(34, 197, 94, 0.45);
+  }
+
+  .pt-search {
+    margin: 10px 12px 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #000;
+    color: #fff;
+  }
+
+  .pt-search:focus-within { border-color: #22c55e; }
+
+  .pt-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font: 15px Inter, system-ui, sans-serif;
+    outline: none;
+  }
+
+  .pt-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .pt-file svg { color: #4ade80; flex: none; }
+
+  .pt-file span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pt-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 8px 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #22c55e #000;
+  }
+
+  .pt-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 0 8px;
+    border-radius: 6px;
+    font-size: 15px;
+    color: #fff;
+  }
+
+  .pt-row--group { padding-left: 4px; }
+  .pt-children { padding-left: 28px; }
+
+  .pt-row--item { cursor: pointer; }
+  .pt-row--item:hover { background: rgba(255, 255, 255, 0.08); }
+
+  .pt-row--item:focus-visible {
+    outline: 2px solid #22c55e;
+    outline-offset: -2px;
+  }
+
+  .pt-row--item.is-selected {
+    background: rgba(34, 197, 94, 0.14);
+    box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.5);
+  }
+
+  .pt-row--item.is-editing {
+    background: rgba(255, 255, 255, 0.05);
+    cursor: default;
+  }
+
+  .pt-row--item.is-hidden .pt-name { color: rgba(255, 255, 255, 0.5); }
+
+  .pt-twisty {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+  }
+
+  .pt-twisty:hover { color: #fff; }
+
+  .pt-check {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    accent-color: #22c55e;
+    flex: none;
+  }
+
+  .pt-check-spacer { width: 17px; flex: none; }
+
+  .pt-group-name { flex: 1; font-weight: 700; color: #fff; }
+
+  .pt-count {
+    font-size: 13px;
+    color: #fff;
+  }
+
+  .pt-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .pt-dot--ok { background: #4ade80; }
+  .pt-dot--out { border: 2px solid #f87171; box-sizing: border-box; }
+  .pt-dot--idle { background: rgba(255, 255, 255, 0.55); }
+
+  .pt-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pt-meta {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+  }
+
+  .pt-meta--out { color: #f87171; }
+
+  .pt-rename-input {
+    flex: 1;
+    min-width: 0;
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid #22c55e;
+    background: #000;
+    color: #fff;
+    font: 500 15px Inter, system-ui, sans-serif;
+    padding: 0 6px;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  }
+
+  .pt-edit-hint {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 2px 8px 6px 48px;
+  }
+
+  .pt-empty {
+    margin: 16px 8px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 1.5;
+  }
+
+  /* Dica do rodapé ("Duplo clique ou F2…") removida a pedido. */
+  .pt-footer { display: none; }
+}
+
+/* Telas desktop menores: mesma altura do mapa (ver regra do map-wrapper
+   em "RESPONSIVO GERAL") e painel um pouco mais estreito. */
+@media (min-width: 769px) and (max-width: 1366px) {
+  #project-tree {
+    top: 3rem;
+    bottom: 2.5rem;
+  }
+
+  body.project-tree-open {
+    --pt-w: 300px;
+  }
+}
+
+/* Menu do botão direito (fica no body, fora do painel) */
+.pt-menu {
+  position: fixed;
+  z-index: 10002;
+  min-width: 200px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.pt-menu-item {
+  height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pt-menu-item:hover,
+.pt-menu-item:focus-visible {
+  background: rgba(34, 197, 94, 0.18);
+  color: #4ade80;
+  outline: none;
+}
+
+.pt-menu-item kbd {
+  font: 500 13px Inter, system-ui, sans-serif;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pt-menu-item--danger { color: #f87171; }
+
+.pt-menu-item--danger:hover,
+.pt-menu-item--danger:focus-visible {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.pt-menu-sep {
+  height: 1px;
+  margin: 4px 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pt-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+body.screenshot-mode #project-tree,
+body.screenshot-mode .pt-menu {
+  display: none !important;
+}
+
+/* Estrutura do projeto: torre do KMZ oculta pela lista (marcador + rótulo).
+   !important vence o style.display que updateLegendsVisibility() aplica. */
+.pt-layer-hidden { display: none !important; }

@@ -39,6 +39,7 @@ const BUNDLES = [
       "assets/js/main/feature.elevation-profile.js",
       "assets/js/main/feature.pivots.js",
       "assets/js/main/feature.repeaters.js",
+      "assets/js/main/feature.project-tree.js",
     ],
   },
 ];
