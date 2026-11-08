@@ -131,6 +131,8 @@
         }
     },
   "tooltips": {
+    "theme_to_light": "Use light theme",
+    "theme_to_dark": "Use dark theme",
     "out_of_signal": "Out of Signal",
     "in_signal": "In Signal",
     "show_hide_coverage": "Show/Hide Coverage",

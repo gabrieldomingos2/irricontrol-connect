@@ -407,7 +407,17 @@ function ptMoveItem(groupId, fromKey, targetKey, after) {
     ptRedrawPivots();
   } else if (groupId === "bombas") {
     const arr = AppState.lastBombasDataDrawn || [];
-    if (!ptReorderArray(arr, Number(fromKey), Number(targetKey), after)) return;
+    const from = Number(fromKey), to = Number(targetKey);
+    if (!arr[from] || !arr[to]) return;
+    // Bomba sem nome é rotulada pela posição ("Irripump 03"); fixa o nome atual
+    // antes de mover, senão o rótulo fica no lugar e as bombas trocam de nome.
+    arr.forEach((b, i) => { if (!b.nome) b.nome = ptBombaName(b, i); });
+    kmz?.bombas?.forEach((kb) => {
+      if (kb.nome) return;
+      const m = arr.find((b) => b.lat === kb.lat && b.lon === kb.lon);
+      m && (kb.nome = m.nome);
+    });
+    if (!ptReorderArray(arr, from, to, after)) return;
     kmz?.bombas && ptSyncOrder(kmz.bombas, arr, (a, b) => a.lat === b.lat && a.lon === b.lon);
     drawBombas(arr);
   } else if (groupId === "repeaters") {

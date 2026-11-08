@@ -26,6 +26,7 @@ function buildElevationProfileUI() {
     <div class="ep-header">
       <div id="ep-stats"></div>
       <div class="ep-actions">
+        <span id="ep-loading" aria-live="polite"></span>
         <button type="button" id="ep-new" data-i18n="elevation_profile.new_path">${t("elevation_profile.new_path")}</button>
         <button type="button" id="ep-clear" data-i18n="elevation_profile.clear">${t("elevation_profile.clear")}</button>
       </div>
@@ -97,10 +98,9 @@ function setupElevationPanelResize() {
   handle.addEventListener("dblclick", () => { setElevationPanelHeight(EP_PANEL_DEFAULT, true); relayout(); });
 }
 
-let _epLastLength = 0;
-function updateElevationProfileLength(meters) {
-  if (typeof meters == "number") _epLastLength = meters;
-}
+// Vários tiles podem falhar de uma vez: mostra o aviso no máximo 1x a cada 10 s.
+const EP_TILE_ERROR_TOAST_MS = 10000;
+let _epLastTileErrorToast = 0;
 
 function ensureElevationProfileTool() {
   if (elevationProfileTool) return elevationProfileTool;
@@ -109,7 +109,6 @@ function ensureElevationProfileTool() {
   elevationProfileTool = new ElevationProfile.ElevationPathTool(map, {
     canvas: document.getElementById("ep-canvas"),
     statsEl: document.getElementById("ep-stats"),
-    onLength: (m) => updateElevationProfileLength(m),
     onState: (s) => {
       if ("loading" in s) {
         const el = document.getElementById("ep-loading");
@@ -120,6 +119,9 @@ function ensureElevationProfileTool() {
     terrainOptions: {
       onError: (key, err) => {
         console.warn("Perfil de elevação: tile de terreno falhou", key, err);
+        const now = Date.now();
+        if (now - _epLastTileErrorToast < EP_TILE_ERROR_TOAST_MS) return;
+        _epLastTileErrorToast = now;
         typeof mostrarMensagem == "function" && mostrarMensagem(t("elevation_profile.tile_error"), "erro");
       },
     },

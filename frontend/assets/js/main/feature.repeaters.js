@@ -604,6 +604,7 @@ async function handleDownloadActivePngsClick() {
       lon: AppState.antenaGlobal.lon,
       altura: AppState.antenaGlobal.altura,
       altura_receiver: AppState.antenaGlobal.altura_receiver,
+      nome_manual: !!AppState.antenaGlobal.nome_manual,
       type: AppState.antenaGlobal.type || "default"
     };
     imagemFilename = AppState.antenaGlobal.imagem_filename;
@@ -617,7 +618,8 @@ async function handleDownloadActivePngsClick() {
       imagem: rep.imagem_filename,
       altura: rep.altura,
       sobre_pivo: rep.sobre_pivo,
-      nome: rep.is_from_kmz ? rep.nome : null,
+      nome: rep.is_from_kmz || rep.nome_manual ? rep.nome : null,
+      nome_manual: !!rep.nome_manual,
       type: rep.type || "default"
     });
   });

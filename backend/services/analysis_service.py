@@ -94,6 +94,7 @@ def _check_coverage_sync(
                 len(entities), len(signal_sources))
     imagens_abertas_cache: Dict[Path, Image.Image] = {}
     entities_atualizadas: List[Dict[str, Any]] = []
+    sem_sinal = 0
 
     PROXIMITY_THRESHOLD_METERS = 20.0
 
@@ -164,9 +165,11 @@ def _check_coverage_sync(
 
             entity_data_atualizado["fora"] = not coberto
             if not coberto:
-                # Mostra no log do uvicorn POR QUE ficou sem sinal (imagem que
-                # não achou, pixel transparente etc.) - facilita achar bug.
-                logger.info("  -> '%s' sem sinal (%.6f, %.6f): %s",
+                # Mostra no log POR QUE ficou sem sinal (imagem que não achou,
+                # pixel transparente etc.). Em DEBUG pra não inundar o log do
+                # Render a cada liga/desliga de cobertura; o total vai em INFO.
+                sem_sinal += 1
+                logger.debug("  -> '%s' sem sinal (%.6f, %.6f): %s",
                             entity_data.get("nome", "<sem nome>"), lat, lon,
                             "; ".join(motivos) or "nenhum overlay enviado")
             entities_atualizadas.append(entity_data_atualizado)
@@ -177,7 +180,8 @@ def _check_coverage_sync(
             except Exception:
                 pass
 
-    logger.info("  -> (Thread) Concluída verificação de %d entidades.", len(entities))
+    logger.info("  -> (Thread) Concluída verificação de %d entidades (%d sem sinal).",
+                len(entities), sem_sinal)
     return entities_atualizadas
 
 

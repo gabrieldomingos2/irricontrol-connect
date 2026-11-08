@@ -41,7 +41,16 @@
       this.maxTiles = opts.maxTiles ?? 600;
       this.tiles = new Map(); // "x/y" -> Float32Array(256*256)
       this.pending = new Map(); // "x/y" -> Promise
+      this.failed = new Map(); // "x/y" -> horário da falha (tile está "zerado" provisoriamente)
+      this.retryMs = opts.retryMs ?? 15000;
       this.onError = opts.onError || null;
+    }
+
+    /** Tile utilizável: carregado e, se for um "zero" de falha, ainda dentro do intervalo de nova tentativa. */
+    _fresh(key) {
+      if (!this.tiles.has(key)) return false;
+      const t = this.failed.get(key);
+      return t === undefined || Date.now() - t < this.retryMs;
     }
 
     _pixel(lat, lon) {
@@ -65,12 +74,12 @@
 
     missing(keys) {
       const out = [];
-      keys.forEach((k) => !this.tiles.has(k) && out.push(k));
+      keys.forEach((k) => !this._fresh(k) && out.push(k));
       return out;
     }
 
     load(key) {
-      if (this.tiles.has(key)) return Promise.resolve();
+      if (this._fresh(key)) return Promise.resolve();
       if (this.pending.has(key)) return this.pending.get(key);
       const [x, y] = key.split("/").map(Number);
       const p = fetch(this.url(this.zoom, x, y))
@@ -87,11 +96,14 @@
           const px = ctx.getImageData(0, 0, 256, 256).data;
           const arr = new Float32Array(256 * 256);
           for (let i = 0, j = 0; i < arr.length; i++, j += 4) arr[i] = this.decode(px[j], px[j + 1], px[j + 2]);
+          this.failed.delete(key);
           this._store(key, arr);
         })
         .catch((err) => {
-          // Tile com erro vira "zero" pra não travar a ferramenta, mas avisa.
-          this._store(key, new Float32Array(256 * 256));
+          // Tile com erro vira "zero" provisório pra não travar a ferramenta;
+          // depois de retryMs ele volta a ser baixado. Avisa quem usa.
+          if (!this.tiles.has(key)) this._store(key, new Float32Array(256 * 256));
+          this.failed.set(key, Date.now());
           this.onError && this.onError(key, err);
         })
         .finally(() => this.pending.delete(key));
@@ -101,7 +113,11 @@
 
     _store(key, arr) {
       this.tiles.set(key, arr);
-      if (this.tiles.size > this.maxTiles) this.tiles.delete(this.tiles.keys().next().value);
+      if (this.tiles.size > this.maxTiles) {
+        const old = this.tiles.keys().next().value;
+        this.tiles.delete(old);
+        this.failed.delete(old);
+      }
     }
 
     ensure(keys) {
@@ -531,6 +547,9 @@
       this._onMove = (e) => { if (this.drawing && this.vertices.length) { this.preview = e.latlng; this._refreshGeometry(false); this.schedule(); } };
       this._onKey = (e) => {
         if (!this.drawing) return;
+        // Não rouba teclas de campos de texto (busca de coordenadas, renomear, etc.).
+        const el = e.target;
+        if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
         if (e.key === "Escape" || e.key === "Enter") this.finish();
         if (e.key === "Backspace" && this.vertices.length) { e.preventDefault(); this.vertices.pop(); this._rebuild(); }
       };
@@ -684,7 +703,7 @@
     _update() {
       const path = this._pathForProfile();
       if (path.length < 2 || this._length(path) < 1) {
-        this.profile = null; this.chart.setData(null); this._renderStats(); return;
+        this.profile = null; this.selection = null; this.chart.setData(null); this._drawSelection(); this._renderStats(); return;
       }
       const pos = samplePositions(path);
       const keys = this.terrain.keysFor(pos.lat, pos.lon);
@@ -703,8 +722,9 @@
       this.profile = p;
       const o = this.linkOpts;
       this.link = o.enabled ? computeLink(p, o) : null;
-      if (this.selection && this.selection[1] >= p.n) this.selection = null;
       this.chart.setData(p, this.link, o.enabled ? o.clutter : 0);
+      // O gráfico descarta a seleção quando o nº de amostras muda; acompanha ele.
+      if (this.selection && (!this.chart.sel || this.selection[1] >= p.n)) this.selection = null;
       if (this.hoverMarker) this._showHover(this.chart.cursor);
       this._drawSelection();
       this._renderStats();

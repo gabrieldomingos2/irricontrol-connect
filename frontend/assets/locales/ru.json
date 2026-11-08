@@ -130,6 +130,8 @@
         }
     },
   "tooltips": {
+    "theme_to_light": "Светлая тема",
+    "theme_to_dark": "Тёмная тема",
     "out_of_signal": "Нет Сигнала",
     "in_signal": "Есть Сигнал",
     "show_hide_coverage": "Показать/Скрыть Покрытие",

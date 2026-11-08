@@ -130,6 +130,8 @@
         }
     },
   "tooltips": {
+    "theme_to_light": "Usar tema claro",
+    "theme_to_dark": "Usar tema oscuro",
     "out_of_signal": "Sin Señal",
     "in_signal": "Con Señal",
     "show_hide_coverage": "Mostrar/Ocultar Cobertura",

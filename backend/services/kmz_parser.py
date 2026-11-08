@@ -108,11 +108,15 @@ def ponto_central_da_reta_maior(
     n = len(pts)
     best = -1.0
     best_i, best_j = 0, 1
-    bloco = 512
+    # Bloco limitado pelo nº de vértices: cada passo aloca ~3 matrizes
+    # bloco x n (float64), então ~1M células = ~24 MB, mesmo em polígonos
+    # enormes (a instância do Render tem só 512 MB).
+    bloco = max(1, min(512, 1_000_000 // n))
+    lat_all, lon_all = pts[:, 0], pts[:, 1]
     for ini in range(0, n - 1, bloco):
         fim = min(ini + bloco, n - 1)
-        diff = pts[ini:fim, None, :] - pts[None, :, :]
-        d2 = (diff ** 2).sum(axis=2)
+        d2 = (pts[ini:fim, 0, None] - lat_all[None, :]) ** 2
+        d2 += (pts[ini:fim, 1, None] - lon_all[None, :]) ** 2
         # só j > i (triângulo superior), igual ao loop original
         linhas = np.arange(ini, fim)[:, None]
         d2[np.arange(n)[None, :] <= linhas] = -1.0
