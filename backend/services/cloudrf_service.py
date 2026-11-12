@@ -1,8 +1,9 @@
 # backend/services/cloudrf_service.py
 
 import asyncio
-import json
 import hashlib
+import importlib.util
+import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -36,13 +37,12 @@ async def get_http_client() -> httpx.AsyncClient:
     kwargs: Dict[str, Any] = {"timeout": _timeout(), "limits": _limits()}
 
     if want_h2:
-        try:
-            import h2  # noqa: F401
-            kwargs["http2"] = True
-        except Exception:
+        # find_spec checa se o pacote existe sem importar (o Pylance não reclama)
+        has_h2 = importlib.util.find_spec("h2") is not None
+        if not has_h2:
             logger.warning('HTTP/2 ativado mas pacote "h2" ausente. Fallback para HTTP/1.1. '
-                            'Dica: pip install "httpx[http2]"')
-            kwargs["http2"] = False
+                           'Dica: pip install "httpx[http2]"')
+        kwargs["http2"] = has_h2
 
     return httpx.AsyncClient(**kwargs)
 
@@ -222,7 +222,13 @@ async def run_cloudrf_simulation(
     tpl = settings.obter_template(template_id)
     rx_alt = altura_receiver if altura_receiver is not None else tpl.receiver.alt
 
-    cache_key_string = f"lat:{lat:.6f}-lon:{lon:.6f}-alt:{altura}-rx_alt:{rx_alt}-tpl:{template_id}"
+    # Os parâmetros do template entram na chave: se alguém mudar rxs/txw/
+    # ganho/cores em templates.py, o cache antigo (com o valor velho) deixa
+    # de ser reaproveitado em vez de devolver uma cobertura desatualizada.
+    tpl_fingerprint = hashlib.sha256(tpl.model_dump_json().encode()).hexdigest()[:16]
+    cache_key_string = (
+        f"lat:{lat:.6f}-lon:{lon:.6f}-alt:{altura}-rx_alt:{rx_alt}-tpl:{template_id}-cfg:{tpl_fingerprint}"
+    )
     cache_hash = hashlib.sha256(cache_key_string.encode()).hexdigest()
     cache_file_path = settings.SIMULATIONS_CACHE_PATH / f"{cache_hash}.json"
 

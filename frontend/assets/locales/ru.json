@@ -1,5 +1,14 @@
 {
   "ui": {
+  "themes": {
+      "system": "Системная (авто)",
+      "dark": "Тёмная",
+      "graphite": "Графит",
+      "ocean": "Ночной синий",
+      "light": "Светлая",
+      "sand": "Песочная",
+      "field": "Яркое солнце (высокий контраст)"
+  },
     "titles": {
       "main": "Irricontrol: Симулятор Сигнала",
       "data_panel": "Панель Данных",
@@ -39,6 +48,7 @@
     },
     "labels": {
       "language": "Язык",
+      "theme": "Тема",
       "tools": "Анализ",
       "legends_group": "Слои",
       "draw_group": "Рисовать",
@@ -130,8 +140,6 @@
         }
     },
   "tooltips": {
-    "theme_to_light": "Светлая тема",
-    "theme_to_dark": "Тёмная тема",
     "out_of_signal": "Нет Сигнала",
     "in_signal": "Есть Сигнал",
     "show_hide_coverage": "Показать/Скрыть Покрытие",

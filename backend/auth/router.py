@@ -55,9 +55,11 @@ async def login(payload: LoginRequest, request: Request, background_tasks: Backg
             headers={"Retry-After": str(access_log.LOGIN_RATE_LIMIT_WINDOW_MINUTES * 60)},
         )
 
-    success = secrets.compare_digest(payload.username, settings.AUTH_ADMIN_USER) and secrets.compare_digest(
-        payload.password, settings.AUTH_ADMIN_PASSWORD
-    )
+    # compare_digest com str dá TypeError (500) se tiver acento/ç ("joão",
+    # "senha€"): compara em bytes UTF-8, que aceita qualquer caractere.
+    user_ok = secrets.compare_digest(payload.username.encode("utf-8"), settings.AUTH_ADMIN_USER.encode("utf-8"))
+    pass_ok = secrets.compare_digest(payload.password.encode("utf-8"), settings.AUTH_ADMIN_PASSWORD.encode("utf-8"))
+    success = user_ok and pass_ok
 
     access_log.record_login(ip=ip, user_agent=user_agent, username=payload.username, success=success)
     background_tasks.add_task(access_log.ensure_ip_location, ip)

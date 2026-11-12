@@ -1,5 +1,14 @@
 {
   "ui": {
+  "themes": {
+      "system": "Sistema (automático)",
+      "dark": "Oscuro",
+      "graphite": "Grafito",
+      "ocean": "Azul nocturno",
+      "light": "Claro",
+      "sand": "Arena",
+      "field": "Sol fuerte (alto contraste)"
+  },
     "titles": {
       "main": "Irricontrol: Simulador de Señal",
       "data_panel": "Panel de Datos",
@@ -39,6 +48,7 @@
     },
     "labels": {
       "language": "Idioma",
+      "theme": "Tema",
       "tools": "Análisis",
       "legends_group": "Capas",
       "draw_group": "Dibujar",
@@ -130,8 +140,6 @@
         }
     },
   "tooltips": {
-    "theme_to_light": "Usar tema claro",
-    "theme_to_dark": "Usar tema oscuro",
     "out_of_signal": "Sin Señal",
     "in_signal": "Con Señal",
     "show_hide_coverage": "Mostrar/Ocultar Cobertura",

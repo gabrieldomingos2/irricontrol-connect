@@ -1,5 +1,14 @@
 {
     "ui": {
+    "themes": {
+        "system": "Sistema (automático)",
+        "dark": "Escuro",
+        "graphite": "Grafite",
+        "ocean": "Azul noturno",
+        "light": "Claro",
+        "sand": "Areia",
+        "field": "Sol forte (alto contraste)"
+    },
     "titles": {
         "main": "Irricontrol: Simulador de Sinal",
         "data_panel": "Painel de Dados",
@@ -39,6 +48,7 @@
     },
     "labels": {
         "language": "Idioma",
+        "theme": "Tema",
         "tools": "Análise",
         "legends_group": "Camadas",
         "draw_group": "Desenhar",
@@ -130,8 +140,6 @@
     }
 },
     "tooltips": {
-        "theme_to_light": "Usar tema claro",
-        "theme_to_dark": "Usar tema escuro",
         "out_of_signal": "Fora de Sinal",
         "in_signal": "Com Sinal",
         "show_hide_coverage": "Mostrar/Esconder Cobertura",
