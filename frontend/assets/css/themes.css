@@ -1,0 +1,764 @@
+/* =====================================================================
+   🎨 TEMAS — assets/js/theme.js escolhe o tema e marca o <html>:
+     data-theme="<id>"  → qual paleta (variáveis --sk-* logo abaixo)
+     .theme-skin        → qualquer tema que NÃO seja o escuro padrão
+     .theme-light       → família clara (inverte as logos, color-scheme)
+   O escuro padrão continua sendo o style.css puro (sem .theme-skin).
+   O mapa, a cobertura, os círculos dos pivôs e os rótulos brancos com
+   sombra NÃO mudam (ficam sobre a imagem de satélite).
+
+   Pra criar um tema novo:
+     1. copie um bloco html[data-theme="..."] abaixo e troque as cores;
+     2. adicione o id em THEMES (theme.js) e o botão no menu (index.html);
+     3. adicione "ui.themes.<id>" nos 5 arquivos de idioma.
+   Contraste: texto/muted devem passar 4.5:1 sobre --sk-bg e --sk-card.
+   ===================================================================== */
+
+/* ---------- Paletas ---------- */
+
+/* ☀️ Claro (o tema claro que já existia, mesmas cores) */
+html[data-theme="light"] {
+  --sk-scheme: light;
+  --sk-bg: #FFFFFF;           --sk-card: #F7F9F8;
+  --sk-hover: #F0F3F1;        --sk-subtle: #EEF1EF;
+  --sk-border: #E2E8E4;       --sk-field-border: #D5DDD8;
+  --sk-text: #0F1A14;         --sk-text-2: #3F4D45;
+  --sk-muted: #5B6B62;        --sk-faint: #8A988F;
+  --sk-dot-idle: #A3B0A8;     --sk-scroll: #B7C3BC;   --sk-track: #C9D3CD;
+  --sk-accent: #15803D;       --sk-accent-bg: #E8F5EC;
+  --sk-accent-bg-2: #F0F9F3;  --sk-accent-border: #86C99B;
+  --sk-accent-ring: rgba(21, 128, 61, 0.15);
+  --sk-btn: #1fa957;          --sk-btn-hover: #22c55e;  --sk-on-accent: #FFFFFF;
+  --sk-ok: #16A34A;
+  --sk-danger: #B91C1C;       --sk-danger-strong: #991B1B;
+  --sk-danger-bg: #FEF2F2;    --sk-danger-bg-2: #FDE2E2;
+  --sk-danger-border: #F3C4C4; --sk-danger-dot: #DC2626;
+  --sk-warn: #B45309;         --sk-warn-border: #D97706;
+  --sk-shadow-color: rgba(15, 26, 20, 0.15);
+  --sk-shadow-color-soft: rgba(15, 26, 20, 0.12);
+  --sk-shadow-color-strong: rgba(15, 26, 20, 0.2);
+  --sk-overlay: rgba(15, 26, 20, 0.35);
+}
+
+/* 🏜️ Areia — claro quente, cansa menos a vista que o branco puro */
+html[data-theme="sand"] {
+  --sk-scheme: light;
+  --sk-bg: #FBF7EF;           --sk-card: #F4EEE2;
+  --sk-hover: #EFE7D8;        --sk-subtle: #EAE2D2;
+  --sk-border: #E2D7C3;       --sk-field-border: #D3C4A9;
+  --sk-text: #2B2418;         --sk-text-2: #4F4433;
+  --sk-muted: #6B5E48;        --sk-faint: #978A72;
+  --sk-dot-idle: #B5A88F;     --sk-scroll: #C9BBA0;   --sk-track: #D3C4A9;
+  --sk-accent: #3A6F25;       --sk-accent-bg: #E9F0DA;
+  --sk-accent-bg-2: #F0F4E4;  --sk-accent-border: #A9C48A;
+  --sk-accent-ring: rgba(58, 111, 37, 0.18);
+  --sk-btn: #3D8B35;          --sk-btn-hover: #4A9E40;  --sk-on-accent: #FFFFFF;
+  --sk-ok: #4D8B31;
+  --sk-danger: #A3311D;       --sk-danger-strong: #832513;
+  --sk-danger-bg: #FAECE4;    --sk-danger-bg-2: #F5DACD;
+  --sk-danger-border: #E9C0AE; --sk-danger-dot: #C2410C;
+  --sk-warn: #8F530A;         --sk-warn-border: #C77D16;
+  --sk-shadow-color: rgba(60, 45, 20, 0.15);
+  --sk-shadow-color-soft: rgba(60, 45, 20, 0.12);
+  --sk-shadow-color-strong: rgba(60, 45, 20, 0.2);
+  --sk-overlay: rgba(43, 36, 24, 0.35);
+}
+
+/* 🌞 Sol forte — claro de alto contraste, pra usar no campo com sol na tela */
+html[data-theme="field"] {
+  --sk-scheme: light;
+  --sk-bg: #FFFFFF;           --sk-card: #F2F4F3;
+  --sk-hover: #E6EAE8;        --sk-subtle: #E2E6E4;
+  --sk-border: #8F9994;       --sk-field-border: #5F6A64;
+  --sk-text: #000000;         --sk-text-2: #101913;
+  --sk-muted: #2B3630;        --sk-faint: #46524B;
+  --sk-dot-idle: #5F6A64;     --sk-scroll: #5F6A64;   --sk-track: #5F6A64;
+  --sk-accent: #0A5527;       --sk-accent-bg: #D3EEDC;
+  --sk-accent-bg-2: #E4F5EA;  --sk-accent-border: #0A5527;
+  --sk-accent-ring: rgba(10, 85, 39, 0.35);
+  --sk-btn: #0B6B2F;          --sk-btn-hover: #0A5527;  --sk-on-accent: #FFFFFF;
+  --sk-ok: #0B6B2F;
+  --sk-danger: #990D0D;       --sk-danger-strong: #760909;
+  --sk-danger-bg: #FDE6E6;    --sk-danger-bg-2: #F9CDCD;
+  --sk-danger-border: #B93C3C; --sk-danger-dot: #B91C1C;
+  --sk-warn: #723F00;         --sk-warn-border: #A34B05;
+  --sk-shadow-color: rgba(0, 0, 0, 0.25);
+  --sk-shadow-color-soft: rgba(0, 0, 0, 0.2);
+  --sk-shadow-color-strong: rgba(0, 0, 0, 0.3);
+  --sk-overlay: rgba(0, 0, 0, 0.45);
+}
+
+/* 🪨 Grafite — escuro neutro, menos "preto total" que o padrão */
+html[data-theme="graphite"] {
+  --sk-scheme: dark;
+  --sk-bg: #1C1F23;           --sk-card: #24282D;
+  --sk-hover: #2C3137;        --sk-subtle: #30353B;
+  --sk-border: #3A4047;       --sk-field-border: #4A515A;
+  --sk-text: #E8EAED;         --sk-text-2: #C3C8CE;
+  --sk-muted: #9AA1A9;        --sk-faint: #737A82;
+  --sk-dot-idle: #5F666E;     --sk-scroll: #4A515A;   --sk-track: #4A515A;
+  --sk-accent: #4ADE80;       --sk-accent-bg: #1F3328;
+  --sk-accent-bg-2: #1E2D25;  --sk-accent-border: #2F7A4B;
+  --sk-accent-ring: rgba(74, 222, 128, 0.25);
+  --sk-btn: #1fa957;          --sk-btn-hover: #22c55e;  --sk-on-accent: #FFFFFF;
+  --sk-ok: #22C55E;
+  --sk-danger: #F87171;       --sk-danger-strong: #FCA5A5;
+  --sk-danger-bg: #3A2224;    --sk-danger-bg-2: #4A2A2D;
+  --sk-danger-border: #6B3438; --sk-danger-dot: #EF4444;
+  --sk-warn: #FBBF24;         --sk-warn-border: #F59E0B;
+  --sk-shadow-color: rgba(0, 0, 0, 0.45);
+  --sk-shadow-color-soft: rgba(0, 0, 0, 0.35);
+  --sk-shadow-color-strong: rgba(0, 0, 0, 0.55);
+  --sk-overlay: rgba(0, 0, 0, 0.55);
+}
+
+/* 🌊 Azul noturno — escuro azulado, o verde da marca continua nos destaques */
+html[data-theme="ocean"] {
+  --sk-scheme: dark;
+  --sk-bg: #0B1626;           --sk-card: #102036;
+  --sk-hover: #152A45;        --sk-subtle: #18304D;
+  --sk-border: #213C5E;       --sk-field-border: #2C4B72;
+  --sk-text: #E6EEF8;         --sk-text-2: #BBCBE0;
+  --sk-muted: #8FA5C2;        --sk-faint: #6A82A3;
+  --sk-dot-idle: #4F6788;     --sk-scroll: #2C4B72;   --sk-track: #2C4B72;
+  --sk-accent: #4ADE80;       --sk-accent-bg: #12332F;
+  --sk-accent-bg-2: #112B2B;  --sk-accent-border: #23704F;
+  --sk-accent-ring: rgba(74, 222, 128, 0.25);
+  --sk-btn: #1fa957;          --sk-btn-hover: #22c55e;  --sk-on-accent: #FFFFFF;
+  --sk-ok: #22C55E;
+  --sk-danger: #F87171;       --sk-danger-strong: #FCA5A5;
+  --sk-danger-bg: #331C2A;    --sk-danger-bg-2: #43222F;
+  --sk-danger-border: #6B2F40; --sk-danger-dot: #EF4444;
+  --sk-warn: #FBBF24;         --sk-warn-border: #F59E0B;
+  --sk-shadow-color: rgba(0, 6, 16, 0.5);
+  --sk-shadow-color-soft: rgba(0, 6, 16, 0.4);
+  --sk-shadow-color-strong: rgba(0, 6, 16, 0.6);
+  --sk-overlay: rgba(2, 8, 18, 0.6);
+}
+
+/* ---------- Seletor de tema (topbar) — mesmo visual do idioma ---------- */
+#topbar-group-theme {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+#topbar-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  min-width: 170px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+#topbar-theme-toggle:hover,
+#topbar-group-theme.open #topbar-theme-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+#topbar-theme-toggle:focus-visible,
+#topbar-theme-menu button:focus-visible {
+  outline: 2px solid #22c55e;
+  outline-offset: 2px;
+}
+
+#topbar-theme-toggle .topbar-theme-caret {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+#topbar-group-theme.open .topbar-theme-caret { transform: rotate(180deg); }
+
+#topbar-theme-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 100%;
+  width: max-content;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 60;
+}
+
+#topbar-theme-menu[hidden] { display: none; }
+
+#topbar-theme-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#topbar-theme-menu button:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+}
+
+#topbar-theme-menu button.active { color: #22c55e; }
+
+/* Visto ✓ do tema atual (só aparece no ativo) */
+#topbar-theme-menu .theme-check {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  visibility: hidden;
+}
+
+#topbar-theme-menu button.active .theme-check { visibility: visible; }
+
+/* Separador entre "Sistema", escuros e claros */
+#topbar-theme-menu .theme-menu-sep {
+  height: 1px;
+  margin: 4px 2px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Bolinha de prévia: metade fundo, metade destaque */
+.theme-swatch {
+  --sw-a: #060B10;
+  --sw-b: #22c55e;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(127, 127, 127, 0.55);
+  background: linear-gradient(135deg, var(--sw-a) 50%, var(--sw-b) 50%);
+}
+
+.theme-swatch[data-swatch="system"]   { --sw-a: #060B10; --sw-b: #FFFFFF; }
+.theme-swatch[data-swatch="dark"]     { --sw-a: #060B10; --sw-b: #22c55e; }
+.theme-swatch[data-swatch="graphite"] { --sw-a: #1C1F23; --sw-b: #4ADE80; }
+.theme-swatch[data-swatch="ocean"]    { --sw-a: #0B1626; --sw-b: #4ADE80; }
+.theme-swatch[data-swatch="light"]    { --sw-a: #FFFFFF; --sw-b: #15803D; }
+.theme-swatch[data-swatch="sand"]     { --sw-a: #FBF7EF; --sw-b: #3A6F25; }
+.theme-swatch[data-swatch="field"]    { --sw-a: #FFFFFF; --sw-b: #000000; }
+
+/* Seletor dentro dos temas com skin (claros e escuros novos) */
+html.theme-skin #topbar-theme-toggle {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  color: var(--sk-text) !important;
+}
+
+html.theme-skin #topbar-theme-toggle:hover,
+html.theme-skin #topbar-group-theme.open #topbar-theme-toggle {
+  background: var(--sk-hover) !important;
+  border-color: var(--sk-field-border) !important;
+}
+
+html.theme-skin #topbar-theme-menu {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  box-shadow: 0 10px 30px var(--sk-shadow-color) !important;
+}
+
+html.theme-skin #topbar-theme-menu button { color: var(--sk-text-2) !important; }
+html.theme-skin #topbar-theme-menu button:hover { background: var(--sk-hover) !important; color: var(--sk-text) !important; }
+html.theme-skin #topbar-theme-menu button.active { color: var(--sk-accent) !important; }
+html.theme-skin #topbar-theme-menu .theme-menu-sep { background: var(--sk-border) !important; }
+
+@media (min-width: 769px) {
+  /* O grupo do tema assume o "empurrar pra direita" que era do idioma */
+  #topbar-group-theme { margin-left: auto; }
+  #topbar-group-lang { margin-left: 0 !important; }
+}
+
+@media (min-width: 769px) and (max-width: 1366px) {
+  #topbar-theme-toggle { height: 36px; }
+}
+
+/* Telas estreitas: igual ao idioma, o botão vira só a bolinha */
+@media (min-width: 769px) and (max-width: 1100px) {
+  #topbar-theme-name { display: none; }
+  #topbar-theme-toggle { min-width: 0; }
+  #topbar-theme-menu { min-width: 190px; }
+}
+
+@media (max-width: 768px) {
+  #topbar-group-theme { display: none; }
+}
+
+/* Troca de tema suave (desligada pra quem pediu menos movimento) */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease !important;
+  }
+}
+
+/* =====================================================================
+   Superfícies da interface (antes era theme-light.css, agora com as
+   variáveis acima — vale pra TODOS os temas com .theme-skin)
+   ===================================================================== */
+
+/* ---------- Base ---------- */
+/* Fundo da página = faixas em volta do mapa (embaixo, com a logo e a
+   opacidade, e à direita). Branco igual à topbar e às barras laterais. */
+html.theme-skin body {
+  background-color: var(--sk-bg) !important;
+  color: var(--sk-text);
+}
+
+html.theme-skin #ui-wrapper {
+  color: var(--sk-text);
+  color-scheme: var(--sk-scheme);
+}
+
+/* Utilitários Tailwind de texto/borda claros usados no HTML */
+html.theme-skin #ui-wrapper .text-white { color: var(--sk-text) !important; }
+html.theme-skin #ui-wrapper .text-white\/80,
+html.theme-skin #ui-wrapper .text-white\/70 { color: var(--sk-text-2) !important; }
+html.theme-skin #ui-wrapper .text-white\/60 { color: var(--sk-muted) !important; }
+html.theme-skin #ui-wrapper .border-white\/10,
+html.theme-skin #ui-wrapper .border-white\/15,
+html.theme-skin #ui-wrapper .border-white\/20 { border-color: var(--sk-border) !important; }
+
+/* Ícones em máscara: no escuro alguns eram forçados a branco (bg-white) */
+html.theme-skin #ui-wrapper .sidebar-icon.bg-white { background-color: currentColor !important; }
+
+/* Logos com letras brancas: inverte só a luminosidade (o verde continua verde) */
+html.theme-light.theme-skin #topbar-brand img,
+html.theme-light.theme-skin #footer-logo-link img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ---------- Topbar ---------- */
+html.theme-skin #app-topbar {
+  background: var(--sk-bg) !important;
+  border-bottom-color: var(--sk-border) !important;
+}
+
+html.theme-skin #app-topbar .topbar-pill {
+  border-color: var(--sk-border) !important;
+  background: var(--sk-bg) !important;
+}
+
+html.theme-skin #app-topbar .topbar-pill > span { color: var(--sk-muted) !important; }
+
+html.theme-skin #app-topbar .glass-button {
+  color: var(--sk-text-2) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html.theme-skin #app-topbar .glass-button:hover {
+  background: var(--sk-hover) !important;
+  color: var(--sk-accent) !important;
+}
+
+html.theme-skin #app-topbar .glass-button.glass-button-active {
+  background: var(--sk-accent-bg) !important;
+  border-color: var(--sk-accent-border) !important;
+  color: var(--sk-accent) !important;
+}
+
+html.theme-skin #topbar-lang-toggle,
+html.theme-skin #app-topbar #btn-logout,
+html.theme-skin #btn-theme-toggle {
+  background: var(--sk-bg) !important;
+  border: 1px solid var(--sk-border) !important;
+  color: var(--sk-text) !important;
+}
+
+html.theme-skin #topbar-lang-toggle:hover,
+html.theme-skin #topbar-group-lang.open #topbar-lang-toggle,
+html.theme-skin #app-topbar #btn-logout:hover,
+html.theme-skin #btn-theme-toggle:hover {
+  background: var(--sk-hover) !important;
+  border-color: var(--sk-field-border) !important;
+}
+
+html.theme-skin #topbar-lang-menu {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  box-shadow: 0 10px 30px var(--sk-shadow-color) !important;
+}
+
+html.theme-skin #topbar-lang-menu button { color: var(--sk-text-2) !important; }
+html.theme-skin #topbar-lang-menu button:hover { background: var(--sk-hover) !important; color: var(--sk-text) !important; }
+html.theme-skin #topbar-lang-menu button.active { color: var(--sk-accent) !important; }
+
+/* ---------- Sidebar esquerda ---------- */
+html.theme-skin #sidebar-left {
+  background: var(--sk-bg) !important;
+  border-right: 1px solid var(--sk-border);
+  scrollbar-color: var(--sk-scroll) var(--sk-bg);
+}
+
+html.theme-skin .sidebar-section-title { color: var(--sk-muted) !important; }
+html.theme-skin .sidebar-section-title::after { background: var(--sk-border) !important; }
+
+html.theme-skin #sidebar-template label { color: var(--sk-text-2) !important; }
+
+html.theme-skin #sidebar-template select,
+html.theme-skin #template-modelo {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-field-border) !important;
+  color: var(--sk-text) !important;
+}
+
+/* Lista de templates: no tema escuro ela é um menu estilizado
+   (::picker(select), style.css). Aqui ganha a mesma forma, em claro. */
+html.theme-skin #template-modelo { color-scheme: var(--sk-scheme); }
+html.theme-skin #template-modelo option { background-color: var(--sk-bg); color: var(--sk-text); }
+
+@media (min-width: 769px) {
+  @supports (appearance: base-select) {
+    html.theme-skin #template-modelo::picker-icon { color: var(--sk-muted); }
+
+    html.theme-skin #template-modelo::picker(select) {
+      background: var(--sk-bg);
+      border: 1px solid var(--sk-border);
+      box-shadow: 0 10px 30px var(--sk-shadow-color);
+    }
+
+    html.theme-skin #template-modelo option {
+      background: transparent;
+      color: var(--sk-text);
+    }
+
+    html.theme-skin #template-modelo option:hover,
+    html.theme-skin #template-modelo option:focus-visible {
+      background: var(--sk-hover);
+      color: var(--sk-text);
+    }
+
+    html.theme-skin #template-modelo option:checked {
+      background: var(--sk-btn);
+      color: var(--sk-on-accent);
+    }
+  }
+}
+
+/* Dois IDs, igual à regra do style.css ("#sidebar-left #sidebar-coord-field"),
+   senão a borda escura de lá vence e o campo some no fundo branco. */
+html.theme-skin #sidebar-left #sidebar-coord-field {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-field-border) !important;
+}
+
+html.theme-skin #lat-long-input-field { color: var(--sk-text) !important; }
+html.theme-skin #lat-long-input-field::placeholder { color: var(--sk-muted) !important; }
+html.theme-skin #coord-search-btn { color: var(--sk-text-2) !important; }
+html.theme-skin #coord-search-btn:hover { color: var(--sk-accent) !important; }
+
+html.theme-skin #sidebar-left .sidebar-button {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-field-border) !important;
+  color: var(--sk-text-2) !important;
+}
+
+html.theme-skin #sidebar-left .sidebar-button:not(:disabled):hover {
+  background: var(--sk-card) !important;
+  color: var(--sk-accent) !important;
+}
+
+html.theme-skin #sidebar-left label.has-file {
+  border-color: var(--sk-accent-border) !important;
+  background: var(--sk-accent-bg-2) !important;
+  color: var(--sk-text) !important;
+}
+
+html.theme-skin .kmz-change-hint,
+html.theme-skin label.has-file .kmz-change-hint { color: var(--sk-accent) !important; }
+
+/* Configurar repetidora */
+html.theme-skin #sidebar-left #painel-repetidora h2 { color: var(--sk-muted) !important; }
+html.theme-skin #sidebar-left #painel-repetidora > .flex.justify-between.items-center::after { background: var(--sk-border) !important; }
+html.theme-skin #sidebar-left #painel-repetidora label { color: var(--sk-text-2) !important; }
+
+html.theme-skin #sidebar-left #painel-repetidora input[type="number"] {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-field-border) !important;
+  color: var(--sk-text) !important;
+}
+
+html.theme-skin .rep-unit { color: var(--sk-muted) !important; }
+
+html.theme-skin #sidebar-left #painel-repetidora #confirmar-repetidora {
+  background: var(--sk-btn) !important;
+  color: var(--sk-on-accent) !important;
+}
+
+html.theme-skin #sidebar-left #painel-repetidora #confirmar-repetidora:not(:disabled):hover {
+  background: var(--sk-btn-hover) !important;
+}
+
+html.theme-skin #sidebar-left #painel-repetidora.rep-locked #confirmar-repetidora {
+  background: var(--sk-subtle) !important;
+  color: var(--sk-muted) !important;
+}
+
+html.theme-skin #sidebar-left #resetar-btn {
+  color: var(--sk-text-2) !important;
+  border-top-color: var(--sk-border) !important;
+  background: none !important;
+}
+
+html.theme-skin #sidebar-left #resetar-btn:hover { color: var(--sk-danger) !important; }
+
+/* A linha em cima do "Resetar" é um ::before (style.css), não a borda do botão */
+html.theme-skin #sidebar-left #resetar-btn::before { border-top-color: var(--sk-border) !important; }
+
+/* ---------- Estrutura do projeto ---------- */
+html.theme-skin #project-tree {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  color: var(--sk-text) !important;
+}
+
+html.theme-skin .pt-strip-btn { color: var(--sk-accent) !important; }
+html.theme-skin .pt-strip-label { color: var(--sk-text-2) !important; }
+html.theme-skin .pt-badge { background: var(--sk-subtle) !important; color: var(--sk-text) !important; }
+html.theme-skin .pt-badge--out { background: var(--sk-danger-bg) !important; color: var(--sk-danger) !important; }
+
+html.theme-skin .pt-header { border-bottom-color: var(--sk-border) !important; }
+html.theme-skin .pt-header-icon,
+html.theme-skin .pt-file svg { color: var(--sk-accent) !important; }
+html.theme-skin .pt-title,
+html.theme-skin .pt-file { color: var(--sk-text) !important; }
+
+html.theme-skin .pt-icon-btn {
+  border-color: var(--sk-border) !important;
+  color: var(--sk-text-2) !important;
+}
+
+html.theme-skin .pt-icon-btn:hover { color: var(--sk-accent) !important; border-color: var(--sk-accent-border) !important; }
+
+html.theme-skin .pt-search {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-field-border) !important;
+  color: var(--sk-muted) !important;
+}
+
+html.theme-skin .pt-search input { color: var(--sk-text) !important; }
+html.theme-skin .pt-search input::placeholder { color: var(--sk-muted); }
+html.theme-skin .pt-list { scrollbar-color: var(--sk-scroll) var(--sk-bg) !important; }
+
+html.theme-skin .pt-row,
+html.theme-skin .pt-group-name { color: var(--sk-text) !important; }
+html.theme-skin .pt-twisty { color: var(--sk-text-2) !important; }
+html.theme-skin .pt-twisty:hover { color: var(--sk-text) !important; }
+html.theme-skin .pt-count { color: var(--sk-text-2) !important; }
+html.theme-skin .pt-row--item:hover { background: var(--sk-hover) !important; }
+
+html.theme-skin .pt-row--item.is-selected {
+  background: var(--sk-accent-bg) !important;
+  box-shadow: inset 0 0 0 1px var(--sk-accent-border) !important;
+}
+
+html.theme-skin .pt-row--item.is-editing { background: var(--sk-card) !important; }
+html.theme-skin .pt-row--item.is-hidden .pt-name { color: var(--sk-faint) !important; }
+html.theme-skin .pt-check { accent-color: var(--sk-accent); }
+html.theme-skin .pt-dot--ok { background: var(--sk-ok) !important; }
+html.theme-skin .pt-dot--out { border-color: var(--sk-danger-dot) !important; }
+html.theme-skin .pt-dot--idle { background: var(--sk-dot-idle) !important; }
+html.theme-skin .pt-meta { color: var(--sk-muted) !important; }
+
+html.theme-skin .pt-rename-input {
+  background: var(--sk-bg) !important;
+  color: var(--sk-text) !important;
+  border-color: var(--sk-accent) !important;
+  box-shadow: 0 0 0 3px var(--sk-accent-ring) !important;
+}
+
+html.theme-skin .pt-edit-hint,
+html.theme-skin .pt-empty { color: var(--sk-muted) !important; }
+
+/* Menu do botão direito da árvore */
+html.theme-skin .pt-menu {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  box-shadow: 0 10px 30px var(--sk-shadow-color) !important;
+}
+
+html.theme-skin .pt-menu-item { color: var(--sk-text) !important; }
+html.theme-skin .pt-menu-item kbd { color: var(--sk-muted) !important; }
+
+html.theme-skin .pt-menu-item:hover,
+html.theme-skin .pt-menu-item:focus-visible {
+  background: var(--sk-accent-bg) !important;
+  color: var(--sk-accent) !important;
+}
+
+html.theme-skin .pt-menu-item--danger { color: var(--sk-danger) !important; }
+
+html.theme-skin .pt-menu-item--danger:hover,
+html.theme-skin .pt-menu-item--danger:focus-visible {
+  background: var(--sk-danger-bg) !important;
+  color: var(--sk-danger-strong) !important;
+}
+
+html.theme-skin .pt-menu-sep { background: var(--sk-border) !important; }
+
+/* ---------- Painéis da direita (Painel de Dados / Repetidoras) ---------- */
+html.theme-skin #overlay-panels-container > .panel {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  box-shadow: 0 8px 24px var(--sk-shadow-color-soft) !important;
+  backdrop-filter: none !important;
+}
+
+/* Painel recolhido: some fundo, borda e sombra (igual ao tema escuro),
+   fica só a setinha pra abrir de novo. */
+html.theme-skin #overlay-panels-container > .panel.minimized {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html.theme-skin #overlay-panels-container > .panel h2 { color: var(--sk-text) !important; }
+html.theme-skin .panel-toggle-btn { color: var(--sk-text-2) !important; }
+html.theme-skin .panel-toggle-btn:hover { color: var(--sk-accent) !important; }
+
+html.theme-skin .data-template { color: var(--sk-accent) !important; }
+
+html.theme-skin .data-stat {
+  background: var(--sk-card) !important;
+  border-color: var(--sk-border) !important;
+}
+
+html.theme-skin .data-stat-value { color: var(--sk-text) !important; }
+html.theme-skin .data-stat-label { color: var(--sk-muted) !important; }
+
+html.theme-skin .data-stat--danger {
+  background: var(--sk-danger-bg) !important;
+  border-color: var(--sk-danger-border) !important;
+}
+
+html.theme-skin .data-stat--danger .data-stat-value,
+html.theme-skin .data-stat--danger .data-stat-label { color: var(--sk-danger) !important; }
+
+html.theme-skin .data-stat--danger.is-zero {
+  background: var(--sk-card) !important;
+  border-color: var(--sk-border) !important;
+}
+
+html.theme-skin .data-stat--danger.is-zero .data-stat-value { color: var(--sk-text) !important; }
+html.theme-skin .data-stat--danger.is-zero .data-stat-label { color: var(--sk-muted) !important; }
+
+html.theme-skin #overlay-panels-container #exportar-pdf-btn:not(:disabled) {
+  background: var(--sk-btn) !important;
+  color: var(--sk-on-accent) !important;
+}
+
+html.theme-skin #overlay-panels-container #exportar-pdf-btn:not(:disabled):hover { background: var(--sk-btn-hover) !important; }
+
+html.theme-skin #overlay-panels-container #exportar-pdf-btn:disabled {
+  background: var(--sk-subtle) !important;
+  color: var(--sk-muted) !important;
+}
+
+html.theme-skin #lista-repetidoras { scrollbar-color: var(--sk-scroll) var(--sk-bg) !important; }
+
+html.theme-skin #lista-repetidoras > .rep-item {
+  background: var(--sk-card) !important;
+  border-color: var(--sk-border) !important;
+}
+
+html.theme-skin #lista-repetidoras .rep-item-name { color: var(--sk-text) !important; }
+
+html.theme-skin .rep-item-height {
+  border-color: var(--sk-field-border) !important;
+  color: var(--sk-text-2) !important;
+}
+
+html.theme-skin .rep-item:has([data-visible="false"]) .rep-item-dot { background: var(--sk-dot-idle) !important; }
+html.theme-skin #lista-repetidoras .rep-item-btn { color: var(--sk-text-2) !important; }
+html.theme-skin #lista-repetidoras .rep-item-btn:hover { background: var(--sk-subtle) !important; color: var(--sk-text) !important; }
+html.theme-skin #lista-repetidoras .rep-item-btn--danger { color: var(--sk-danger) !important; background: var(--sk-danger-bg) !important; }
+html.theme-skin #lista-repetidoras .rep-item-btn--danger:hover { background: var(--sk-danger-bg-2) !important; }
+
+/* ---------- Controles flutuantes ---------- */
+html.theme-skin #opacity-control > span { color: var(--sk-text-2) !important; }
+html.theme-skin .range-slider-custom { background: var(--sk-track); }
+
+/* ---------- Menu de renomear antena/repetidora (no mapa) ---------- */
+html.theme-skin .rename-menu {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  box-shadow: 0 10px 30px var(--sk-shadow-color) !important;
+  backdrop-filter: none !important;
+}
+
+html.theme-skin .rename-menu button { color: var(--sk-text) !important; }
+html.theme-skin .rename-menu button:hover { background: var(--sk-accent-bg) !important; color: var(--sk-accent) !important; }
+html.theme-skin .rename-menu button + button { border-color: var(--sk-border) !important; }
+
+/* ---------- Caixa de confirmação ---------- */
+html.theme-skin #custom-confirm-overlay { background: var(--sk-overlay) !important; }
+
+html.theme-skin #custom-confirm-box {
+  background: var(--sk-bg) !important;
+  border-color: var(--sk-border) !important;
+  box-shadow: 0 20px 50px var(--sk-shadow-color-strong) !important;
+}
+
+html.theme-skin #custom-confirm-title { color: var(--sk-accent) !important; }
+html.theme-skin #custom-confirm-message { color: var(--sk-text) !important; }
+html.theme-skin #custom-confirm-box > div:last-child { background: var(--sk-card) !important; }
+html.theme-skin #custom-confirm-cancel-btn { color: var(--sk-text-2) !important; }
+html.theme-skin #custom-confirm-cancel-btn:hover { background: var(--sk-subtle) !important; color: var(--sk-text) !important; }
+html.theme-skin #custom-confirm-ok-btn { background: var(--sk-btn) !important; box-shadow: none !important; }
+html.theme-skin #custom-confirm-ok-btn:hover { background: var(--sk-btn-hover) !important; }
+
+/* ---------- Continuam com texto branco (fundo verde/escuro) ----------
+   Mesmo peso da regra "#ui-wrapper .text-white" lá de cima (senão ela
+   ganha e o texto fica escuro em fundo escuro). */
+html.theme-skin #ui-wrapper #custom-confirm-ok-btn { color: var(--sk-on-accent) !important; }
+html.theme-skin #ui-wrapper #btn-screenshot-mode,
+html.theme-skin #ui-wrapper #loader .text-white { color: #FFFFFF !important; }
+
+/* ---------- Aviso (mostrarMensagem): cartão branco no tema claro ----------
+   A borda colorida da esquerda (verde/vermelha/amarela) vem do JS. */
+html.theme-skin #ui-wrapper #mensagem {
+  background-color: var(--sk-bg) !important;
+  color: var(--sk-text) !important;
+  border-top: 1px solid var(--sk-border);
+  border-right: 1px solid var(--sk-border);
+  border-bottom: 1px solid var(--sk-border);
+  box-shadow: 0 10px 30px var(--sk-shadow-color) !important;
+}
+
+html.theme-skin #ui-wrapper #mensagem.border-green-400 { border-left-color: var(--sk-ok) !important; }
+html.theme-skin #ui-wrapper #mensagem .text-green-400 { color: var(--sk-accent) !important; }
+html.theme-skin #ui-wrapper #mensagem .text-yellow-400 { color: var(--sk-warn) !important; }
+html.theme-skin #ui-wrapper #mensagem.border-yellow-400 { border-left-color: var(--sk-warn-border) !important; }
+
+/* Arrastar pra reordenar */
+html.theme-skin .pt-row.pt-drop-before { box-shadow: inset 0 2px 0 var(--sk-accent) !important; }
+html.theme-skin .pt-row.pt-drop-after { box-shadow: inset 0 -2px 0 var(--sk-accent) !important; }
+
+/* Setinha do painel recolhido fica sobre o satélite: branca com sombra */
+html.theme-skin #overlay-panels-container > .panel.minimized .panel-toggle-btn {
+  color: #FFFFFF !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+}

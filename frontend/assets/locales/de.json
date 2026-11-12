@@ -1,5 +1,14 @@
 {
   "ui": {
+  "themes": {
+      "system": "System (automatisch)",
+      "dark": "Dunkel",
+      "graphite": "Graphit",
+      "ocean": "Nachtblau",
+      "light": "Hell",
+      "sand": "Sand",
+      "field": "Pralle Sonne (hoher Kontrast)"
+  },
     "titles": {
       "main": "Irricontrol: Signalsimulator",
       "data_panel": "Datenpanel",
@@ -39,6 +48,7 @@
     },
     "labels": {
       "language": "Sprache",
+      "theme": "Design",
       "tools": "Analyse",
       "legends_group": "Ebenen",
       "draw_group": "Zeichnen",
@@ -130,8 +140,6 @@
         }
     },
   "tooltips": {
-    "theme_to_light": "Helles Design verwenden",
-    "theme_to_dark": "Dunkles Design verwenden",
     "out_of_signal": "Kein Signal",
     "in_signal": "Mit Signal",
     "show_hide_coverage": "Abdeckung ein-/ausblenden",

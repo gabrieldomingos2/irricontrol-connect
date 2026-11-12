@@ -9,7 +9,7 @@
 // ?v=N diferente, é sempre buscada fresca) e só cai pro cache se a rede
 // falhar de verdade. Isso evita reintroduzir via cache o mesmo problema de
 // "JS desatualizado" que o cache-busting por query string já resolve.
-const CACHE_NAME = "irricontrol-shell-v1";
+const CACHE_NAME = "irricontrol-shell-v2";
 
 self.addEventListener("install", () => {
   self.skipWaiting();

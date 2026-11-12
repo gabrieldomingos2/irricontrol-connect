@@ -24,7 +24,7 @@ class AppSettings(BaseSettings):
 
     # --- Configurações Gerais ---
     APP_NAME: str = "Irricontrol Signal Simulator API"
-    APP_VERSION: str = "2.1.0"
+    APP_VERSION: str = "2.2.0"
     API_V1_STR: str = "/api/v1"
     DEFAULT_TEMPLATE_ID: TemplateID = TemplateID.XBEE_PRO_900HP_90DBM
     ENVIRONMENT: str = "development"
